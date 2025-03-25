@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;  
+
+@layer base {
+  @font-face {
+    font-family: 'MierA';
+    font-weight: 500;
+    src: url('./assets/fonts/MierA-Book.woff') format('woff');
+  }
+  
+  @font-face {
+    font-family: 'MierA';
+    font-weight: 700;
+    src: url('./assets/fonts/MierA-Bold.woff') format('woff');
+  }    
+}
+
+:root {
+  font-family: MierA, sans-serif;
+  font-weight: 500;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  /* @apply antialiased; */
+}
+
+
+body {
+  margin: 0;
+  min-width: 320px;
+
+  /* @apply bg-grey-1; */
+}
+
+
+.shadow-top {
+  position: relative;
+  overflow-y: auto;
+}
+
+.shadow-top:before {
+  content: '';
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px; /* Adjust height as needed */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.shadow-top.scrolled:before {
+  opacity: 1;
+}
