@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-    readonly VITE_GIFT_SHOP_API: string;
+    readonly VITE_LIGHT_SHOP_API: string;
 }
 
 interface ImportMeta {

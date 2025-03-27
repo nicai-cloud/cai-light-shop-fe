@@ -16,12 +16,12 @@ import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-
 import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 
-type PreselectionType = {
+type LightType = {
     quantity: number,
-    preselectionId: number
+    lightId: number
 }
 
-type orderItemType = PreselectionType
+type orderItemType = LightType
 
 type PublishableKeyResponse = {
     publishableKey: string;
@@ -29,7 +29,7 @@ type PublishableKeyResponse = {
   
 async function retrievePublishableKey(): Promise<PublishableKeyResponse> {
     const response = await fetch(
-      `${import.meta.env.VITE_GIFT_SHOP_API}/complete-order/publishable-key`
+      `${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order/publishable-key`
     );
     return await response.json();
 }
@@ -90,14 +90,14 @@ export default function Base() {
 
         const orderItems: orderItemType[] = [];
         cartContext.cart.map((cartItem) => {
-            if (cartItem.selection.preselectionId) {
-                orderItems.push({quantity: cartItem.quantity, preselectionId: cartItem.selection.preselectionId})
+            if (cartItem.selection.lightId) {
+                orderItems.push({quantity: cartItem.quantity, lightId: cartItem.selection.lightId})
             }
         })
 
         let response;
         try {
-            response = await fetch(`${import.meta.env.VITE_GIFT_SHOP_API}/complete-order`, {
+            response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

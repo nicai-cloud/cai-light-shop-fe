@@ -4,8 +4,8 @@ import './index.css'
 import App from './App.tsx'
 import Success from './pages/success.tsx'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
-import Preselections from './pages/preselections.tsx'
-import Preselection from './pages/preselection.tsx'
+import Lights from './pages/lights.tsx'
+import Light from './pages/light.tsx'
 import ViewOrderSummary from './pages/view-order-summary.tsx'
 import ConfirmOrder from './pages/confirm-order.tsx'
 import { CartProvider } from './context/CartContext.tsx'
@@ -18,19 +18,19 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Navigate to="/preselections" replace />,
+        element: <Navigate to="/lights" replace />,
       },
       {
         path: '/',
         element: <Base />,
         children: [
           {
-            path: 'preselections',
-            element: <Preselections />,
+            path: 'lights',
+            element: <Lights />,
           },
           {
-            path: 'preselection/:name',
-            element: <Preselection />,
+            path: 'light/:name',
+            element: <Light />,
           },
           {
             path: 'view-order-summary',
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <Navigate to='/preselections' replace />,
+        element: <Navigate to='/lights' replace />,
       }
     ]
   }

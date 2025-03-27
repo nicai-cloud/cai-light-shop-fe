@@ -3,13 +3,11 @@ import { useMainContext } from './context';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
-import { getPreselections } from '../services/preselection';
+import { getLights } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_ALL_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_BAGS, GET_ITEMS, GET_PRESELECTIONS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 import { getCoupon } from '../services/coupon';
-import { getAllImageUrls } from '../services/image';
-import { getBags } from '../services/bag';
-import { getItems } from '../services/item';
+import { getLightImageUrls } from '../services/image';
 import { getShippingMethodInfo } from '../services/shippingMethod';
 import { getNumberEnv } from '../utils/load-env';
 import { NavArrowDown } from 'iconoir-react';
@@ -35,20 +33,12 @@ export default function ViewOrderSumary() {
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_ALL_IMAGE_URLS, getAllImageUrls, {
+    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isPreselectionsLoading, data: preselections} = useSWR(GET_PRESELECTIONS, getPreselections, {
-        // revalidateIfStale: false, // Prevent re-fetching when cache is stale
-        dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
-    });
-    const {isLoading: isBagsLoading, data: bags} = useSWR(GET_BAGS, getBags, {
-        // revalidateIfStale: false, // Prevent re-fetching when cache is stale
-        dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
-    });
-    const {isLoading: isItemsLoading, data: items} = useSWR(GET_ITEMS, getItems, {
+    const {isLoading: isLightsLoading, data: lights} = useSWR(GET_LIGHTS, getLights, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -100,8 +90,8 @@ export default function ViewOrderSumary() {
         }
     }
 
-    const countPreselectionItems = useCallback(() => {
-        return cartContext.cart.filter(cartItem => cartItem.selection.preselectionId !== undefined).length;
+    const countLightItems = useCallback(() => {
+        return cartContext.cart.filter(cartItem => cartItem.selection.lightId !== undefined).length;
     }, [cartContext])
 
     const handleCheckout = useCallback(() => {
@@ -133,9 +123,7 @@ export default function ViewOrderSumary() {
     };
 
     if (isImagesLoading || !images ||
-        isPreselectionsLoading || !preselections ||
-        isBagsLoading || !bags ||
-        isItemsLoading || !items ||
+        isLightsLoading || !lights ||
         isShippingMethodLoading || !shippingMethodInfo
     ) {
         return (
@@ -162,55 +150,52 @@ export default function ViewOrderSumary() {
                 <hr className={"border-2 border-gray-300"}/>
                 <div>
                     {cartContext.cart.map((cartItem, index) => {
-                        const preselectionId = cartItem.selection.preselectionId;
+                        const lightId = cartItem.selection.lightId;
 
                         return (
                             <div key={cartItem.itemId} className="mb-8">
-                                {preselectionId && (
-                                    <div className="my-8">
-                                        {index === 0 && (<div className="text-xl mb-4">Surprise bags</div>)}
-                                        <Disclosure
-                                            as="div"
-                                            className="flex flex-col items-start gap-3 text-start self-stretch"
-                                            defaultOpen={true}
-                                        >
-                                            <div className="w-full flex flex-row justify-between">
-                                                <div className="justify-start flex flex-row">
-                                                    <DisclosureButton className="group self-stretch">
-                                                        <NavArrowDown className="transition duration-150 ease-in-out group-data-[open]:rotate-180" />
-                                                    </DisclosureButton>
-                                                    <p className="ml-3 text-xl">No.{index + 1}</p>
-                                                </div>
-                                                <div className="flex flex-row items-center">
-                                                    <EditQuantity
-                                                        cartItem={cartItem}
-                                                        onTrashClick={() => {
-                                                            setDeletedCartItemId(cartItem.itemId);
-                                                            setConfirmCartItemDeletionModalOpen(true);
-                                                        }}
-                                                    />
-                                                    <p className="ml-4 w-16 text-right">${formatMoney(cartItem.price.times(cartItem.quantity))}</p>
-                                                </div>
+                                <div className="my-8">
+                                    {index === 0 && (<div className="text-xl mb-4">Lights</div>)}
+                                    <Disclosure
+                                        as="div"
+                                        className="flex flex-col items-start gap-3 text-start self-stretch"
+                                        defaultOpen={true}
+                                    >
+                                        <div className="w-full flex flex-row justify-between">
+                                            <div className="justify-start flex flex-row">
+                                                <DisclosureButton className="group self-stretch">
+                                                    <NavArrowDown className="transition duration-150 ease-in-out group-data-[open]:rotate-180" />
+                                                </DisclosureButton>
+                                                <p className="ml-3 text-xl">No.{index + 1}</p>
                                             </div>
-                                            <DisclosurePanel
-                                                transition
-                                                className="transition duration-150 east-out data-[closed]:-translate-y-2 data-[closed]:opacity-0 self-stretch"
-                                            >
-                                                {(() => {
-                                                    // Preselection gift
-                                                    const preselection = preselections.find(preselection => preselection.id === preselectionId)!;
-                                                    return (
-                                                        <div className="flex flex-row items-center justify-between">
-                                                            <img src={preselection.imageUrl} alt={preselection.name} className="w-[150px] h-[150px]" />
-                                                            <p>{preselection.name}</p>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </DisclosurePanel>
-                                        </Disclosure>
-                                    </div>
-                                )}
-                                <hr className={`mt-8 ${(index === countPreselectionItems() - 1 || index === cartContext.cart.length-1) ? "border-2 border-gray-300" : ""}`}/>
+                                            <div className="flex flex-row items-center">
+                                                <EditQuantity
+                                                    cartItem={cartItem}
+                                                    onTrashClick={() => {
+                                                        setDeletedCartItemId(cartItem.itemId);
+                                                        setConfirmCartItemDeletionModalOpen(true);
+                                                    }}
+                                                />
+                                                <p className="ml-4 w-16 text-right">${formatMoney(cartItem.price.times(cartItem.quantity))}</p>
+                                            </div>
+                                        </div>
+                                        <DisclosurePanel
+                                            transition
+                                            className="transition duration-150 east-out data-[closed]:-translate-y-2 data-[closed]:opacity-0 self-stretch"
+                                        >
+                                            {(() => {
+                                                const light = lights.find(light => light.id === lightId)!;
+                                                return (
+                                                    <div className="flex flex-row items-center justify-between">
+                                                        <img src={light.imageUrl} alt={light.name} className="w-[150px] h-[150px]" />
+                                                        <p>{light.name}</p>
+                                                    </div>
+                                                )
+                                            })}
+                                        </DisclosurePanel>
+                                    </Disclosure>
+                                </div>
+                                <hr className={`mt-8 ${(index === countLightItems() - 1 || index === cartContext.cart.length-1) ? "border-2 border-gray-300" : ""}`}/>
                             </div>
                         )
                     })}

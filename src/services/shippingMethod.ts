@@ -33,7 +33,7 @@ function convertShippingMethod(shippingMethod: RawShippingMethodType): ShippingM
 }
 
 export const getShippingMethodInfo = async (): Promise<ShippingMethodInfoType> => {
-    const response = await fetch(`${import.meta.env.VITE_GIFT_SHOP_API}/shipping-methods`);
+    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/shipping-methods`);
     const shippingMethodInfo = await response.json();
     const result = {
         ...shippingMethodInfo,

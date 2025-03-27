@@ -1,9 +1,4 @@
-export const getAllImageUrls = async (): Promise<string[]> => {
-    const response = await fetch(`${import.meta.env.VITE_GIFT_SHOP_API}/images`);
-    return await response.json();
-}
-
-export const getPreselectionImageUrls = async (): Promise<string[]> => {
-    const response = await fetch(`${import.meta.env.VITE_GIFT_SHOP_API}/images/preselection`);
+export const getLightImageUrls = async (): Promise<string[]> => {
+    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/images/light`);
     return await response.json();
 }

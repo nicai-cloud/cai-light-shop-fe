@@ -117,7 +117,7 @@ export default function ConfirmOrder() {
         }
 
         const data = await fetch(
-            `${import.meta.env.VITE_GIFT_SHOP_API}/address/auto-complete`, {
+            `${import.meta.env.VITE_LIGHT_SHOP_API}/address/auto-complete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

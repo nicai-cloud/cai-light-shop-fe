@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import Decimal from 'decimal.js';
 
 interface SelectionIds {
-    preselectionId?: number;
+    lightId: number;
 }
 
 export interface CartItem {
@@ -98,8 +98,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [cart, shippingMethod, coupon]);
 
     const customSort = (x: CartItem, y: CartItem): number => {
-        if ("preselectionId" in x.selection && "preselectionId" in y.selection) return 0;
-        if ("preselectionId" in x.selection) return -1;
+        if ("lightId" in x.selection && "lightId" in y.selection) return 0;
+        if ("lightId" in x.selection) return -1;
         return 0;
     };
 
