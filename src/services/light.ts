@@ -6,8 +6,6 @@ export type RawLightType = {
     videoUrl: string | null,
     name: string,
     type: string,
-    color: string,
-    description: string,
     price: string
 }
 
@@ -17,8 +15,6 @@ export type LightType = {
     videoUrl: string | null,
     name: string,
     type: string,
-    color: string,
-    description: string,
     price: Decimal
 }
 
