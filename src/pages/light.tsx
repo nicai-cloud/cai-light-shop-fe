@@ -18,7 +18,7 @@ export default function Light() {
 
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
-    const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
+    const [lightImageUrls, setLightImageUrls] = useState<Set<string>>(new Set());
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
@@ -43,12 +43,15 @@ export default function Light() {
     };
 
     useEffect(() => {
-        if (light) {
-            const lightImageUrl = light.imageUrl;
-            const combinedImageUrls = [lightImageUrl];
+        if (lightVariants) {
+            const combinedImageUrls = new Set();
+            for (const lightVariant of lightVariants) {
+                combinedImageUrls.add(lightVariant.imageUrl);
+            }
+            console.log(combinedImageUrls);
             setLightImageUrls(combinedImageUrls);
         }
-    }, [light]);
+    }, [lightVariants]);
 
     useEffect(() => {
         if (images) {
@@ -78,6 +81,8 @@ export default function Light() {
             </div>
         )
     }
+
+    console.log("lightVariants", lightVariants)
 
     const handleAddToCart = () => {
         const cartItem: CartItem = {
