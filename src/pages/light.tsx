@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { getLightVariantsByName } from '../services/light';
+import { getLightVariantsByName, LightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
@@ -18,8 +18,9 @@ export default function Light() {
 
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
-    const [lightImageUrls, setLightImageUrls] = useState<Set<string>>(new Set());
+    const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
+    const [selectedLightVariant, setSelectedLightVariant] = useState<LightVariantType | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -44,12 +45,17 @@ export default function Light() {
 
     useEffect(() => {
         if (lightVariants) {
-            const combinedImageUrls = new Set();
-            for (const lightVariant of lightVariants) {
+            const combinedImageUrls = new Set<string>();
+            let index = 0;
+            while (index < lightVariants.length) {
+                const lightVariant = lightVariants[index];
                 combinedImageUrls.add(lightVariant.imageUrl);
+                if (index == 0) {
+                    setSelectedLightVariant(lightVariant);
+                }
+                index++;
             }
-            console.log(combinedImageUrls);
-            setLightImageUrls(combinedImageUrls);
+            setLightImageUrls([...combinedImageUrls]);
         }
     }, [lightVariants]);
 
@@ -73,7 +79,8 @@ export default function Light() {
 
     if (isImagesLoading || !images ||
         isLightVariantsLoading || !lightVariants ||
-        !lightImageUrls
+        !lightImageUrls ||
+        !selectedLightVariant
     ) {
         return (
             <div className="w-full flex items-center justify-center">
@@ -82,17 +89,15 @@ export default function Light() {
         )
     }
 
-    console.log("lightVariants", lightVariants)
-
     const handleAddToCart = () => {
         const cartItem: CartItem = {
-            itemId: 'light' + light.id,
-            imageUrl: light.imageUrl,
-            name: light.name,
-            price: light.price,
+            itemId: 'light' + selectedLightVariant.id,
+            imageUrl: selectedLightVariant.imageUrl,
+            name: selectedLightVariant.description,
+            price: selectedLightVariant.price,
             quantity: selectedDropdown.id,
             selection: {
-                lightId: light.id
+                lightId: selectedLightVariant.lightId
             }
         }
         addItem(cartItem);
@@ -109,11 +114,11 @@ export default function Light() {
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">
-                    <p className="font-bold text-xl mb-10">{light.name}</p>
+                    {/* <p className="font-bold text-xl mb-10">{light.name}</p> */}
                     <Carousel images={lightImageUrls} stockStatus={null} />
                 </div>
                 <div className="px-2 mt-4">
-                    <p className="font-bold text-2xl mt-4">${light.price.toFixed(2)}</p>
+                    <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
                     <br />
                     <p className="font-bold">DESCRIPTION</p>
                     <div className="ml-4">
