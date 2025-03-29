@@ -2,18 +2,16 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { getLightByName } from '../services/light';
+import { getLightVariantsByName } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHT, LIGHTS_PAGE, GET_INVENTORIES } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
 import { getLightImageUrls } from '../services/image';
-import { getInventories } from '../services/inventory';
 import { preloadImage } from '../services/preload_image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
-import { getLightStockStatus } from '../services/stock_status';
 
 export default function Light() {
     const DEFAULT_QUANTITY_DROPDOWN_OPTION = {id: 1, name: "1"};
@@ -22,7 +20,6 @@ export default function Light() {
     const { addItem } = useContext(CartContext);
     const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-    const [lightStockStatus, setLightStockStatus] = useState<string | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -31,12 +28,10 @@ export default function Light() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightLoading, data: light} = useSWR([GET_LIGHT, name!], () => getLightByName(name!), {
+    const {isLoading: isLightVariantsLoading, data: lightVariants} = useSWR([GET_LIGHT_VARIANTS_BY_NAME, name!], () => getLightVariantsByName(name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
-
-    const {isLoading: isInventoriesLoading, data: inventories} = useSWR(GET_INVENTORIES, getInventories);
 
     const QUANTITY_CHOICES = Array.from({ length: 9 }, (_, i) => ({
         id: i + 1,
@@ -54,12 +49,6 @@ export default function Light() {
             setLightImageUrls(combinedImageUrls);
         }
     }, [light]);
-
-    useEffect(() => {
-        if (inventories && light) {
-            setLightStockStatus(getLightStockStatus(inventories, light));
-        }
-    }, [inventories, light]);
 
     useEffect(() => {
         if (images) {
@@ -80,8 +69,7 @@ export default function Light() {
     };
 
     if (isImagesLoading || !images ||
-        isLightLoading || !light ||
-        isInventoriesLoading || !inventories ||
+        isLightVariantsLoading || !lightVariants ||
         !lightImageUrls
     ) {
         return (
@@ -117,7 +105,7 @@ export default function Light() {
                 </div>
                 <div className="px-2 my-4 flex flex-col">
                     <p className="font-bold text-xl mb-10">{light.name}</p>
-                    <Carousel images={lightImageUrls} stockStatus={lightStockStatus} />
+                    <Carousel images={lightImageUrls} stockStatus={null} />
                 </div>
                 <div className="px-2 mt-4">
                     <p className="font-bold text-2xl mt-4">${light.price.toFixed(2)}</p>
@@ -135,14 +123,12 @@ export default function Light() {
                     value={selectedDropdown}
                     onChange={handleDropdownChange}
                     className="w-32"
-                    disabled={lightStockStatus === "OutOfStock"}
                 />
             </div>
             <div className="mt-10 w-full flex flex-row items-center justify-center">
                 <button
                     onClick={handleAddToCart}
-                    className={`mt-2 bg-[#1bafe7] text-white px-8 py-2 rounded ${lightStockStatus === "OutOfStock" ? "bg-gray-400 cursor-not-allowed" : "bg-[#1bafe7]"}`}
-                    disabled={lightStockStatus === "OutOfStock"}
+                    className={`mt-2 bg-[#1bafe7] text-white px-8 py-2 rounded "bg-[#1bafe7]"}`}
                 >
                     Add to cart
                 </button>
