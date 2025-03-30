@@ -90,8 +90,8 @@ export default function Base() {
 
         const orderItems: orderItemType[] = [];
         cartContext.cart.map((cartItem) => {
-            if (cartItem.selection.lightId) {
-                orderItems.push({quantity: cartItem.quantity, lightId: cartItem.selection.lightId})
+            if (cartItem.selection.lightVariantId) {
+                orderItems.push({quantity: cartItem.quantity, lightId: cartItem.selection.lightVariantId})
             }
         })
 

@@ -91,7 +91,7 @@ export default function ViewOrderSumary() {
     }
 
     const countLightItems = useCallback(() => {
-        return cartContext.cart.filter(cartItem => cartItem.selection.lightId !== undefined).length;
+        return cartContext.cart.filter(cartItem => cartItem.selection.lightVariantId !== undefined).length;
     }, [cartContext])
 
     const handleCheckout = useCallback(() => {
@@ -150,7 +150,7 @@ export default function ViewOrderSumary() {
                 <hr className={"border-2 border-gray-300"}/>
                 <div>
                     {cartContext.cart.map((cartItem, index) => {
-                        const lightId = cartItem.selection.lightId;
+                        const lightId = cartItem.selection.lightVariantId;
 
                         return (
                             <div key={cartItem.itemId} className="mb-8">

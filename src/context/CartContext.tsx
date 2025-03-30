@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import Decimal from 'decimal.js';
 
 interface SelectionIds {
-    lightId: number;
+    lightVariantId: number;
 }
 
 export interface CartItem {

@@ -148,7 +148,7 @@ export default function Light() {
             price: selectedLightVariant.price,
             quantity: selectedDropdown.id,
             selection: {
-                lightId: selectedLightVariant.lightId
+                lightVariantId: selectedLightVariant.id
             }
         }
         addItem(cartItem);
