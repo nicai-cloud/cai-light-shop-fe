@@ -1,34 +1,21 @@
 import { NavArrowLeft, NavArrowRight } from "iconoir-react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSwipeable } from "react-swipeable";
 
 type CarouselProps = {
     images: string[];
     imageIndex: number;
     stockStatus: string | null;
+    onIndexChange: (index: number) => void;
 };
 
-const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    useEffect(() => {
-        if (imageIndex !== undefined) {
-            setCurrentIndex(imageIndex);
-        }
-    }, [imageIndex]);
-
-    console.log("current imageIndex inside carousel", imageIndex);
-
+const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus, onIndexChange }) => {
     const handlePrevious = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? images.length - 1 : prevIndex - 1
-        );
+        onIndexChange(imageIndex === 0 ? images.length - 1 : imageIndex - 1);
     };
 
     const handleNext = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === images.length - 1 ? 0 : prevIndex + 1
-        );
+        onIndexChange(imageIndex === images.length - 1 ? 0 : imageIndex + 1);
     };
 
     const swipeHandlers = useSwipeable({
@@ -46,8 +33,8 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus }) 
                         className="overflow-hidden rounded-lg shadow-md flex items-center justify-center"
                     >
                         <img
-                            src={images[currentIndex]}
-                            alt={`Slide ${currentIndex}`}
+                            src={images[imageIndex]}
+                            alt={`Slide ${imageIndex}`}
                             className="w-[320px] h-[320px]"
                         />
                         {stockStatus && (
@@ -78,9 +65,9 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus }) 
                     {images.map((_, index) => (
                         <button
                             key={index}
-                            onClick={() => setCurrentIndex(index)}
+                            onClick={() => onIndexChange(index)}
                             className={`w-3 h-3 rounded-full ${
-                            index === currentIndex
+                            index === imageIndex
                                 ? "bg-gray-700"
                                 : "bg-gray-300 hover:bg-gray-500"
                             }`}

@@ -31,13 +31,13 @@ export default function Light() {
     const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<LightVariantType | null>(null);
-    const [selectedLightVariantId, setSelectedLightVariantId] = useState<number | null>(null);
     const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
     const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
     const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
     const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, DimensionType> | null>(null);
     const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
+    const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, LightVariantType> | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -68,11 +68,14 @@ export default function Light() {
             const tempColorsMapping: Record<number, ColorType> = {};
             const tempDimensionsMapping: Record<number, DimensionType> = {};
             const tempColorDimensionToLightVariant: Record<string, number> = {};
+            const tempLightVariantMapping: Record<number, LightVariantType> = {};
             let index = 0;
             let uniqueColorIndex = 0;
             while (index < lightVariants.length) {
                 const lightVariant = lightVariants[index];
                 combinedImageUrls.add(lightVariant.imageUrl);
+
+                tempLightVariantMapping[lightVariant.id] = lightVariant;
 
                 const colorId = lightVariant.colorId;
                 const color: ColorType = {"color": lightVariant.color, "id": uniqueColorIndex}
@@ -94,7 +97,6 @@ export default function Light() {
 
                 if (index == 0) {
                     setSelectedLightVariant(lightVariant);
-                    setSelectedLightVariantId(lightVariant.id);
                     setSelectedColorId(lightVariant.colorId);
                     setSelectedDimensionId(lightVariant.dimensionId);
                 }
@@ -104,6 +106,7 @@ export default function Light() {
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
             setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
+            setLightVariantMapping(tempLightVariantMapping);
         }
     }, [lightVariants]);
 
@@ -137,8 +140,6 @@ export default function Light() {
         )
     }
 
-    console.log("selectedLightVariantId", selectedLightVariantId);
-
     const handleAddToCart = () => {
         const cartItem: CartItem = {
             itemId: 'light' + selectedLightVariant.id,
@@ -157,15 +158,16 @@ export default function Light() {
     };
 
     const handleSelectColor = (colorId: number) => {
-        console.log(`colorId: ${colorId}, id: ${colorsMapping![colorId].id}`);
         setCarouselImageIndex(colorsMapping![colorId].id);
         setSelectedColorId(colorId);
-        setSelectedLightVariantId(colorDimensionToLightVariant![`${colorId}+${selectedDimensionId}`]);
+        const selectedLightVariantId = colorDimensionToLightVariant![`${colorId}+${selectedDimensionId}`];
+        setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
     }
 
     const handleSelectDimension = (dimensionId: number) => {
         setSelectedDimensionId(dimensionId);
-        setSelectedLightVariantId(colorDimensionToLightVariant![`${selectedColorId}+${dimensionId}`]);
+        const selectedLightVariantId = colorDimensionToLightVariant![`${selectedColorId}+${dimensionId}`];
+        setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
     }
 
     return (
@@ -177,7 +179,12 @@ export default function Light() {
                 </div>
                 <div className="px-2 my-4 flex flex-col">
                     {/* <p className="font-bold text-xl mb-10">{light.name}</p> */}
-                    <Carousel images={lightImageUrls} imageIndex={carouselImageIndex} stockStatus={null} />
+                    <Carousel
+                        images={lightImageUrls}
+                        imageIndex={carouselImageIndex}
+                        stockStatus={null} 
+                        onIndexChange={setCarouselImageIndex}
+                    />
                 </div>
                 <div>
                     {Object.entries(colorsMapping!).map(([colorId, color]) => (
