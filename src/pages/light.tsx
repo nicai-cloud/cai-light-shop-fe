@@ -13,6 +13,16 @@ import { preloadImage } from '../services/preload_image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
 
+type ColorType = {
+    color: string,
+    imageUrl: string
+}
+
+type DimensionType = {
+    length: number,
+    width: number | null
+}
+
 export default function Light() {
     const DEFAULT_QUANTITY_DROPDOWN_OPTION = {id: 1, name: "1"};
 
@@ -21,6 +31,10 @@ export default function Light() {
     const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<LightVariantType | null>(null);
+    const [selectedColor, setSelectedColor] = useState<number | null>(null);
+    const [selectedDimension, setSelectedDimension] = useState<number | null>(null);
+    const [colorsMapping, setColorsMapping] = useState<Record<string, ColorType> | null>(null);
+    const [dimensionsMapping, setDimensionsMapping] = useState<Record<string, DimensionType> | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -46,16 +60,37 @@ export default function Light() {
     useEffect(() => {
         if (lightVariants) {
             const combinedImageUrls = new Set<string>();
+            const colorIdsSet = new Set<number>();
+            const dimensionIdsSet = new Set<number>();
+            const tempColorsMapping: Record<string, ColorType> = {};
+            const tempDimensionsMapping: Record<string, DimensionType> = {};
             let index = 0;
             while (index < lightVariants.length) {
                 const lightVariant = lightVariants[index];
                 combinedImageUrls.add(lightVariant.imageUrl);
+
+                const color: ColorType = {"color": lightVariant.color, "imageUrl": lightVariant.imageUrl}
+                if (!colorIdsSet.has(lightVariant.colorId)) {
+                    colorIdsSet.add(lightVariant.colorId);
+                    tempColorsMapping[index] = color;
+                }
+
+                const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width}
+                if (!dimensionIdsSet.has(lightVariant.dimensionId)) {
+                    dimensionIdsSet.add(lightVariant.dimensionId);
+                    tempDimensionsMapping[index] = dimension;
+                }
+
                 if (index == 0) {
                     setSelectedLightVariant(lightVariant);
+                    setSelectedColor(lightVariant.colorId);
+                    setSelectedDimension(lightVariant.dimensionId);
                 }
                 index++;
             }
             setLightImageUrls([...combinedImageUrls]);
+            setColorsMapping(tempColorsMapping);
+            setDimensionsMapping(tempDimensionsMapping);
         }
     }, [lightVariants]);
 
@@ -89,6 +124,8 @@ export default function Light() {
         )
     }
 
+    console.log("selectedColorId", selectedColor, "selectedDimension", selectedDimension);
+
     const handleAddToCart = () => {
         const cartItem: CartItem = {
             itemId: 'light' + selectedLightVariant.id,
@@ -116,6 +153,20 @@ export default function Light() {
                 <div className="px-2 my-4 flex flex-col">
                     {/* <p className="font-bold text-xl mb-10">{light.name}</p> */}
                     <Carousel images={lightImageUrls} stockStatus={null} />
+                </div>
+                <div>
+                    {Object.values(colorsMapping!).map((color) => (
+                        <button key={color.color} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8">
+                            {color.color}
+                        </button>
+                    ))}
+                </div>
+                <div>
+                    {Object.values(dimensionsMapping!).map((dimension) => (
+                        <button key={dimension.length} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8">
+                            {dimension.length}
+                        </button>
+                    ))}
                 </div>
                 <div className="px-2 mt-4">
                     <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
