@@ -187,18 +187,24 @@ export default function Light() {
                     />
                 </div>
                 <div>
-                    {Object.entries(colorsMapping!).map(([colorId, color]) => (
-                        <button key={colorId} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8" onClick={() => handleSelectColor(Number(colorId))}>
-                            {color.color}
-                        </button>
-                    ))}
+                    <p>Choose color:</p>
+                    <div className="flex flex-row">
+                        {Object.entries(colorsMapping!).map(([colorId, color]) => (
+                            <div key={colorId} className={`w-[160px] mt-2 border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
+                                {color.color}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div>
-                    {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                        <button key={dimension.length} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8" onClick={() => handleSelectDimension(Number(dimensionId))}>
-                            {dimension.length}
-                        </button>
-                    ))}
+                <div className="mt-8">
+                    <p>Choose length:</p>
+                    <div className="flex flex-row">
+                        {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                            <div key={dimension.length} className={`w-100px] mt-2 border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                {dimension.length} m
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="px-2 mt-4">
                     <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
