@@ -31,10 +31,11 @@ export default function Light() {
     const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<LightVariantType | null>(null);
-    const [selectedColor, setSelectedColor] = useState<number | null>(null);
-    const [selectedDimension, setSelectedDimension] = useState<number | null>(null);
-    const [colorsMapping, setColorsMapping] = useState<Record<string, ColorType> | null>(null);
-    const [dimensionsMapping, setDimensionsMapping] = useState<Record<string, DimensionType> | null>(null);
+    const [selectedLightVariantId, setSelectedLightVariantId] = useState<number | null>(null);
+    const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
+    const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
+    const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
+    const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, DimensionType> | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -72,19 +73,20 @@ export default function Light() {
                 const color: ColorType = {"color": lightVariant.color, "imageUrl": lightVariant.imageUrl}
                 if (!colorIdsSet.has(lightVariant.colorId)) {
                     colorIdsSet.add(lightVariant.colorId);
-                    tempColorsMapping[index] = color;
+                    tempColorsMapping[lightVariant.colorId] = color;
                 }
 
                 const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width}
                 if (!dimensionIdsSet.has(lightVariant.dimensionId)) {
                     dimensionIdsSet.add(lightVariant.dimensionId);
-                    tempDimensionsMapping[index] = dimension;
+                    tempDimensionsMapping[lightVariant.dimensionId] = dimension;
                 }
 
                 if (index == 0) {
                     setSelectedLightVariant(lightVariant);
-                    setSelectedColor(lightVariant.colorId);
-                    setSelectedDimension(lightVariant.dimensionId);
+                    setSelectedLightVariantId(lightVariant.id);
+                    setSelectedColorId(lightVariant.colorId);
+                    setSelectedDimensionId(lightVariant.dimensionId);
                 }
                 index++;
             }
@@ -124,7 +126,7 @@ export default function Light() {
         )
     }
 
-    console.log("selectedColorId", selectedColor, "selectedDimension", selectedDimension);
+    console.log("selectedColorId", selectedColorId, "selectedDimensionId", selectedDimensionId, "selectedLightVariantId", selectedLightVariantId);
 
     const handleAddToCart = () => {
         const cartItem: CartItem = {
@@ -143,6 +145,16 @@ export default function Light() {
         mainContext.handleAddToCart(LIGHTS_PAGE);
     };
 
+    const handleSelectColor = (colorId: number) => {
+        console.log("change colorId to ", colorId);
+        setSelectedColorId(colorId);
+    }
+
+    const handleSelectDimension = (dimensionId: number) => {
+        console.log("change dimensionId to ", dimensionId);
+        setSelectedDimensionId(dimensionId);
+    }
+
     return (
         <div className="w-full px-4">
             <div className="w-full flex flex-col">
@@ -155,15 +167,15 @@ export default function Light() {
                     <Carousel images={lightImageUrls} stockStatus={null} />
                 </div>
                 <div>
-                    {Object.values(colorsMapping!).map((color) => (
-                        <button key={color.color} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8">
+                    {Object.entries(colorsMapping!).map(([colorId, color]) => (
+                        <button key={colorId} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8" onClick={() => handleSelectColor(Number(colorId))}>
                             {color.color}
                         </button>
                     ))}
                 </div>
                 <div>
-                    {Object.values(dimensionsMapping!).map((dimension) => (
-                        <button key={dimension.length} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8">
+                    {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                        <button key={dimension.length} className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8" onClick={() => handleSelectDimension(Number(dimensionId))}>
                             {dimension.length}
                         </button>
                     ))}
