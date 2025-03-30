@@ -1,14 +1,23 @@
 import { NavArrowLeft, NavArrowRight } from "iconoir-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 
 type CarouselProps = {
     images: string[];
+    imageIndex: number;
     stockStatus: string | null;
 };
 
-const Carousel: React.FC<CarouselProps> = ({ images, stockStatus }) => {
+const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (imageIndex !== undefined) {
+            setCurrentIndex(imageIndex);
+        }
+    }, [imageIndex]);
+
+    console.log("current imageIndex inside carousel", imageIndex);
 
     const handlePrevious = () => {
         setCurrentIndex((prevIndex) =>

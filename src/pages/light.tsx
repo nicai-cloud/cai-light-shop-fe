@@ -15,7 +15,7 @@ import Dropdown, { DropdownOption } from '../components/input/dropdown';
 
 type ColorType = {
     color: string,
-    imageUrl: string
+    id: number
 }
 
 type DimensionType = {
@@ -36,6 +36,8 @@ export default function Light() {
     const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
     const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
     const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, DimensionType> | null>(null);
+    const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
+    const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -63,24 +65,32 @@ export default function Light() {
             const combinedImageUrls = new Set<string>();
             const colorIdsSet = new Set<number>();
             const dimensionIdsSet = new Set<number>();
-            const tempColorsMapping: Record<string, ColorType> = {};
-            const tempDimensionsMapping: Record<string, DimensionType> = {};
+            const tempColorsMapping: Record<number, ColorType> = {};
+            const tempDimensionsMapping: Record<number, DimensionType> = {};
+            const tempColorDimensionToLightVariant: Record<string, number> = {};
             let index = 0;
+            let uniqueColorIndex = 0;
             while (index < lightVariants.length) {
                 const lightVariant = lightVariants[index];
                 combinedImageUrls.add(lightVariant.imageUrl);
 
-                const color: ColorType = {"color": lightVariant.color, "imageUrl": lightVariant.imageUrl}
-                if (!colorIdsSet.has(lightVariant.colorId)) {
-                    colorIdsSet.add(lightVariant.colorId);
-                    tempColorsMapping[lightVariant.colorId] = color;
+                const colorId = lightVariant.colorId;
+                const color: ColorType = {"color": lightVariant.color, "id": uniqueColorIndex}
+                if (!colorIdsSet.has(colorId)) {
+                    colorIdsSet.add(colorId);
+                    tempColorsMapping[colorId] = color;
+                    uniqueColorIndex++;
                 }
 
+                const dimensionId = lightVariant.dimensionId;
                 const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width}
                 if (!dimensionIdsSet.has(lightVariant.dimensionId)) {
                     dimensionIdsSet.add(lightVariant.dimensionId);
                     tempDimensionsMapping[lightVariant.dimensionId] = dimension;
                 }
+
+                const key = `${colorId}+${dimensionId}`
+                tempColorDimensionToLightVariant[key] = lightVariant.id
 
                 if (index == 0) {
                     setSelectedLightVariant(lightVariant);
@@ -93,6 +103,7 @@ export default function Light() {
             setLightImageUrls([...combinedImageUrls]);
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
+            setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
         }
     }, [lightVariants]);
 
@@ -126,7 +137,7 @@ export default function Light() {
         )
     }
 
-    console.log("selectedColorId", selectedColorId, "selectedDimensionId", selectedDimensionId, "selectedLightVariantId", selectedLightVariantId);
+    console.log("selectedLightVariantId", selectedLightVariantId);
 
     const handleAddToCart = () => {
         const cartItem: CartItem = {
@@ -146,13 +157,15 @@ export default function Light() {
     };
 
     const handleSelectColor = (colorId: number) => {
-        console.log("change colorId to ", colorId);
+        console.log(`colorId: ${colorId}, id: ${colorsMapping![colorId].id}`);
+        setCarouselImageIndex(colorsMapping![colorId].id);
         setSelectedColorId(colorId);
+        setSelectedLightVariantId(colorDimensionToLightVariant![`${colorId}+${selectedDimensionId}`]);
     }
 
     const handleSelectDimension = (dimensionId: number) => {
-        console.log("change dimensionId to ", dimensionId);
         setSelectedDimensionId(dimensionId);
+        setSelectedLightVariantId(colorDimensionToLightVariant![`${selectedColorId}+${dimensionId}`]);
     }
 
     return (
@@ -164,7 +177,7 @@ export default function Light() {
                 </div>
                 <div className="px-2 my-4 flex flex-col">
                     {/* <p className="font-bold text-xl mb-10">{light.name}</p> */}
-                    <Carousel images={lightImageUrls} stockStatus={null} />
+                    <Carousel images={lightImageUrls} imageIndex={carouselImageIndex} stockStatus={null} />
                 </div>
                 <div>
                     {Object.entries(colorsMapping!).map(([colorId, color]) => (
