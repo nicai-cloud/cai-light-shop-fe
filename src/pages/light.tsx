@@ -186,45 +186,38 @@ export default function Light() {
                         onIndexChange={setCarouselImageIndex}
                     />
                 </div>
-                <div>
-                    <p>Choose color:</p>
-                    <div className="flex flex-row">
+                <div className="px-2 mt-4">
+                    <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
+                    <p className="mt-4">Choose color:</p>
+                    <div className="flex flex-row mt-4">
                         {Object.entries(colorsMapping!).map(([colorId, color]) => (
-                            <div key={colorId} className={`w-[160px] mt-2 border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
+                            <div key={colorId} className={`w-[160px] border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
                                 {color.color}
                             </div>
                         ))}
                     </div>
-                </div>
-                <div className="mt-8">
-                    <p>Choose length:</p>
-                    <div className="flex flex-row">
+                    <p className="mt-4">Choose length:</p>
+                    <div className="flex flex-row mt-4">
                         {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                            <div key={dimension.length} className={`w-100px] mt-2 border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                            <div key={dimension.length} className={`w-100px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                 {dimension.length} m
                             </div>
                         ))}
                     </div>
-                </div>
-                <div className="px-2 mt-4">
-                    <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
-                    <br />
-                    <p className="font-bold">DESCRIPTION</p>
+                    <Dropdown
+                        label="Quantity"
+                        options={QUANTITY_CHOICES}
+                        value={selectedDropdown}
+                        onChange={handleDropdownChange}
+                        className="w-32 mt-8"
+                    />
+                    <p className="font-bold mt-4">DESCRIPTION</p>
                     <div className="ml-4">
                         <p>The light's description goes here</p>
                     </div>
                 </div>
             </div>
-            <div className="px-2 mt-10">
-                <Dropdown
-                    label="Quantity"
-                    options={QUANTITY_CHOICES}
-                    value={selectedDropdown}
-                    onChange={handleDropdownChange}
-                    className="w-32"
-                />
-            </div>
-            <div className="mt-10 w-full flex flex-row items-center justify-center">
+            <div className="mt-4 w-full flex flex-row items-center justify-center">
                 <button
                     onClick={handleAddToCart}
                     className={`mt-2 bg-[#1bafe7] text-white px-8 py-2 rounded "bg-[#1bafe7]"}`}

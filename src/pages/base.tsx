@@ -249,11 +249,11 @@ export default function Base() {
                             <FontAwesomeIcon className="text-white mr-2" icon={faEnvelope} size="2x"/>
                             <p className="text-white">support@lightoz.com.au</p>
                         </div>
-                        <div className="flex flex-row">
+                        {/* <div className="flex flex-row">
                             <FontAwesomeIcon className="cursor-pointer text-white mr-8" icon={faInstagram} size="2x" onClick={handleInstagramIconClick} />
                             <FontAwesomeIcon className="cursor-pointer text-white mr-8" icon={faFacebook} size="2x" onClick={handleFacebookIconClick} />
                             <FontAwesomeIcon className="cursor-pointer text-white" icon={faTiktok} size="2x" onClick={handleTiktokIconClick} />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </Page.Footer>
