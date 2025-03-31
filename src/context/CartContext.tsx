@@ -97,12 +97,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [cart, shippingMethod, coupon]);
 
-    const customSort = (x: CartItem, y: CartItem): number => {
-        if ("lightId" in x.selection && "lightId" in y.selection) return 0;
-        if ("lightId" in x.selection) return -1;
-        return 0;
-    };
-
     const addItem = (newItem: CartItem) => {
         setCart((prevCart) => {
             const existingItem = prevCart.find((item) => item.itemId === newItem.itemId);
@@ -111,12 +105,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     item.itemId === newItem.itemId ? { ...item, quantity: item.quantity + newItem.quantity } : item
                 );
             }
-            return [...prevCart, newItem].sort(customSort);
+            return [...prevCart, newItem];
         });
     };
 
   const removeItem = (itemId: string) => {
-      setCart((prevCart) => prevCart.filter((item) => item.itemId !== itemId).sort(customSort));
+      setCart((prevCart) => prevCart.filter((item) => item.itemId !== itemId));
   };
 
   const clearCart = () => {
