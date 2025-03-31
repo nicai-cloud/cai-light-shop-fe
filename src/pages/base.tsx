@@ -12,7 +12,7 @@ import { ConfirmCartItemDeletionModal } from "./confirm-cart-item-deletion-modal
 import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
-import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
+// import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
 import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 
@@ -66,17 +66,17 @@ export default function Base() {
         setAddToCartDestination(addToCartDestination);
     }
 
-    const handleInstagramIconClick = () => {
-        window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
-    }
+    // const handleInstagramIconClick = () => {
+    //     window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
+    // }
 
-    const handleFacebookIconClick = () => {
-        window.open('https://www.facebook.com', '_blank', 'noopener,noreferrer');
-    }
+    // const handleFacebookIconClick = () => {
+    //     window.open('https://www.facebook.com', '_blank', 'noopener,noreferrer');
+    // }
 
-    const handleTiktokIconClick = () => {
-        window.open('https://www.tiktok.com', '_blank', 'noopener,noreferrer');
-    }
+    // const handleTiktokIconClick = () => {
+    //     window.open('https://www.tiktok.com', '_blank', 'noopener,noreferrer');
+    // }
 
     const submitCompleteOrder = async (finalPageDetails: any) => {
         const snakeCaseAddress = {};
