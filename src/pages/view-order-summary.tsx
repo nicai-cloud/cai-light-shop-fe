@@ -3,9 +3,9 @@ import { useMainContext } from './context';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
-import { getLights } from '../services/light';
+import { getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 import { getCoupon } from '../services/coupon';
 import { getLightImageUrls } from '../services/image';
 import { getShippingMethodInfo } from '../services/shippingMethod';
@@ -38,7 +38,7 @@ export default function ViewOrderSumary() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightsLoading, data: lights} = useSWR(GET_LIGHTS, getLights, {
+    const {isLoading: isLightVariantsLoading, data: lightVariants} = useSWR(GET_LIGHT_VARIANTS, getLightVariants, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -123,7 +123,7 @@ export default function ViewOrderSumary() {
     };
 
     if (isImagesLoading || !images ||
-        isLightsLoading || !lights ||
+        isLightVariantsLoading || !lightVariants ||
         isShippingMethodLoading || !shippingMethodInfo
     ) {
         return (
@@ -150,7 +150,7 @@ export default function ViewOrderSumary() {
                 <hr className={"border-2 border-gray-300"}/>
                 <div>
                     {cartContext.cart.map((cartItem, index) => {
-                        const lightId = cartItem.selection.lightVariantId;
+                        const lightVariantId = cartItem.selection.lightVariantId;
 
                         return (
                             <div key={cartItem.itemId} className="mb-8">
@@ -184,11 +184,11 @@ export default function ViewOrderSumary() {
                                             className="transition duration-150 east-out data-[closed]:-translate-y-2 data-[closed]:opacity-0 self-stretch"
                                         >
                                             {(() => {
-                                                const light = lights.find(light => light.id === lightId)!;
+                                                const lightVariant = lightVariants.find(lightVariant => lightVariant.id === lightVariantId)!;
                                                 return (
                                                     <div className="flex flex-row items-center justify-between">
-                                                        <img src={light.imageUrl} alt={light.name} className="w-[150px] h-[150px]" />
-                                                        <p>{light.name}</p>
+                                                        <img src={lightVariant.imageUrl} alt={lightVariant.description} className="w-[150px] h-[150px]" />
+                                                        <p>{lightVariant.description}</p>
                                                     </div>
                                                 )
                                             })}

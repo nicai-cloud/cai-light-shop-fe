@@ -68,6 +68,12 @@ export const getLights = async (): Promise<LightType[]> => {
     return lights.map(convertLight);
 }
 
+export const getLightVariants = async (): Promise<LightVariantType[]> => {
+    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/light-variants`);
+    const lightVariants = await response.json();
+    return lightVariants.map(convertLight);
+}
+
 export const getLightVariantsByName = async (name: string): Promise<LightVariantType[]> => {
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?name=${name}`);
     const lightVariants = await response.json();
