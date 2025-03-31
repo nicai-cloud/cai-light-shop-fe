@@ -51,7 +51,7 @@ export default function Light() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const QUANTITY_CHOICES = Array.from({ length: 9 }, (_, i) => ({
+    const QUANTITY_CHOICES = Array.from({ length: 5 }, (_, i) => ({
         id: i + 1,
         name: (i + 1).toString(),
     }));
@@ -206,7 +206,6 @@ export default function Light() {
                     </div>
                     <p className="mt-4">Quantity:</p>
                     <Dropdown
-                        label="Quantity"
                         options={QUANTITY_CHOICES}
                         value={selectedDropdown}
                         onChange={handleDropdownChange}

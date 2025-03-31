@@ -1,4 +1,4 @@
-import { Field, Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import { Field, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import tailwindMerge from '../../utils/tailwind-merge';
 import Down from '../icons/16/Down';
 
@@ -8,16 +8,14 @@ export type DropdownOption = {
 };
 
 export type DropdownProps = {
-    label: string;
     options: DropdownOption[];
     value: DropdownOption;
     onChange?: (value: DropdownOption) => void;
     className?: string;
-    disabled?: boolean;
 };
 
 export default function Dropdown(props: DropdownProps) {
-    const { className, options, label, value, onChange, disabled } = props;
+    const { className, options, value, onChange } = props;
 
     // Handle change
     const handleChange = (newValue: DropdownOption) => {
@@ -28,22 +26,23 @@ export default function Dropdown(props: DropdownProps) {
 
     return (
         <Field className={tailwindMerge('relative', className)}>
-            <Listbox as="div" value={value} onChange={handleChange} disabled={disabled}>
+            <Listbox as="div" value={value} onChange={handleChange}>
                 <ListboxButton className={tailwindMerge(
-                        'group peer w-full',
-                        'pl-[0.875rem] pr-[2.875rem] pt-6 pb-2 rounded-xl',
+                        'group peer w-[100px]',
+                        'px-4 py-2 rounded',
                         'bg-white border-2 border-grey-2 transition-colors duration-150 ease-in-out',
                         'placeholder-transparent [&::placeholder]:transition-all [&::placeholder]:duration-150 [&::placeholder]:ease-in-out',
                         'text-p text-dark-strong text-left focus:outline-none caret-[#1bafe7]',
-                        'focus:border-[#1bafe7] data-[open]:border-[#1bafe7]',
-                        disabled && 'cursor-not-allowed opacity-50'
+                        'focus:border-[#1bafe7] data-[open]:border-[#1bafe7]'
                     )}
                 >
-                    <div>{value.name}</div>
-                    <Down
-                        className={tailwindMerge('transition duration-150 absolute top-[1.375rem] right-[0.875rem] group-data-[open]:rotate-180')}
-                        color="#5B5E70"
-                    />
+                    <div className="flex flex-row justify-between items-center">
+                        <div>{value.name}</div>
+                        <Down
+                            className={tailwindMerge('transition duration-150 group-data-[open]:rotate-180')}
+                            color="#5B5E70"
+                        />
+                    </div>
                 </ListboxButton>
                 <ListboxOptions
                     anchor="bottom"
@@ -87,16 +86,6 @@ export default function Dropdown(props: DropdownProps) {
                     </div>
                 </ListboxOptions>
             </Listbox>
-            <Label
-                className={tailwindMerge(
-                    'transition-all duration-150 ease-in-out absolute left-4 top-[1.125rem]',
-                    '-translate-y-[0.625rem]',
-                    'text-caption text-dark-medium',
-                    'pointer-events-none',
-                )}
-            >
-                {label}
-            </Label>
         </Field>
     );
 }
