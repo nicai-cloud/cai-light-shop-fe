@@ -3,11 +3,9 @@ import { useEffect } from 'react';
 import useSWR from 'swr';
 import { getLightImageUrls } from '../services/image';
 import { getLights } from '../services/light';
-import { getInventories } from '../services/inventory';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE, GET_INVENTORIES } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
-import { getLightStockStatus } from '../services/stock_status';
 import { preloadImage } from '../services/preload_image';
 
 export default function Lights() {
@@ -23,8 +21,6 @@ export default function Lights() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isInventoriesLoading, data: inventories} = useSWR(GET_INVENTORIES, getInventories);
-
     useEffect(() => {
         if (images) {
             images.forEach(preloadImage);
@@ -32,8 +28,7 @@ export default function Lights() {
     }, [images]);
 
     if (isImagesLoading || !images ||
-        isLoading || !lights ||
-        isInventoriesLoading || !inventories
+        isLoading || !lights
     ) {
         return (
             <div className="w-full flex items-center justify-center">
@@ -61,14 +56,6 @@ export default function Lights() {
                             alt={light.name}
                             className="h-full w-full aspect-square"
                         />
-                        {(() => {
-                            const stockStatus = getLightStockStatus(inventories, light);
-                            return stockStatus && (
-                                <span className="absolute top-0 left-0 bg-black text-white rounded-md text-xs px-1 py-1">
-                                    {stockStatus === "LowInStock" ? "Low In Stock" : "Out Of Stock"}
-                                </span>
-                            );
-                        })()}
                         <p>{light.name}</p>
                         <p>${light.price.toFixed(2)}</p>
                     </div>
@@ -88,14 +75,6 @@ export default function Lights() {
                             alt={light.name}
                             className="h-full w-full aspect-square"
                         />
-                        {(() => {
-                            const stockStatus = getLightStockStatus(inventories, light);
-                            return stockStatus && (
-                                <span className="absolute top-0 left-0 bg-black text-white rounded-md text-xs px-1 py-1">
-                                    {stockStatus === "LowInStock" ? "Low In Stock" : "Out Of Stock"}
-                                </span>
-                            );
-                        })()}
                         <p>{light.name}</p>
                         <p>${light.price.toFixed(2)}</p>
                     </div>
@@ -115,14 +94,6 @@ export default function Lights() {
                             alt={light.name}
                             className="h-full w-full aspect-square"
                         />
-                        {(() => {
-                            const stockStatus = getLightStockStatus(inventories, light);
-                            return stockStatus && (
-                                <span className="absolute top-0 left-0 bg-black text-white rounded-md text-xs px-1 py-1">
-                                    {stockStatus === "LowInStock" ? "Low In Stock" : "Out Of Stock"}
-                                </span>
-                            );
-                        })()}
                         <p>{light.name}</p>
                         <p>${light.price.toFixed(2)}</p>
                     </div>
