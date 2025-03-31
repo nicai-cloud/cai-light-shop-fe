@@ -210,7 +210,7 @@ export default function Light() {
                         options={QUANTITY_CHOICES}
                         value={selectedDropdown}
                         onChange={handleDropdownChange}
-                        className="w-32 mt-8"
+                        className="w-32 mt-4"
                     />
                     <p className="font-bold mt-4">DESCRIPTION</p>
                     <div className="ml-4">
