@@ -16,12 +16,12 @@ import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-
 import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 
-type LightType = {
+type LightVariantType = {
     quantity: number,
-    lightId: number
+    lightVariantId: number
 }
 
-type orderItemType = LightType
+type OrderItemType = LightVariantType
 
 type PublishableKeyResponse = {
     publishableKey: string;
@@ -88,10 +88,10 @@ export default function Base() {
             snakeCaseAddress[snakeCaseKey] = finalPageDetails.address[k];
         });
 
-        const orderItems: orderItemType[] = [];
+        const orderItems: OrderItemType[] = [];
         cartContext.cart.map((cartItem) => {
             if (cartItem.selection.lightVariantId) {
-                orderItems.push({quantity: cartItem.quantity, lightId: cartItem.selection.lightVariantId})
+                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
             }
         })
 
