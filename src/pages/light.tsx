@@ -204,6 +204,7 @@ export default function Light() {
                             </div>
                         ))}
                     </div>
+                    <p className="mt-4">Quantity:</p>
                     <Dropdown
                         label="Quantity"
                         options={QUANTITY_CHOICES}
