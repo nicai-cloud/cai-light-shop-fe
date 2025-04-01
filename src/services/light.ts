@@ -55,11 +55,18 @@ export type LightVariantType = {
     stock: number
 }
 
-function convertLightVariant(light: RawLightVariantType): LightVariantType {
-    return {
-        ...light,
-        price: new Decimal(light.price)
-    };
+export type RawLightAndVariantsType = {
+    lightName: string,
+    lightType: string,
+    lightVideoUrl: string | null,
+    lightVariants: RawLightVariantType[]
+}
+
+export type LightAndVariantsType = {
+    lightName: string,
+    lightType: string,
+    lightVideoUrl: string | null,
+    lightVariants: LightVariantType[]
 }
 
 export const getLights = async (): Promise<LightType[]> => {
@@ -74,8 +81,16 @@ export const getLightVariants = async (): Promise<LightVariantType[]> => {
     return lightVariants.map(convertLight);
 }
 
-export const getLightVariantsByName = async (name: string): Promise<LightVariantType[]> => {
+export const getLightAndVariantsByName = async (name: string): Promise<LightAndVariantsType> => {
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?name=${name}`);
-    const lightVariants = await response.json();
-    return lightVariants.map(convertLightVariant);
+    const lightAndVariants = await response.json();
+    return {
+        lightName: lightAndVariants.lightName,
+        lightType: lightAndVariants.lightType,
+        lightVideoUrl: lightAndVariants.lightVideoUrl,
+        lightVariants: lightAndVariants.lightVariants.map(variant => ({
+            ...variant,
+            price: new Decimal(variant.price),
+        })),
+    };
 }

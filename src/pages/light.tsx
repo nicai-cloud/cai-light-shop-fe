@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { getLightVariantsByName, LightVariantType } from '../services/light';
+import { getLightAndVariantsByName, LightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
@@ -46,7 +46,7 @@ export default function Light() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightVariantsLoading, data: lightVariants} = useSWR([GET_LIGHT_VARIANTS_BY_NAME, name!], () => getLightVariantsByName(name!), {
+    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_VARIANTS_BY_NAME, name!], () => getLightAndVariantsByName(name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -61,7 +61,9 @@ export default function Light() {
     };
 
     useEffect(() => {
-        if (lightVariants) {
+        if (lightAndVariants) {
+            console.log(lightAndVariants.lightName, lightAndVariants.lightType, lightAndVariants.lightVideoUrl)
+            const lightVariants = lightAndVariants.lightVariants;
             const combinedImageUrls = new Set<string>();
             const colorIdsSet = new Set<number>();
             const dimensionIdsSet = new Set<number>();
@@ -108,7 +110,7 @@ export default function Light() {
             setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
             setLightVariantMapping(tempLightVariantMapping);
         }
-    }, [lightVariants]);
+    }, [lightAndVariants]);
 
     useEffect(() => {
         if (images) {
@@ -129,7 +131,7 @@ export default function Light() {
     };
 
     if (isImagesLoading || !images ||
-        isLightVariantsLoading || !lightVariants ||
+        isLightAndVariantsLoading || !lightAndVariants ||
         !lightImageUrls ||
         !selectedLightVariant
     ) {
