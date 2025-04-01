@@ -88,7 +88,7 @@ export const getLightAndVariantsByName = async (name: string): Promise<LightAndV
         lightName: lightAndVariants.lightName,
         lightType: lightAndVariants.lightType,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
-        lightVariants: lightAndVariants.lightVariants.map(variant => ({
+        lightVariants: lightAndVariants.lightVariants.map((variant: RawLightVariantType) => ({
             ...variant,
             price: new Decimal(variant.price),
         })),
