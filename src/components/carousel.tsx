@@ -1,27 +1,44 @@
 import { NavArrowLeft, NavArrowRight } from "iconoir-react";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 
 type CarouselProps = {
     images: string[];
+    videoUrl: string | null;
     imageIndex: number;
-    stockStatus: string | null;
     onIndexChange: (index: number) => void;
 };
 
-const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus, onIndexChange }) => {
+const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, videoUrl, onIndexChange }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
     const handlePrevious = () => {
-        onIndexChange(imageIndex === 0 ? images.length - 1 : imageIndex - 1);
+        const mediaLength = images.length + (videoUrl === null ? 0 : 1);
+        onIndexChange(imageIndex === 0 ? mediaLength - 1 : imageIndex - 1);
     };
 
     const handleNext = () => {
-        onIndexChange(imageIndex === images.length - 1 ? 0 : imageIndex + 1);
+        const mediaLength = images.length + (videoUrl === null ? 0 : 1);
+        onIndexChange(imageIndex === mediaLength - 1 ? 0 : imageIndex + 1);
     };
 
     const swipeHandlers = useSwipeable({
         onSwipedLeft: handleNext,
         onSwipedRight: handlePrevious
     });
+
+    const togglePlay = (event: React.MouseEvent<HTMLVideoElement>) => {
+        event.stopPropagation();
+        if (videoRef.current) {
+            if (isPlaying) {
+                videoRef.current.pause();
+            } else {
+                videoRef.current.play();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
 
     return (
         <div className="flex flex-col">
@@ -32,19 +49,27 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus, on
                         {...swipeHandlers}
                         className="overflow-hidden rounded-lg shadow-md flex items-center justify-center"
                     >
-                        <img
-                            src={images[imageIndex]}
-                            alt={`Slide ${imageIndex}`}
-                            className="w-[320px] h-[320px]"
-                        />
-                        {stockStatus && (
-                            <span className="absolute top-0 left-0 bg-black text-white rounded-md text-xs px-1 py-1">
-                                {stockStatus === "LowInStock" ? "Low in stock" : "Out of stock"}
-                            </span>
+                        {imageIndex < images.length && (
+                            <img
+                                src={images[imageIndex]}
+                                alt={`Slide ${imageIndex}`}
+                                className="w-[320px] h-[320px]"
+                            />
+                        )}
+                        {videoUrl !== null && imageIndex == images.length && (
+                            <video 
+                                ref={videoRef}
+                                src={videoUrl!}
+                                playsInline
+                                preload="auto"
+                                autoPlay
+                                controls
+                                className="w-[320px] h-[320px] z-60 opacity-100"
+                                onClick={togglePlay}
+                            />
                         )}
                     </div>
                 </div>
-
                 {/* Buttons */}
                 <button
                     onClick={handlePrevious}
@@ -73,6 +98,17 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, stockStatus, on
                             }`}
                         />
                     ))}
+                    {videoUrl !== null && (
+                        <button
+                            key={images.length}
+                            onClick={() => onIndexChange(images.length)}
+                            className={`w-3 h-3 rounded-full ${
+                            images.length === imageIndex
+                                ? "bg-gray-700"
+                                : "bg-gray-300 hover:bg-gray-500"
+                            }`}
+                        />
+                    )}
                 </div>
             </div>
         </div>

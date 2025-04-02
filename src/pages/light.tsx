@@ -193,8 +193,8 @@ export default function Light() {
                     <p className="font-bold text-xl mb-10">{lightAndVariants.lightName}</p>
                     <Carousel
                         images={lightImageUrls}
+                        videoUrl={lightAndVariants.lightVideoUrl}
                         imageIndex={carouselImageIndex}
-                        stockStatus={null} 
                         onIndexChange={setCarouselImageIndex}
                     />
                 </div>
