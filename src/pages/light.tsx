@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { getLightAndVariantsByName, LightVariantType } from '../services/light';
+import { getLightAndVariantsByName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
@@ -30,16 +30,17 @@ export default function Light() {
 
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
+    const [lightDimensionType, setLightDimensionType] = useState<string | null>(null);
     const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-    const [selectedLightVariant, setSelectedLightVariant] = useState<LightVariantType | null>(null);
+    const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
     const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
     const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
     const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, DimensionType> | null>(null);
     const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
-    const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, LightVariantType> | null>(null);
+    const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, EnhancedLightVariantType> | null>(null);
 
     const { name } = useParams<{ name: string }>(); // Extract light name from the URL
 
@@ -72,7 +73,7 @@ export default function Light() {
             const tempColorsMapping: Record<number, ColorType> = {};
             const tempDimensionsMapping: Record<number, DimensionType> = {};
             const tempColorDimensionToLightVariant: Record<string, number> = {};
-            const tempLightVariantMapping: Record<number, LightVariantType> = {};
+            const tempLightVariantMapping: Record<number, EnhancedLightVariantType> = {};
             let index = 0;
             let uniqueColorIndex = 0;
             while (index < lightVariants.length) {
@@ -90,10 +91,15 @@ export default function Light() {
                 }
 
                 const dimensionId = lightVariant.dimensionId;
-                const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width, "height": lightVariant.height, "weight": lightVariant.weight}
-                if (!dimensionIdsSet.has(lightVariant.dimensionId)) {
-                    dimensionIdsSet.add(lightVariant.dimensionId);
-                    tempDimensionsMapping[lightVariant.dimensionId] = dimension;
+                const dimension: DimensionType = {
+                    "length": lightVariant.length,
+                    "width": lightVariant.width,
+                    "height": lightVariant.height,
+                    "weight": lightVariant.weight
+                }
+                if (!dimensionIdsSet.has(dimensionId)) {
+                    dimensionIdsSet.add(dimensionId);
+                    tempDimensionsMapping[dimensionId] = dimension;
                 }
 
                 const key = `${colorId}+${dimensionId}`
@@ -106,6 +112,7 @@ export default function Light() {
                 }
                 index++;
             }
+            setLightDimensionType(lightAndVariants.lightDimensionType);
             setLightImageUrls([...combinedImageUrls]);
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
@@ -134,6 +141,7 @@ export default function Light() {
 
     if (isImagesLoading || !images ||
         isLightAndVariantsLoading || !lightAndVariants ||
+        !lightDimensionType ||
         !lightImageUrls ||
         !selectedLightVariant
     ) {
@@ -182,7 +190,7 @@ export default function Light() {
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">
-                    {/* <p className="font-bold text-xl mb-10">{light.name}</p> */}
+                    <p className="font-bold text-xl mb-10">{lightAndVariants.lightName}</p>
                     <Carousel
                         images={lightImageUrls}
                         imageIndex={carouselImageIndex}
@@ -200,14 +208,45 @@ export default function Light() {
                             </div>
                         ))}
                     </div>
-                    <p className="mt-4">Length:</p>
-                    <div className="flex flex-row mt-4">
-                        {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                            <div key={dimension.length} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
-                                {dimension.length} m
+                    {/* length only lights */}
+                    {lightDimensionType === "length-only" && (
+                        <div>
+                            <p className="mt-4">Length:</p>
+                            <div className="flex flex-row mt-4">
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                        {dimension.length}m
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
+                    {/* length-width lights */}
+                    {lightDimensionType === "length-width" && (
+                        <div>
+                            <p className="mt-4">Dimension:</p>
+                            <div className="flex flex-row mt-4">
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                        {dimension.length}m x {dimension.width}m
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {/* length-height lights */}
+                    {lightDimensionType === "length-height" && (
+                        <div>
+                            <p className="mt-4">Dimension:</p>
+                            <div className="flex flex-row mt-4">
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                        {dimension.length}m x {dimension.height}m
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     <p className="mt-4">Quantity:</p>
                     <Dropdown
                         options={QUANTITY_CHOICES}
