@@ -3,9 +3,9 @@ import { useMainContext } from './context';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
-import { getLightVariants } from '../services/light';
+import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 import { getCoupon } from '../services/coupon';
 import { getLightImageUrls } from '../services/image';
 import { getShippingMethodInfo } from '../services/shippingMethod';
@@ -38,10 +38,16 @@ export default function ViewOrderSumary() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
+    const {isLoading: isLightsLoading, data: lights} = useSWR(GET_LIGHTS, getLights, {
+        // revalidateIfStale: false, // Prevent re-fetching when cache is stale
+        dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
+    });
+
     const {isLoading: isLightVariantsLoading, data: lightVariants} = useSWR(GET_LIGHT_VARIANTS, getLightVariants, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
+
     const {isLoading: isShippingMethodLoading, data: shippingMethodInfo} = useSWR(GET_SHIPPING_METHOD_INFO, getShippingMethodInfo, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
@@ -123,6 +129,7 @@ export default function ViewOrderSumary() {
     };
 
     if (isImagesLoading || !images ||
+        isLightsLoading || !lights ||
         isLightVariantsLoading || !lightVariants ||
         isShippingMethodLoading || !shippingMethodInfo
     ) {
@@ -185,10 +192,11 @@ export default function ViewOrderSumary() {
                                         >
                                             {(() => {
                                                 const lightVariant = lightVariants.find(lightVariant => lightVariant.id === lightVariantId)!;
+                                                const light = lights.find(light => light.id === lightVariant.lightId)!;
                                                 return (
                                                     <div className="flex flex-row items-center justify-between">
-                                                        <img src={lightVariant.imageUrl} alt={lightVariant.description} className="w-[150px] h-[150px]" />
-                                                        <p>{lightVariant.description}</p>
+                                                        <img src={lightVariant.imageUrl} alt={light.name} className="w-[150px] h-[150px]" />
+                                                        <p>{light.name}</p>
                                                     </div>
                                                 )
                                             })}
