@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import { getLightAndVariantsByName, EnhancedLightVariantType } from '../services/light';
+import { getLightAndVariantsByInternalName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
@@ -42,14 +42,14 @@ export default function Light() {
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
     const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, EnhancedLightVariantType> | null>(null);
 
-    const { name } = useParams<{ name: string }>(); // Extract light name from the URL
+    const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
 
     const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_AND_VARIANTS_BY_NAME, name!], () => getLightAndVariantsByName(name!), {
+    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_AND_VARIANTS_BY_NAME, internal_name!], () => getLightAndVariantsByInternalName(internal_name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -65,7 +65,7 @@ export default function Light() {
 
     useEffect(() => {
         if (lightAndVariants) {
-            console.log(lightAndVariants.lightName, lightAndVariants.lightPowerType, lightAndVariants.lightVideoUrl, lightAndVariants.lightDimensionType);
+            console.log(lightAndVariants.lightInternalName, lightAndVariants.lightDisplayName, lightAndVariants.lightPowerType, lightAndVariants.lightVideoUrl, lightAndVariants.lightDimensionType);
             const lightVariants = lightAndVariants.lightVariants;
             const combinedImageUrls = new Set<string>();
             const colorIdsSet = new Set<number>();
@@ -156,7 +156,7 @@ export default function Light() {
         const cartItem: CartItem = {
             itemId: 'light' + selectedLightVariant.id,
             imageUrl: selectedLightVariant.imageUrl,
-            name: lightAndVariants.lightName,
+            name: lightAndVariants.lightDisplayName,
             price: selectedLightVariant.price,
             quantity: selectedDropdown.id,
             selection: {
@@ -190,7 +190,7 @@ export default function Light() {
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">
-                    <p className="font-bold text-xl mb-10">{lightAndVariants.lightName}</p>
+                    <p className="font-bold text-xl mb-10">{lightAndVariants.lightDisplayName}</p>
                     <Carousel
                         images={lightImageUrls}
                         videoUrl={lightAndVariants.lightVideoUrl}

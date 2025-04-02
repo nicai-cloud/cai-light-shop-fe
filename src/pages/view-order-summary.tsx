@@ -195,8 +195,8 @@ export default function ViewOrderSumary() {
                                                 const light = lights.find(light => light.id === lightVariant.lightId)!;
                                                 return (
                                                     <div className="flex flex-row items-center justify-between">
-                                                        <img src={lightVariant.imageUrl} alt={light.name} className="w-[150px] h-[150px]" />
-                                                        <p>{light.name}</p>
+                                                        <img src={lightVariant.imageUrl} alt={light.displayName} className="w-[150px] h-[150px]" />
+                                                        <p>{light.displayName}</p>
                                                     </div>
                                                 )
                                             })}

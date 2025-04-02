@@ -4,7 +4,8 @@ export type RawLightType = {
     id: number,
     imageUrl: string,
     videoUrl: string | null,
-    name: string,
+    internalName: string,
+    displayName: string,
     powerType: string,
     dimensionType: string,
     fromPrice: string
@@ -14,7 +15,8 @@ export type LightType = {
     id: number,
     imageUrl: string,
     videoUrl: string | null,
-    name: string,
+    internalName: string,
+    displayName: string,
     powerType: string,
     dimensionType: string,
     fromPrice: Decimal
@@ -91,7 +93,8 @@ export type EnhancedLightVariantType = {
 }
 
 export type RawLightAndVariantsType = {
-    lightName: string,
+    lightInternalName: string,
+    lightDisplayName: string,
     lightPowerType: string,
     lightVideoUrl: string | null,
     lightDimensionType: string,
@@ -99,7 +102,8 @@ export type RawLightAndVariantsType = {
 }
 
 export type LightAndVariantsType = {
-    lightName: string,
+    lightInternalName: string,
+    lightDisplayName: string,
     lightPowerType: string,
     lightVideoUrl: string | null,
     lightDimensionType: string,
@@ -118,11 +122,12 @@ export const getLightVariants = async (): Promise<LightVariantType[]> => {
     return lightVariants.map(convertLightVariant);
 }
 
-export const getLightAndVariantsByName = async (name: string): Promise<LightAndVariantsType> => {
-    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?name=${name}`);
+export const getLightAndVariantsByInternalName = async (name: string): Promise<LightAndVariantsType> => {
+    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal_name=${name}`);
     const lightAndVariants = await response.json();
     return {
-        lightName: lightAndVariants.lightName,
+        lightInternalName: lightAndVariants.lightInternalName,
+        lightDisplayName: lightAndVariants.lightDisplayName,
         lightPowerType: lightAndVariants.lightPowerType,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
         lightDimensionType: lightAndVariants.lightDimensionType,

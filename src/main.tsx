@@ -29,7 +29,7 @@ const router = createBrowserRouter([
             element: <Lights />,
           },
           {
-            path: 'light/:name',
+            path: 'light/:internal_name',
             element: <Light />,
           },
           {
