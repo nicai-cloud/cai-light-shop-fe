@@ -43,7 +43,7 @@ export default function Lights() {
 
     return (
         <div className="w-full">
-            <div className="w-full h-16 bg-blue-400 flex items-center justify-center">
+            <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
                 <p className="text-white text-center">
                     POWER LIGHTS
                 </p>
