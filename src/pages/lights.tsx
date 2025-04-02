@@ -49,7 +49,7 @@ export default function Lights() {
                 </p>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 mx-10 sm:mx-5 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.type === "power").map((light) => (
+                {lights.filter(light => light.powerType === "power").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.name)}>
                         <img
                             src={light.imageUrl}
@@ -57,7 +57,7 @@ export default function Lights() {
                             className="h-full w-full aspect-square"
                         />
                         <p>{light.name}</p>
-                        <p>${light.price.toFixed(2)}</p>
+                        <p>From ${light.fromPrice.toFixed(2)}</p>
                     </div>
                 ))}
             </div>
@@ -68,7 +68,7 @@ export default function Lights() {
                 </p>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 mx-10 sm:mx-5 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.type === "solar").map((light) => (
+                {lights.filter(light => light.powerType === "solar").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.name)}>
                         <img
                             src={light.imageUrl}
@@ -76,7 +76,7 @@ export default function Lights() {
                             className="h-full w-full aspect-square"
                         />
                         <p>{light.name}</p>
-                        <p>${light.price.toFixed(2)}</p>
+                        <p>From ${light.fromPrice.toFixed(2)}</p>
                     </div>
                 ))}
             </div>
@@ -87,7 +87,7 @@ export default function Lights() {
                 </p>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 mx-10 sm:mx-5 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.type === "battery").map((light) => (
+                {lights.filter(light => light.powerType === "battery").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.name)}>
                         <img
                             src={light.imageUrl}
@@ -95,7 +95,7 @@ export default function Lights() {
                             className="h-full w-full aspect-square"
                         />
                         <p>{light.name}</p>
-                        <p>${light.price.toFixed(2)}</p>
+                        <p>From ${light.fromPrice.toFixed(2)}</p>
                     </div>
                 ))}
             </div>

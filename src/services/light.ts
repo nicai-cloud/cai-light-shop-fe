@@ -5,8 +5,9 @@ export type RawLightType = {
     imageUrl: string,
     videoUrl: string | null,
     name: string,
-    type: string,
-    price: string
+    powerType: string,
+    dimensionType: string,
+    fromPrice: string
 }
 
 export type LightType = {
@@ -14,27 +15,25 @@ export type LightType = {
     imageUrl: string,
     videoUrl: string | null,
     name: string,
-    type: string,
-    price: Decimal
+    powerType: string,
+    dimensionType: string,
+    fromPrice: Decimal
 }
 
 function convertLight(light: RawLightType): LightType {
     return {
         ...light,
-        price: new Decimal(light.price)
+        fromPrice: new Decimal(light.fromPrice)
     };
 }
 
 export type RawLightVariantType = {
     id: number,
     lightId: number,
-    colorId: number,
     dimensionId: number,
+    colorId: number,
     color: string,
     imageUrl: string,
-    length: number,
-    width: number | null,
-    weight: number | null,
     description: string,
     price: string,
     stock: number
@@ -43,12 +42,41 @@ export type RawLightVariantType = {
 export type LightVariantType = {
     id: number,
     lightId: number,
-    colorId: number,
     dimensionId: number,
+    colorId: number,
     color: string,
     imageUrl: string,
-    length: number,
+    description: string,
+    price: Decimal,
+    stock: number
+}
+
+export type RawEnhancedLightVariantType = {
+    id: number,
+    lightId: number,
+    dimensionId: number,
+    colorId: number,
+    color: string,
+    imageUrl: string,
+    length: number | null,
     width: number | null,
+    height: number | null,
+    weight: number | null,
+    description: string,
+    price: string,
+    stock: number
+}
+
+export type EnhancedLightVariantType = {
+    id: number,
+    lightId: number,
+    dimensionId: number,
+    colorId: number,
+    color: string,
+    imageUrl: string,
+    length: number | null,
+    width: number | null,
+    height: number | null,
     weight: number | null,
     description: string,
     price: Decimal,
@@ -57,16 +85,18 @@ export type LightVariantType = {
 
 export type RawLightAndVariantsType = {
     lightName: string,
-    lightType: string,
+    lightPowerType: string,
     lightVideoUrl: string | null,
-    lightVariants: RawLightVariantType[]
+    lightDimensionType: string,
+    lightVariants: RawEnhancedLightVariantType[]
 }
 
 export type LightAndVariantsType = {
     lightName: string,
-    lightType: string,
+    lightPowerType: string,
     lightVideoUrl: string | null,
-    lightVariants: LightVariantType[]
+    lightDimensionType: string,
+    lightVariants: EnhancedLightVariantType[]
 }
 
 export const getLights = async (): Promise<LightType[]> => {
@@ -86,8 +116,9 @@ export const getLightAndVariantsByName = async (name: string): Promise<LightAndV
     const lightAndVariants = await response.json();
     return {
         lightName: lightAndVariants.lightName,
-        lightType: lightAndVariants.lightType,
+        lightPowerType: lightAndVariants.lightPowerType,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
+        lightDimensionType: lightAndVariants.lightDimensionType,
         lightVariants: lightAndVariants.lightVariants.map((variant: RawLightVariantType) => ({
             ...variant,
             price: new Decimal(variant.price),

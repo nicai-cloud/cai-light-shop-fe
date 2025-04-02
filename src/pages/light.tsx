@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { getLightAndVariantsByName, LightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
 import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
@@ -19,8 +19,10 @@ type ColorType = {
 }
 
 type DimensionType = {
-    length: number,
-    width: number | null
+    length: number | null,
+    width: number | null,
+    height: number | null,
+    weight: number | null
 }
 
 export default function Light() {
@@ -46,7 +48,7 @@ export default function Light() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_VARIANTS_BY_NAME, name!], () => getLightAndVariantsByName(name!), {
+    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_AND_VARIANTS_BY_NAME, name!], () => getLightAndVariantsByName(name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -62,7 +64,7 @@ export default function Light() {
 
     useEffect(() => {
         if (lightAndVariants) {
-            console.log(lightAndVariants.lightName, lightAndVariants.lightType, lightAndVariants.lightVideoUrl)
+            console.log(lightAndVariants.lightName, lightAndVariants.lightPowerType, lightAndVariants.lightVideoUrl, lightAndVariants.lightDimensionType);
             const lightVariants = lightAndVariants.lightVariants;
             const combinedImageUrls = new Set<string>();
             const colorIdsSet = new Set<number>();
@@ -88,7 +90,7 @@ export default function Light() {
                 }
 
                 const dimensionId = lightVariant.dimensionId;
-                const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width}
+                const dimension: DimensionType = {"length": lightVariant.length, "width": lightVariant.width, "height": lightVariant.height, "weight": lightVariant.weight}
                 if (!dimensionIdsSet.has(lightVariant.dimensionId)) {
                     dimensionIdsSet.add(lightVariant.dimensionId);
                     tempDimensionsMapping[lightVariant.dimensionId] = dimension;
@@ -193,7 +195,7 @@ export default function Light() {
                     <p className="mt-4">Color:</p>
                     <div className="flex flex-row mt-4">
                         {Object.entries(colorsMapping!).map(([colorId, color]) => (
-                            <div key={colorId} className={`w-[160px] border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
+                            <div key={colorId} className={`w-[120px] border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
                                 {color.color}
                             </div>
                         ))}
@@ -201,7 +203,7 @@ export default function Light() {
                     <p className="mt-4">Length:</p>
                     <div className="flex flex-row mt-4">
                         {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                            <div key={dimension.length} className={`w-100px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black items-center px-8 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                            <div key={dimension.length} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                 {dimension.length} m
                             </div>
                         ))}
