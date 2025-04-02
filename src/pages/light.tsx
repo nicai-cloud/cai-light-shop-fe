@@ -156,7 +156,7 @@ export default function Light() {
         const cartItem: CartItem = {
             itemId: 'light' + selectedLightVariant.id,
             imageUrl: selectedLightVariant.imageUrl,
-            name: selectedLightVariant.description,
+            name: lightAndVariants.lightName,
             price: selectedLightVariant.price,
             quantity: selectedDropdown.id,
             selection: {

@@ -51,6 +51,13 @@ export type LightVariantType = {
     stock: number
 }
 
+function convertLightVariant(lightVariant: RawLightVariantType): LightVariantType {
+    return {
+        ...lightVariant,
+        price: new Decimal(lightVariant.price)
+    };
+}
+
 export type RawEnhancedLightVariantType = {
     id: number,
     lightId: number,
@@ -108,7 +115,7 @@ export const getLights = async (): Promise<LightType[]> => {
 export const getLightVariants = async (): Promise<LightVariantType[]> => {
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/light-variants`);
     const lightVariants = await response.json();
-    return lightVariants.map(convertLight);
+    return lightVariants.map(convertLightVariant);
 }
 
 export const getLightAndVariantsByName = async (name: string): Promise<LightAndVariantsType> => {
