@@ -54,7 +54,7 @@ export default function Lights() {
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
-                            className="h-full w-full aspect-square"
+                            className="h-[200px] w-[200px]"
                         />
                         <p>{light.displayName}</p>
                         <p>From ${light.fromPrice.toFixed(2)}</p>
@@ -73,7 +73,7 @@ export default function Lights() {
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
-                            className="h-full w-full aspect-square"
+                            className="h-[200px] w-[200px]"
                         />
                         <p>{light.displayName}</p>
                         <p>From ${light.fromPrice.toFixed(2)}</p>
@@ -92,7 +92,7 @@ export default function Lights() {
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
-                            className="h-full w-full aspect-square"
+                            className="h-[200px] w-[200px]"
                         />
                         <p>{light.displayName}</p>
                         <p>From ${light.fromPrice.toFixed(2)}</p>
