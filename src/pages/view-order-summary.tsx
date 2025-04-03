@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
-import { getCoupon } from '../services/coupon';
+// import { getCoupon } from '../services/coupon';
 import { getLightImageUrls } from '../services/image';
 import { getShippingMethodInfo } from '../services/shippingMethod';
 import { getNumberEnv } from '../utils/load-env';
@@ -24,12 +24,12 @@ export default function ViewOrderSumary() {
     const mainContext = useMainContext();
     const cartContext = useContext(CartContext);
     const { shippingMethod, setShippingMethod } = useContext(CartContext);
-    const { coupon, setCoupon } = useContext(CartContext);
+    // const { coupon, setCoupon } = useContext(CartContext);
 
     const [shippingCost, setShippingCost] = useState<Decimal>(Decimal(0));
-    const [enteredCouponCode, setEnteredCouponCode] = useState("");
-    const [emptyCoupon, setEmptyCoupon] = useState<boolean>(false);
-    const [invalidCoupon, setInvalidCoupon] = useState<boolean>(false);
+    // const [enteredCouponCode, setEnteredCouponCode] = useState("");
+    // const [emptyCoupon, setEmptyCoupon] = useState<boolean>(false);
+    // const [invalidCoupon, setInvalidCoupon] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
 
@@ -75,10 +75,10 @@ export default function ViewOrderSumary() {
         return cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
     }
 
-    const calculateSubtotalWithCoupon = () => {
-        const original = cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
-        return original.times(1 - coupon!.discountPercentage / 100);
-    }
+    // const calculateSubtotalWithCoupon = () => {
+    //     const original = cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
+    //     return original.times(1 - coupon!.discountPercentage / 100);
+    // }
 
     const calculateShippingCost = () => {
         if (calculateSubtotal().gte(shippingMethodInfo!.freeShippingThreshold)) {
@@ -109,24 +109,24 @@ export default function ViewOrderSumary() {
         setShippingMethod(value);
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEnteredCouponCode(event.target.value);
-    };
+    // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setEnteredCouponCode(event.target.value);
+    // };
 
-    const handleApplyCouponCode = async () => {
-        const resp = await getCoupon(enteredCouponCode);
-        if (resp.isValid) {
-            setCoupon(resp);
-        }
+    // const handleApplyCouponCode = async () => {
+    //     const resp = await getCoupon(enteredCouponCode);
+    //     if (resp.isValid) {
+    //         setCoupon(resp);
+    //     }
 
-        if (enteredCouponCode === "") {
-            setEmptyCoupon(true);
-            setInvalidCoupon(false);
-        } else {
-            setEmptyCoupon(false);
-            setInvalidCoupon(!resp.isValid);
-        }
-    };
+    //     if (enteredCouponCode === "") {
+    //         setEmptyCoupon(true);
+    //         setInvalidCoupon(false);
+    //     } else {
+    //         setEmptyCoupon(false);
+    //         setInvalidCoupon(!resp.isValid);
+    //     }
+    // };
 
     if (isImagesLoading || !images ||
         isLightsLoading || !lights ||
@@ -208,7 +208,7 @@ export default function ViewOrderSumary() {
                         )
                     })}
                 </div>
-                <div className="flex flex-row justify-end mt-4">
+                {/* <div className="flex flex-row justify-end mt-4">
                     <input
                         type="text"
                         value={enteredCouponCode}
@@ -231,10 +231,11 @@ export default function ViewOrderSumary() {
                 )}
                 {invalidCoupon && (
                     <p className="mt-4 flex justify-end text-red-500">Invalid coupon!</p>
-                )}
+                )} */}
                 <div className="flex flex-row text-lg justify-between mt-4">
                     <p>Subtotal</p>
-                    {coupon && coupon.isValid && (
+                    <p>${formatMoney(calculateSubtotal())}</p>
+                    {/* {coupon && coupon.isValid && (
                         <div className="flex flex-row">
                             <p className="line-through text-red-500 mr-4">${formatMoney(calculateSubtotal())}</p>
                             <p>${formatMoney(calculateSubtotalWithCoupon())}</p>
@@ -242,7 +243,7 @@ export default function ViewOrderSumary() {
                     )}
                     {(!coupon || !coupon.isValid) && (
                         <p>${formatMoney(calculateSubtotal())}</p>
-                    )}
+                    )} */}
                 </div>
                 <div className="flex flex-row text-lg justify-between mt-1">
                     <div className="flex flex-row">
@@ -263,12 +264,13 @@ export default function ViewOrderSumary() {
                 </div>
                 <div className="flex flex-row text-lg justify-between mt-1">
                     <p>Order Total</p>
-                    {coupon && coupon.isValid && (
+                    <p>${formatMoney(calculateSubtotal().add(shippingCost))}</p>
+                    {/* {coupon && coupon.isValid && (
                         <p>${formatMoney(calculateSubtotalWithCoupon().add(shippingCost))}</p>
                     )}
                     {(!coupon || !coupon.isValid) && (
                         <p>${formatMoney(calculateSubtotal().add(shippingCost))}</p>
-                    )}
+                    )} */}
                 </div>
                 <div className="mt-20 flex items-center justify-center">
                     <button
