@@ -259,7 +259,7 @@ export default function Light() {
                             <span className={selectedLightVariant.stock <= LOW_STOCK_QUANTITY ? "text-red-500" : "text-black"}>
                                 {selectedLightVariant.stock}
                             </span>{" "}
-                            remaining
+                            left
                         </p>
                     </div>
                     <p className="font-bold mt-4">DESCRIPTION</p>
