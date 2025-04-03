@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { getLightAndVariantsByInternalName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE, MAXIMUM_SELECTION_QUANTITY } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE, MAXIMUM_SELECTION_QUANTITY, LOW_STOCK_QUANTITY } from '../utils/constants';
 import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
@@ -247,14 +247,21 @@ export default function Light() {
                             </div>
                         </div>
                     )}
-                    <p className="mt-4">Current stock: {selectedLightVariant.stock}</p>
                     <p className="mt-4">Quantity:</p>
-                    <Dropdown
-                        options={QUANTITY_CHOICES}
-                        value={selectedDropdown}
-                        onChange={handleDropdownChange}
-                        className="w-32 mt-4"
-                    />
+                    <div className="flex flex-row mt-4 items-center">
+                        <Dropdown
+                            options={QUANTITY_CHOICES}
+                            value={selectedDropdown}
+                            onChange={handleDropdownChange}
+                            className="w-32 mr-2"
+                        />
+                        <p>
+                            <span className={selectedLightVariant.stock <= LOW_STOCK_QUANTITY ? "text-red-500" : "text-black"}>
+                                {selectedLightVariant.stock}
+                            </span>{" "}
+                            remaining
+                        </p>
+                    </div>
                     <p className="font-bold mt-4">DESCRIPTION</p>
                     <div className="ml-4">
                         <p>The light's description goes here</p>
