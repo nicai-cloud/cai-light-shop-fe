@@ -48,7 +48,7 @@ export default function Lights() {
                     POWER LIGHTS
                 </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-6 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "power").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
                         <img
@@ -67,7 +67,7 @@ export default function Lights() {
                     SOLAR LIGHTS
                 </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-6 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "solar").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
                         <img
@@ -86,7 +86,7 @@ export default function Lights() {
                     BATTERY LIGHTS
                 </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-6 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "battery").map((light) => (
                     <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
                         <img
