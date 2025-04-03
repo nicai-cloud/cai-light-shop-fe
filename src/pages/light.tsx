@@ -203,7 +203,7 @@ export default function Light() {
                     <p className="mt-4">Color:</p>
                     <div className="flex flex-row mt-4">
                         {Object.entries(colorsMapping!).map(([colorId, color]) => (
-                            <div key={colorId} className={`w-[120px] border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
+                            <div key={colorId} className={`w-[160px] border-2 ${selectedColorId! === Number(colorId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
                                 {color.color}
                             </div>
                         ))}
@@ -214,7 +214,7 @@ export default function Light() {
                             <p className="mt-4">Length:</p>
                             <div className="flex flex-row mt-4">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[160px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimension.length}m
                                     </div>
                                 ))}
@@ -227,7 +227,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="flex flex-row mt-4">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[160px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimension.length}m x {dimension.width}m
                                     </div>
                                 ))}
@@ -240,7 +240,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="flex flex-row mt-4">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[160px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-[#1bafe7]' : 'border-gray-100'} text-black text-center px-2 py-2 rounded mr-8`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimension.length}m x {dimension.height}m
                                     </div>
                                 ))}
