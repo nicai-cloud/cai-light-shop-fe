@@ -57,7 +57,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>From ${light.fromPrice.toFixed(2)}</p>
+                        <p>{light.fromPrice}</p>
                     </div>
                 ))}
             </div>
@@ -76,7 +76,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>From ${light.fromPrice.toFixed(2)}</p>
+                        <p>{light.fromPrice}</p>
                     </div>
                 ))}
             </div>
@@ -95,7 +95,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>From ${light.fromPrice.toFixed(2)}</p>
+                        <p>{light.fromPrice}</p>
                     </div>
                 ))}
             </div>

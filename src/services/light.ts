@@ -1,16 +1,5 @@
 import Decimal from 'decimal.js';
 
-export type RawLightType = {
-    id: number,
-    imageUrl: string,
-    videoUrl: string | null,
-    internalName: string,
-    displayName: string,
-    powerType: string,
-    dimensionType: string,
-    fromPrice: string
-}
-
 export type LightType = {
     id: number,
     imageUrl: string,
@@ -19,14 +8,7 @@ export type LightType = {
     displayName: string,
     powerType: string,
     dimensionType: string,
-    fromPrice: Decimal
-}
-
-function convertLight(light: RawLightType): LightType {
-    return {
-        ...light,
-        fromPrice: new Decimal(light.fromPrice)
-    };
+    fromPrice: string
 }
 
 export type RawLightVariantType = {
@@ -112,8 +94,7 @@ export type LightAndVariantsType = {
 
 export const getLights = async (): Promise<LightType[]> => {
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights`);
-    const lights = await response.json();
-    return lights.map(convertLight);
+    return await response.json();
 }
 
 export const getLightVariants = async (): Promise<LightVariantType[]> => {
