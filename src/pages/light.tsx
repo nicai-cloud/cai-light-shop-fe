@@ -190,7 +190,7 @@ export default function Light() {
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">
-                    <p className="font-bold text-xl mb-10">{lightAndVariants.lightDisplayName}</p>
+                    {/* <p className="font-bold text-xl mb-10">{lightAndVariants.lightDisplayName}</p> */}
                     <Carousel
                         images={lightImageUrls}
                         videoUrl={lightAndVariants.lightVideoUrl}
