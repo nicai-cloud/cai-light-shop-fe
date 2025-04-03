@@ -22,7 +22,7 @@ export const ConfirmCartItemDeletionModal = ({
                     <p>Are you sure you want to delete this light?</p>
                     <div className="flex flex-row">
                         <button
-                            className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded mr-8"
+                            className="mt-8 bg-pink-300 text-white items-center px-8 py-2 rounded mr-8"
                             onClick={() => {
                                 onYes();
                                 onClose();
@@ -31,7 +31,7 @@ export const ConfirmCartItemDeletionModal = ({
                             Yes
                         </button>
                         <button
-                            className="mt-8 bg-[#1bafe7] text-white items-center px-8 py-2 rounded"
+                            className="mt-8 bg-pink-300 text-white items-center px-8 py-2 rounded"
                             onClick={handleNo}
                         >
                             No

@@ -349,7 +349,7 @@ export default function ConfirmOrder() {
                     <ActionButton
                         type="submit"
                         form="completeOrderForm"
-                        className="text-white px-8 py-2 rounded bg-[#1bafe7]"
+                        className="text-white px-8 py-2 rounded bg-pink-300"
                         loading={isLoading}
                     >
                         Complete order

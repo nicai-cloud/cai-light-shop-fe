@@ -274,7 +274,7 @@ export default function ViewOrderSumary() {
                 </div>
                 <div className="mt-20 flex items-center justify-center">
                     <button
-                        className="text-white px-8 py-2 rounded bg-[#1bafe7]"
+                        className="text-white px-8 py-2 rounded bg-pink-300"
                         onClick={handleCheckout}
                     >
                         Check out

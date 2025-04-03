@@ -33,7 +33,7 @@ export default function Success() {
             <hr className="my-10"/>
             <div className="flex items-center justify-center">
                 <button
-                    className="text-white px-8 py-2 rounded bg-[#1bafe7]"
+                    className="text-white px-8 py-2 rounded bg-pink-300"
                     onClick={handleContinueShopping}
                 >
                     Continue Shopping

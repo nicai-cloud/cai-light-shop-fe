@@ -107,7 +107,7 @@ export const ShoppingCartModal = ({
                     <div className="flex items-center justify-center">
                         <button
                             onClick={handleViewOrderSummary}
-                            className={`mt-2 bg-[#1bafe7] text-white px-8 py-2 rounded`}
+                            className={"mt-2 bg-pink-300 text-white px-8 py-2 rounded"}
                         >
                             View Order Summary
                         </button>
