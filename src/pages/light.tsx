@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { getLightAndVariantsByInternalName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE, MAXIMUM_SELECTION_QUANTITY } from '../utils/constants';
 import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
@@ -54,7 +54,7 @@ export default function Light() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const QUANTITY_CHOICES = Array.from({ length: 5 }, (_, i) => ({
+    const QUANTITY_CHOICES = Array.from({ length: MAXIMUM_SELECTION_QUANTITY }, (_, i) => ({
         id: i + 1,
         name: (i + 1).toString(),
     }));
@@ -247,6 +247,7 @@ export default function Light() {
                             </div>
                         </div>
                     )}
+                    <p className="mt-4">Current stock: {selectedLightVariant.stock}</p>
                     <p className="mt-4">Quantity:</p>
                     <Dropdown
                         options={QUANTITY_CHOICES}

@@ -9,3 +9,4 @@ export const LIGHT_PAGE = "./light"
 export const VIEW_ORDER_SUMMARY_PAGE = "./view-order-summary"
 export const CONFIRM_ORDER_PAGE = "./confirm-order"
 export const SUCCESS_PAGE = "./success"
+export const MAXIMUM_SELECTION_QUANTITY = 3
