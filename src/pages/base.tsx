@@ -247,7 +247,7 @@ export default function Base() {
                     <div className="flex flex-col">
                         <div className="flex flex-row justify-between items-center mb-4">
                             <FontAwesomeIcon className="text-white mr-2" icon={faEnvelope} size="2x"/>
-                            <p className="text-white">support@lightoz.com.au</p>
+                            <a className="text-white" href="mailto:support@lightoz.com.au">support@lightoz.com.au</a>
                         </div>
                         {/* <div className="flex flex-row">
                             <FontAwesomeIcon className="cursor-pointer text-white mr-8" icon={faInstagram} size="2x" onClick={handleInstagramIconClick} />
