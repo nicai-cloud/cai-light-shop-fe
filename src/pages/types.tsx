@@ -1,5 +1,5 @@
 export type ConfirmOrderDetailsForm = {
-    // Parent Details
+    // Customer Details
     firstName: string;
     lastName: string;
     mobile: string;
@@ -16,4 +16,12 @@ export type ConfirmOrderDetailsForm = {
         month: number;
         year: number;
     };
+};
+
+export type ConfirmOrderPickupDetailsForm = {
+    // Customer Details
+    firstName: string;
+    lastName: string;
+    mobile: string;
+    email: string;
 };

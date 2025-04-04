@@ -5,7 +5,7 @@ import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 // import { getCoupon } from '../services/coupon';
 import { getLightImageUrls } from '../services/image';
 import { getShippingMethodInfo } from '../services/shippingMethod';
@@ -20,6 +20,10 @@ import { preloadImage } from '../services/preload_image';
 
 export default function ViewOrderSumary() {
     const SHIPPING_METHODS = [{id: 1, name: "Standard"}, {id: 2, name: "Express"}]
+    
+    // const DELIVERY_METHOD_POSTAGE = 0;
+    const DELIVERY_METHOD_PICKUP = 1;
+    const DEFAULT_DELIVERY_METHOD = DELIVERY_METHOD_PICKUP;
 
     const mainContext = useMainContext();
     const cartContext = useContext(CartContext);
@@ -32,6 +36,7 @@ export default function ViewOrderSumary() {
     // const [invalidCoupon, setInvalidCoupon] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
+    const [selectedDeliveryMethod, _] = useState<Number>(DEFAULT_DELIVERY_METHOD);
 
     const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
@@ -101,7 +106,11 @@ export default function ViewOrderSumary() {
     }, [cartContext])
 
     const handleCheckout = useCallback(() => {
-        mainContext.navigateTo(CONFIRM_ORDER_PAGE);
+        if (selectedDeliveryMethod == 0) {
+            mainContext.navigateTo(CONFIRM_ORDER_PAGE);
+        } else {
+            mainContext.navigateTo(CONFIRM_ORDER_PICKUP_PAGE);
+        }
         setDeletedCartItemId(null);
     }, [mainContext])
 

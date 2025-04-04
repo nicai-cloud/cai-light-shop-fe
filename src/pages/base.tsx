@@ -13,7 +13,7 @@ import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
 // import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
-import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
+import { HOME_PAGE, SUCCESS_PAGE, PICKUP_ORDER_SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 
 type LightVariantType = {
@@ -148,10 +148,62 @@ export default function Base() {
         return null;
     };
 
+    const submitCompleteOrderPickup = async (finalPageDetails: any) => {
+        const orderItems: OrderItemType[] = [];
+        cartContext.cart.map((cartItem) => {
+            if (cartItem.selection.lightVariantId) {
+                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
+            }
+        })
+
+        let response;
+        try {
+            response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order-pickup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    customerInfo: {
+                        firstName: finalPageDetails?.firstName,
+                        lastName: finalPageDetails?.lastName,
+                        mobile: finalPageDetails?.mobile,
+                        email: finalPageDetails?.email
+                    },
+                    orderItems: orderItems
+                }),
+            });
+        }
+        catch (e) {
+            return {
+                message: 'There was an unexpected error completing your order. Please try again.',
+            };
+        }
+
+        if (response.status === 400 && (await response.json()).description === "Out of stock") {
+            return {
+                message: 'Sorry, we are running out of stock for the items you have ordered.',
+            }
+        }
+
+        if (response.status >= 400) {
+            return {
+                message: 'There was an unexpected error completing your order. Please try again.',
+            };
+        }
+
+        cartContext.clearCart();
+        setDeletedCartItemId(null);
+        navigateTo(`${PICKUP_ORDER_SUCCESS_PAGE}#${(await response.json()).order_number}`);
+
+        return null;
+    };
+
     const context: MainContext = {
         navigateTo,
         handleAddToCart,
-        submitCompleteOrder
+        submitCompleteOrder,
+        submitCompleteOrderPickup
     };
 
     const stripeElementsOptions: StripeElementsOptions = {
