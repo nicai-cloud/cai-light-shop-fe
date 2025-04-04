@@ -5,10 +5,10 @@ import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_SHIPPING_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_FULFILLMENT_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 // import { getCoupon } from '../services/coupon';
 import { getLightImageUrls } from '../services/image';
-import { getShippingMethodInfo } from '../services/shippingMethod';
+import { getFulfillmentMethodInfo } from '../services/fulfillmentMethod';
 import { getNumberEnv } from '../utils/load-env';
 import { NavArrowDown } from 'iconoir-react';
 import EditQuantity from '../components/edit-quantity';
@@ -19,7 +19,7 @@ import Decimal from 'decimal.js';
 import { preloadImage } from '../services/preload_image';
 
 export default function ViewOrderSumary() {
-    const SHIPPING_METHODS = [
+    const FULFILLMENT_METHODS = [
         {id: 0, name: "Pickup"},
         {id: 1, name: "Standard Post"},
         {id: 2, name: "Express Post"}
@@ -31,7 +31,7 @@ export default function ViewOrderSumary() {
 
     const mainContext = useMainContext();
     const cartContext = useContext(CartContext);
-    const { shippingMethod, setShippingMethod } = useContext(CartContext);
+    const { fulfillmentMethod, setFulfillmentMethod } = useContext(CartContext);
     // const { coupon, setCoupon } = useContext(CartContext);
 
     const [shippingCost, setShippingCost] = useState<Decimal>(Decimal(0));
@@ -56,7 +56,7 @@ export default function ViewOrderSumary() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isShippingMethodLoading, data: shippingMethodInfo} = useSWR(GET_SHIPPING_METHOD_INFO, getShippingMethodInfo, {
+    const {isLoading: isFulfillmentMethodLoading, data: fulfillmentMethodInfo} = useSWR(GET_FULFILLMENT_METHOD_INFO, getFulfillmentMethodInfo, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     })
@@ -74,10 +74,10 @@ export default function ViewOrderSumary() {
     }, [images]);
 
     useEffect(() => {
-        if (shippingMethodInfo) {
+        if (fulfillmentMethodInfo) {
             setShippingCost(calculateShippingCost())
         }
-    }, [cartContext, shippingMethodInfo])
+    }, [cartContext, fulfillmentMethodInfo])
 
     const calculateSubtotal = () => {
         return cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
@@ -89,10 +89,10 @@ export default function ViewOrderSumary() {
     // }
 
     const calculateShippingCost = () => {
-        if (calculateSubtotal().gte(shippingMethodInfo!.freeShippingThreshold)) {
-            return shippingMethodInfo!.shippingMethods[shippingMethod.id].discountFee;
+        if (calculateSubtotal().gte(fulfillmentMethodInfo!.freeShippingThreshold)) {
+            return fulfillmentMethodInfo!.fulfillmentMethods[fulfillmentMethod.id].discountFee;
         } else {
-            return shippingMethodInfo!.shippingMethods[shippingMethod.id].fee;
+            return fulfillmentMethodInfo!.fulfillmentMethods[fulfillmentMethod.id].fee;
         }
     }
 
@@ -101,7 +101,7 @@ export default function ViewOrderSumary() {
     }, [cartContext])
 
     const handleCheckout = () => {
-        if (shippingMethod.id === DELIVERY_METHOD_PICKUP) {
+        if (fulfillmentMethod.id === DELIVERY_METHOD_PICKUP) {
             mainContext.navigateTo(CONFIRM_ORDER_PICKUP_PAGE);
         } else {
             mainContext.navigateTo(CONFIRM_ORDER_PAGE);
@@ -110,7 +110,7 @@ export default function ViewOrderSumary() {
     }
 
     const handleDropdownChange = (value: DropdownOption) => {
-        setShippingMethod(value);
+        setFulfillmentMethod(value);
     };
 
     // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +135,7 @@ export default function ViewOrderSumary() {
     if (isImagesLoading || !images ||
         isLightsLoading || !lights ||
         isLightVariantsLoading || !lightVariants ||
-        isShippingMethodLoading || !shippingMethodInfo
+        isFulfillmentMethodLoading || !fulfillmentMethodInfo
     ) {
         return (
             <div className="w-full flex items-center justify-center">
@@ -253,8 +253,8 @@ export default function ViewOrderSumary() {
                     <div className="flex flex-row">
                         <p className="mr-3">Pickup or Post</p>
                         <DropdownWithoutLabel
-                            options={SHIPPING_METHODS}
-                            value={shippingMethod}
+                            options={FULFILLMENT_METHODS}
+                            value={fulfillmentMethod}
                             onChange={handleDropdownChange}
                             className="w-[150px]"
                         />
@@ -268,11 +268,11 @@ export default function ViewOrderSumary() {
                 </div>
                 <div className="flex flex-row text-lg justify-between mt-1">
                     <p>Order Total</p>
-                    {shippingMethod.id === DELIVERY_METHOD_PICKUP && (
+                    {fulfillmentMethod.id === DELIVERY_METHOD_PICKUP && (
                         <p>${formatMoney(calculateSubtotal())}</p>
                     )}
-                    {(shippingMethod.id === DELIVERY_METHOD_POST_STANDARD ||
-                      shippingMethod.id === DELIVERY_METHOD_POST_EXPRESS) && (
+                    {(fulfillmentMethod.id === DELIVERY_METHOD_POST_STANDARD ||
+                      fulfillmentMethod.id === DELIVERY_METHOD_POST_EXPRESS) && (
                         <p>${formatMoney(calculateSubtotal().add(shippingCost))}</p>
                     )}
                     {/* {coupon && coupon.isValid && (

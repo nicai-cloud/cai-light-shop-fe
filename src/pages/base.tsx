@@ -111,7 +111,7 @@ export default function Base() {
                         address: finalPageDetails?.address,
                     },
                     orderItems: orderItems,
-                    shippingMethod: cartContext.shippingMethod.id,
+                    fulfillmentMethod: cartContext.fulfillmentMethod.id,
                     couponCode: cartContext.coupon?.couponCode,
                     paymentMethodId: finalPageDetails?.paymentMethodId,
                 }),

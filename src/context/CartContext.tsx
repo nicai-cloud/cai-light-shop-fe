@@ -14,7 +14,7 @@ export interface CartItem {
     selection: SelectionIds
 }
 
-export interface ShippingMethod {
+export interface FulfillmentMethod {
     id: number;
     name: string;
 }
@@ -25,33 +25,33 @@ export interface Coupon {
     discountPercentage: number;
 }
 
-const DEFAULT_SHIPPING_METHOD = {id: 0, name: "Pickup"};
+const DEFAULT_FULFILLMENT_METHOD = {id: 0, name: "Pickup"};
 
 const DEFAULT_COUPON = null;
 
 interface CartContextProps {
     cart: CartItem[];
-    shippingMethod: ShippingMethod;
+    fulfillmentMethod: FulfillmentMethod;
     coupon: Coupon | null;
     addItem: (item: CartItem) => void;
     removeItem: (itemId: string) => void;
     clearCart: () => void;
     increaseItemQuantity: (itemId: string) => void;
     decreaseItemQuantity: (itemId: string) => void;
-    setShippingMethod: (method: ShippingMethod) => void;
+    setFulfillmentMethod: (method: FulfillmentMethod) => void;
     setCoupon: (coupon: Coupon) => void;
 }
 
 export const CartContext = createContext<CartContextProps>({
     cart: [],
-    shippingMethod: DEFAULT_SHIPPING_METHOD,
+    fulfillmentMethod: DEFAULT_FULFILLMENT_METHOD,
     coupon: DEFAULT_COUPON,
     addItem: () => {},
     removeItem: () => {},
     clearCart: () => {},
     increaseItemQuantity: () => {},
     decreaseItemQuantity: () => {},
-    setShippingMethod: () => {},
+    setFulfillmentMethod: () => {},
     setCoupon: () => {},
 });
 
@@ -69,19 +69,19 @@ function reviver(_: string, value: any): any {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
-    const [shippingMethod, setShippingMethod] = useState<ShippingMethod>(DEFAULT_SHIPPING_METHOD);
+    const [fulfillmentMethod, setFulfillmentMethod] = useState<FulfillmentMethod>(DEFAULT_FULFILLMENT_METHOD);
     const [coupon, setCoupon] = useState<Coupon | null>(DEFAULT_COUPON);
     const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
 
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
-        const savedShippingMethod = localStorage.getItem('shippingMethod');
+        const savedFulfillmentMethod = localStorage.getItem('fulfillmentMethod');
         const savedCoupon = localStorage.getItem('coupon');
         if (savedCart) {
             setCart(JSON.parse(savedCart, reviver));
         }
-        if (savedShippingMethod) {
-            setShippingMethod(JSON.parse(savedShippingMethod));
+        if (savedFulfillmentMethod) {
+            setFulfillmentMethod(JSON.parse(savedFulfillmentMethod));
         }
         if (savedCoupon) {
             setCoupon(JSON.parse(savedCoupon));
@@ -92,10 +92,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         if (isLocalStorageLoaded) {
             localStorage.setItem('cart', JSON.stringify(cart));
-            localStorage.setItem('shippingMethod', JSON.stringify(shippingMethod));
+            localStorage.setItem('fulfillmentMethod', JSON.stringify(fulfillmentMethod));
             localStorage.setItem('coupon', JSON.stringify(coupon));
         }
-    }, [cart, shippingMethod, coupon]);
+    }, [cart, fulfillmentMethod, coupon]);
 
     const addItem = (newItem: CartItem) => {
         setCart((prevCart) => {
@@ -115,7 +115,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCart = () => {
       setCart([]);
-      setShippingMethod(DEFAULT_SHIPPING_METHOD);
+      setFulfillmentMethod(DEFAULT_FULFILLMENT_METHOD);
       setCoupon(DEFAULT_COUPON);
   }
 
@@ -145,7 +145,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
       <CartContext.Provider value={
-          { cart, shippingMethod, coupon, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setShippingMethod, setCoupon }
+          { cart, fulfillmentMethod, coupon, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setFulfillmentMethod, setCoupon }
       }>
           {children}
       </CartContext.Provider>
