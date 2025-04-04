@@ -19,10 +19,14 @@ import Decimal from 'decimal.js';
 import { preloadImage } from '../services/preload_image';
 
 export default function ViewOrderSumary() {
-    const SHIPPING_METHODS = [{id: 1, name: "Standard"}, {id: 2, name: "Express"}]
+    const SHIPPING_METHODS = [
+        {id: 0, name: "Pickup"},
+        {id: 1, name: "Standard"},
+        {id: 2, name: "Express"}
+    ]
     
-    // const DELIVERY_METHOD_POSTAGE = 0;
-    const DELIVERY_METHOD_PICKUP = 1;
+    const DELIVERY_METHOD_PICKUP = 0;
+    const DELIVERY_METHOD_POST = 1;
     const DEFAULT_DELIVERY_METHOD = DELIVERY_METHOD_PICKUP;
 
     const mainContext = useMainContext();
@@ -36,7 +40,7 @@ export default function ViewOrderSumary() {
     // const [invalidCoupon, setInvalidCoupon] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
-    const [selectedDeliveryMethod, _] = useState<Number>(DEFAULT_DELIVERY_METHOD);
+    const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState<number>(DEFAULT_DELIVERY_METHOD);
 
     const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
@@ -87,17 +91,9 @@ export default function ViewOrderSumary() {
 
     const calculateShippingCost = () => {
         if (calculateSubtotal().gte(shippingMethodInfo!.freeShippingThreshold)) {
-            if (shippingMethod.id === 1) {
-                return shippingMethodInfo!.shippingMethods[0].discountFee;
-            } else {
-                return shippingMethodInfo!.shippingMethods[1].discountFee;
-            }
+            return shippingMethodInfo!.shippingMethods[shippingMethod.id].discountFee;
         } else {
-            if (shippingMethod.id === 1) {
-                return shippingMethodInfo!.shippingMethods[0].fee;
-            } else {
-                return shippingMethodInfo!.shippingMethods[1].fee;
-            }
+            return shippingMethodInfo!.shippingMethods[shippingMethod.id].fee;
         }
     }
 
@@ -105,18 +101,22 @@ export default function ViewOrderSumary() {
         return cartContext.cart.filter(cartItem => cartItem.selection.lightVariantId !== undefined).length;
     }, [cartContext])
 
-    const handleCheckout = useCallback(() => {
-        if (selectedDeliveryMethod == 0) {
+    const handleCheckout = () => {
+        if (selectedDeliveryMethod === DELIVERY_METHOD_POST) {
             mainContext.navigateTo(CONFIRM_ORDER_PAGE);
         } else {
             mainContext.navigateTo(CONFIRM_ORDER_PICKUP_PAGE);
         }
         setDeletedCartItemId(null);
-    }, [mainContext])
+    }
 
     const handleDropdownChange = (value: DropdownOption) => {
         setShippingMethod(value);
     };
+
+    const handleSelectDeliveryMethod = (deliveryMethod: number) => {
+        setSelectedDeliveryMethod(deliveryMethod);
+    }
 
     // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     setEnteredCouponCode(event.target.value);
@@ -254,26 +254,44 @@ export default function ViewOrderSumary() {
                         <p>${formatMoney(calculateSubtotal())}</p>
                     )} */}
                 </div>
-                <div className="flex flex-row text-lg justify-between mt-1">
+                <div className="flex flex-col text-lg justify-between mt-1">
+                    <p className="mr-3">Delivery method </p>
                     <div className="flex flex-row">
-                        <p className="mr-3">Shipping</p>
-                        <DropdownWithoutLabel
-                            options={SHIPPING_METHODS}
-                            value={shippingMethod}
-                            onChange={handleDropdownChange}
-                            className="w-[100px] mt-[3px]"
-                        />
+                        <div className={`w-[100px] border-2 ${selectedDeliveryMethod === DELIVERY_METHOD_PICKUP ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 rounded mr-8`} onClick={() => handleSelectDeliveryMethod(DELIVERY_METHOD_PICKUP)}>
+                            Pick up
+                        </div>
+                        <div className={`w-[100px] border-2 ${selectedDeliveryMethod === DELIVERY_METHOD_POST ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 rounded mr-8`} onClick={() => handleSelectDeliveryMethod(DELIVERY_METHOD_POST)}>
+                            Post
+                        </div>
                     </div>
-                    {shippingCost.eq(0) && (
-                        <p>Free</p>
-                    )}
-                    {shippingCost.gt(0) && (
-                        <p>${formatMoney(shippingCost)}</p>
-                    )}
                 </div>
+                {selectedDeliveryMethod === DELIVERY_METHOD_POST && (
+                    <div className="flex flex-row text-lg justify-between mt-1">
+                        <div className="flex flex-row">
+                            <p className="mr-3">Shipping</p>
+                            <DropdownWithoutLabel
+                                options={SHIPPING_METHODS}
+                                value={shippingMethod}
+                                onChange={handleDropdownChange}
+                                className="w-[100px] mt-[3px]"
+                            />
+                        </div>
+                        {shippingCost.eq(0) && (
+                            <p>Free</p>
+                        )}
+                        {shippingCost.gt(0) && (
+                            <p>${formatMoney(shippingCost)}</p>
+                        )}
+                    </div>
+                )}
                 <div className="flex flex-row text-lg justify-between mt-1">
                     <p>Order Total</p>
-                    <p>${formatMoney(calculateSubtotal().add(shippingCost))}</p>
+                    {selectedDeliveryMethod === DELIVERY_METHOD_PICKUP && (
+                        <p>${formatMoney(calculateSubtotal())}</p>
+                    )}
+                    {selectedDeliveryMethod === DELIVERY_METHOD_POST && (
+                        <p>${formatMoney(calculateSubtotal().add(shippingCost))}</p>
+                    )}
                     {/* {coupon && coupon.isValid && (
                         <p>${formatMoney(calculateSubtotalWithCoupon().add(shippingCost))}</p>
                     )}
