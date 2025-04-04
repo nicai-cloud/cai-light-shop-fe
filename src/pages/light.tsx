@@ -190,7 +190,6 @@ export default function Light() {
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">
-                    {/* <p className="font-bold text-xl mb-10">{lightAndVariants.lightDisplayName}</p> */}
                     <Carousel
                         images={lightImageUrls}
                         videoUrl={lightAndVariants.lightVideoUrl}
@@ -199,7 +198,13 @@ export default function Light() {
                     />
                 </div>
                 <div className="px-2 mt-4">
-                    <p className="font-bold text-2xl mt-4">${selectedLightVariant.price.toFixed(2)}</p>
+                    <p className="mt-4 text-xl">{lightAndVariants.lightDisplayName} light</p>
+                    <p className="mt-4">
+                        <span className="text-xl">
+                            ${selectedLightVariant.price.toFixed(2)} 
+                        </span>{" "}
+                        each
+                    </p>
                     <p className="mt-4">Color:</p>
                     <div className="flex flex-row mt-4">
                         {Object.entries(colorsMapping!).map(([colorId, color]) => (
