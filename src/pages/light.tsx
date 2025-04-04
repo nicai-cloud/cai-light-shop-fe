@@ -253,7 +253,7 @@ export default function Light() {
                             options={QUANTITY_CHOICES}
                             value={selectedDropdown}
                             onChange={handleDropdownChange}
-                            className="w-32 mr-2"
+                            className="w-28"
                         />
                         <p>
                             <span className={selectedLightVariant.stock <= LOW_STOCK_QUANTITY ? "text-red-500" : "text-black"}>
