@@ -21,8 +21,8 @@ import { preloadImage } from '../services/preload_image';
 export default function ViewOrderSumary() {
     const SHIPPING_METHODS = [
         {id: 0, name: "Pickup"},
-        {id: 1, name: "Standard"},
-        {id: 2, name: "Express"}
+        {id: 1, name: "Standard Post"},
+        {id: 2, name: "Express Post"}
     ]
     
     const DELIVERY_METHOD_PICKUP = 0;
@@ -251,12 +251,12 @@ export default function ViewOrderSumary() {
                 </div>
                 <div className="flex flex-row text-lg justify-between mt-1">
                     <div className="flex flex-row">
-                        <p className="mr-3">Delivery</p>
+                        <p className="mr-3">Pickup or Post</p>
                         <DropdownWithoutLabel
                             options={SHIPPING_METHODS}
                             value={shippingMethod}
                             onChange={handleDropdownChange}
-                            className="w-[100px] mt-[3px]"
+                            className="w-[150px]"
                         />
                     </div>
                     {shippingCost.eq(0) && (

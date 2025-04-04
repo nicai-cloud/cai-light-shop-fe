@@ -25,7 +25,7 @@ export interface Coupon {
     discountPercentage: number;
 }
 
-const DEFAULT_SHIPPING_METHOD = {id: 1, name: "Standard"};
+const DEFAULT_SHIPPING_METHOD = {id: 0, name: "Pickup"};
 
 const DEFAULT_COUPON = null;
 
