@@ -43,7 +43,7 @@ export default function Light() {
 
     const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, () => getLightImageUrlsByInternalName(internal_name!), {
+    const {isLoading: isImagesLoading, data: images} = useSWR([GET_LIGHT_IMAGE_URLS, internal_name!], () => getLightImageUrlsByInternalName(internal_name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
