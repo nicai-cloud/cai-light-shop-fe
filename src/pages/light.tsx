@@ -152,6 +152,8 @@ export default function Light() {
         )
     }
 
+    const descriptionParts = selectedLightVariant.description.split(",");
+
     const handleAddToCart = () => {
         const cartItem: CartItem = {
             itemId: 'light' + selectedLightVariant.id,
@@ -267,10 +269,16 @@ export default function Light() {
                             left
                         </p>
                     </div>
-                    <p className="font-bold mt-4">DESCRIPTION</p>
-                    <div className="ml-4">
-                        <p>The light's description goes here</p>
-                    </div>
+                    {descriptionParts[0].length > 0 && (
+                        <div>
+                            <p className="font-bold mt-4">DESCRIPTION</p>
+                            <ul className="ml-4 list-disc">
+                                {descriptionParts.map((descriptionPart, index) => (
+                                    <li key={index} className='ml-4'>{descriptionPart}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="mt-4 w-full flex flex-row items-center justify-center">
