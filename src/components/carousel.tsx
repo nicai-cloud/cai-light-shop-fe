@@ -52,7 +52,7 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, videoUrl, onInd
                         {imageIndex < images.length && (
                             <img
                                 src={images[imageIndex]}
-                                alt={`Slide ${imageIndex}`}
+                                alt={`Image ${imageIndex}`}
                                 className="w-[320px] h-[320px]"
                             />
                         )}
