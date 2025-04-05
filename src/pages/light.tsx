@@ -8,7 +8,7 @@ import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE, MAXI
 import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
-import { getLightImageUrls } from '../services/image';
+import { getLightImageUrlsByInternalName } from '../services/image';
 import { preloadImage } from '../services/preload_image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
@@ -31,7 +31,6 @@ export default function Light() {
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
     const [lightDimensionType, setLightDimensionType] = useState<string | null>(null);
-    const [lightImageUrls, setLightImageUrls] = useState<string[]>([]);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
@@ -44,7 +43,7 @@ export default function Light() {
 
     const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
+    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, () => getLightImageUrlsByInternalName(internal_name!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -65,9 +64,7 @@ export default function Light() {
 
     useEffect(() => {
         if (lightAndVariants) {
-            console.log(lightAndVariants.lightInternalName, lightAndVariants.lightDisplayName, lightAndVariants.lightPowerType, lightAndVariants.lightVideoUrl, lightAndVariants.lightDimensionType);
             const lightVariants = lightAndVariants.lightVariants;
-            const combinedImageUrls = new Set<string>();
             const colorIdsSet = new Set<number>();
             const dimensionIdsSet = new Set<number>();
             const tempColorsMapping: Record<number, ColorType> = {};
@@ -78,7 +75,6 @@ export default function Light() {
             let uniqueColorIndex = 0;
             while (index < lightVariants.length) {
                 const lightVariant = lightVariants[index];
-                combinedImageUrls.add(lightVariant.imageUrl);
 
                 tempLightVariantMapping[lightVariant.id] = lightVariant;
 
@@ -113,7 +109,6 @@ export default function Light() {
                 index++;
             }
             setLightDimensionType(lightAndVariants.lightDimensionType);
-            setLightImageUrls([...combinedImageUrls]);
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
             setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
@@ -142,7 +137,6 @@ export default function Light() {
     if (isImagesLoading || !images ||
         isLightAndVariantsLoading || !lightAndVariants ||
         !lightDimensionType ||
-        !lightImageUrls ||
         !selectedLightVariant
     ) {
         return (
@@ -193,7 +187,7 @@ export default function Light() {
                 </div>
                 <div className="px-2 my-4 flex flex-col">
                     <Carousel
-                        images={lightImageUrls}
+                        images={images}
                         videoUrl={lightAndVariants.lightVideoUrl}
                         imageIndex={carouselImageIndex}
                         onIndexChange={setCarouselImageIndex}

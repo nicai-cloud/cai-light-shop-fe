@@ -1,17 +1,17 @@
 import { useMainContext } from './context';
 import { useEffect } from 'react';
 import useSWR from 'swr';
-import { getLightImageUrls } from '../services/image';
+import { getAllLightsImageUrls } from '../services/image';
 import { getLights } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
+import { GET_ALL_LIGHTS_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
 import { preloadImage } from '../services/preload_image';
 
 export default function Lights() {
     const mainContext = useMainContext();
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
+    const {isLoading: isAllLightsImagesLoading, data: allLightsImages} = useSWR(GET_ALL_LIGHTS_IMAGE_URLS, getAllLightsImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
@@ -22,12 +22,12 @@ export default function Lights() {
     });
 
     useEffect(() => {
-        if (images) {
-            images.forEach(preloadImage);
+        if (allLightsImages) {
+            allLightsImages.forEach(preloadImage);
         }
-    }, [images]);
+    }, [allLightsImages]);
 
-    if (isImagesLoading || !images ||
+    if (isAllLightsImagesLoading || !allLightsImages ||
         isLoading || !lights
     ) {
         return (

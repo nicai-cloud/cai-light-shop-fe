@@ -5,9 +5,9 @@ import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_LIGHT_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_FULFILLMENT_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_FULFILLMENT_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 // import { getCoupon } from '../services/coupon';
-import { getLightImageUrls } from '../services/image';
+import { getAllLightVariantsImageUrls } from '../services/image';
 import { getFulfillmentMethodInfo } from '../services/fulfillmentMethod';
 import { getNumberEnv } from '../utils/load-env';
 import { NavArrowDown } from 'iconoir-react';
@@ -41,7 +41,7 @@ export default function ViewOrderSumary() {
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
+    const {isLoading: isImagesLoading, data: images} = useSWR(GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, getAllLightVariantsImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });

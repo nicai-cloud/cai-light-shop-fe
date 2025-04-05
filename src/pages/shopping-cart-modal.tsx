@@ -5,9 +5,9 @@ import { CartContext, CartItem } from "../context/CartContext";
 import Modal from "../components/modal";
 import EditQuantity from "../components/edit-quantity";
 import { formatMoney } from "../utils/format-money";
-import { GET_LIGHT_IMAGE_URLS, VIEW_ORDER_SUMMARY_PAGE } from "../utils/constants";
+import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, VIEW_ORDER_SUMMARY_PAGE } from "../utils/constants";
 import { getNumberEnv } from '../utils/load-env';
-import { getLightImageUrls } from "../services/image";
+import { getAllLightVariantsImageUrls } from "../services/image";
 import { preloadImage } from '../services/preload_image';
 import Spinner from '../components/loading/spinner';
 import Decimal from 'decimal.js';
@@ -37,7 +37,7 @@ export const ShoppingCartModal = ({
         navigate(VIEW_ORDER_SUMMARY_PAGE);
     }
 
-    const {isLoading: isImagesLoading, data: images} = useSWR(GET_LIGHT_IMAGE_URLS, getLightImageUrls, {
+    const {isLoading: isImagesLoading, data: images} = useSWR(GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, getAllLightVariantsImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
