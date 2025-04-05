@@ -162,7 +162,7 @@ export default function Light() {
         addItem(cartItem);
 
         setSelectedDropdown(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-        mainContext.handleAddToCart(LIGHTS_PAGE);
+        mainContext.handleAddToCart();
     };
 
     const handleSelectColor = (colorId: number) => {
