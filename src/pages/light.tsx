@@ -18,25 +18,22 @@ type ColorType = {
     id: number
 }
 
-type DimensionType = {
-    length: number | null,
-    width: number | null,
-    height: number | null,
-    weight: number | null
-}
-
 export default function Light() {
     const DEFAULT_QUANTITY_DROPDOWN_OPTION = {id: 1, name: "1"};
+    // const LIGHT_DIMENSION_TYPE_NO_DIMENSION = "no-dimension"; -- this is not being used, only for explanation
+    const LIGHT_DIMENSION_TYPE_LENGTH_WIDTH = "length-width";
+    const LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT = "length-height";
+    const LIGHT_DIMENSION_TYPE_LENGTH_ONLY = "length-only";
 
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
-    const [lightDimensionType, setLightDimensionType] = useState<string | null>(null);
+    const [lightDimensionTypeStr, setLightDimensionTypeStr] = useState<string | null>(null);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
     const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
     const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
-    const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, DimensionType> | null>(null);
+    const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, string> | null>(null);
     const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
     const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, EnhancedLightVariantType> | null>(null);
@@ -68,7 +65,7 @@ export default function Light() {
             const colorIdsSet = new Set<number>();
             const dimensionIdsSet = new Set<number>();
             const tempColorsMapping: Record<number, ColorType> = {};
-            const tempDimensionsMapping: Record<number, DimensionType> = {};
+            const tempDimensionsMapping: Record<number, string> = {};
             const tempColorDimensionToLightVariant: Record<string, number> = {};
             const tempLightVariantMapping: Record<number, EnhancedLightVariantType> = {};
             let index = 0;
@@ -87,15 +84,9 @@ export default function Light() {
                 }
 
                 const dimensionId = lightVariant.dimensionId;
-                const dimension: DimensionType = {
-                    "length": lightVariant.length,
-                    "width": lightVariant.width,
-                    "height": lightVariant.height,
-                    "weight": lightVariant.weight
-                }
                 if (!dimensionIdsSet.has(dimensionId)) {
                     dimensionIdsSet.add(dimensionId);
-                    tempDimensionsMapping[dimensionId] = dimension;
+                    tempDimensionsMapping[dimensionId] = lightVariant.dimensionStr;
                 }
 
                 const key = `${colorId}+${dimensionId}`
@@ -108,7 +99,7 @@ export default function Light() {
                 }
                 index++;
             }
-            setLightDimensionType(lightAndVariants.lightDimensionType);
+            setLightDimensionTypeStr(lightAndVariants.lightDimensionTypeStr);
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
             setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
@@ -136,7 +127,7 @@ export default function Light() {
 
     if (isImagesLoading || !images ||
         isLightAndVariantsLoading || !lightAndVariants ||
-        !lightDimensionType ||
+        !lightDimensionTypeStr ||
         !selectedLightVariant
     ) {
         return (
@@ -153,6 +144,7 @@ export default function Light() {
             itemId: 'light' + selectedLightVariant.id,
             imageUrl: selectedLightVariant.imageUrl,
             name: lightAndVariants.lightDisplayName,
+            dimensionStr: selectedLightVariant.dimensionStr,
             price: selectedLightVariant.price,
             quantity: selectedDropdown.id,
             selection: {
@@ -210,39 +202,39 @@ export default function Light() {
                         ))}
                     </div>
                     {/* length only lights */}
-                    {lightDimensionType === "length-only" && (
+                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_ONLY && (
                         <div>
                             <p className="mt-4">Length:</p>
                             <div className="flex flex-row mt-4">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
-                                        {dimension.length}m
+                                        {dimensionStr}
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
                     {/* length-width lights */}
-                    {lightDimensionType === "length-width" && (
+                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_WIDTH && (
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="flex flex-row mt-4">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
-                                        {dimension.length}m x {dimension.width}m
+                                        {dimensionStr}
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
                     {/* length-height lights */}
-                    {lightDimensionType === "length-height" && (
+                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT && (
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="flex flex-row mt-4">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimension]) => (
+                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
-                                        {dimension.length}m x {dimension.height}m
+                                        {dimensionStr}
                                     </div>
                                 ))}
                             </div>

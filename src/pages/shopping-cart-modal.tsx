@@ -80,7 +80,10 @@ export const ShoppingCartModal = ({
                                 <div className="flex flex-row justify-between items-center">
                                     <div className="flex flex-row items-center">
                                         <img src={item.imageUrl} alt="image source" className="w-[80px] h-[80px]" />
-                                        <p className="ml-4">{item.name}</p>
+                                        <div className="flex flex-col">
+                                            <p className="ml-4">{item.name}</p>
+                                            <p className="ml-4">{item.dimensionStr}</p>
+                                        </div>
                                     </div>
                                     <div className="flex flex-row">
                                         <EditQuantity

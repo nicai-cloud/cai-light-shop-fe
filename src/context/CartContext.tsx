@@ -9,6 +9,7 @@ export interface CartItem {
     itemId: string;
     imageUrl: string;
     name: string;
+    dimensionStr: string;
     price: Decimal;
     quantity: number;
     selection: SelectionIds

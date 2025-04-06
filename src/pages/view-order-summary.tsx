@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useMainContext } from './context';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
@@ -10,7 +9,6 @@ import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PI
 import { getAllLightVariantsImageUrls } from '../services/image';
 import { getFulfillmentMethodInfo } from '../services/fulfillmentMethod';
 import { getNumberEnv } from '../utils/load-env';
-import { NavArrowDown } from 'iconoir-react';
 import EditQuantity from '../components/edit-quantity';
 import { formatMoney } from '../utils/format-money';
 import DropdownWithoutLabel, { DropdownOption } from '../components/input/dropdown-without-label';
@@ -161,51 +159,29 @@ export default function ViewOrderSumary() {
                 <hr className={"border-2 border-gray-300"}/>
                 <div>
                     {cartContext.cart.map((cartItem, index) => {
-                        const lightVariantId = cartItem.selection.lightVariantId;
-
                         return (
                             <div key={cartItem.itemId} className="mb-8">
                                 <div className="my-8">
                                     {index === 0 && (<div className="text-xl mb-4">Lights</div>)}
-                                    <Disclosure
-                                        as="div"
-                                        className="flex flex-col items-start gap-3 text-start self-stretch"
-                                        defaultOpen={true}
-                                    >
-                                        <div className="w-full flex flex-row justify-between">
-                                            <div className="justify-start flex flex-row">
-                                                <DisclosureButton className="group self-stretch">
-                                                    <NavArrowDown className="transition duration-150 ease-in-out group-data-[open]:rotate-180" />
-                                                </DisclosureButton>
-                                                <p className="ml-3 text-xl">No.{index + 1}</p>
-                                            </div>
-                                            <div className="flex flex-row items-center">
-                                                <EditQuantity
-                                                    cartItem={cartItem}
-                                                    onTrashClick={() => {
-                                                        setDeletedCartItemId(cartItem.itemId);
-                                                        setConfirmCartItemDeletionModalOpen(true);
-                                                    }}
-                                                />
-                                                <p className="ml-4 w-16 text-right">${formatMoney(cartItem.price.times(cartItem.quantity))}</p>
-                                            </div>
+                                    <div className="flex flex-row justify-between items-center">
+                                    <div className="flex flex-row items-center">
+                                        <img src={cartItem.imageUrl} alt="image source" className="w-[80px] h-[80px]" />
+                                        <div className="flex flex-col">
+                                            <p className="ml-4">{cartItem.name}</p>
+                                            <p className="ml-4">{cartItem.dimensionStr}</p>
                                         </div>
-                                        <DisclosurePanel
-                                            transition
-                                            className="transition duration-150 east-out data-[closed]:-translate-y-2 data-[closed]:opacity-0 self-stretch"
-                                        >
-                                            {(() => {
-                                                const lightVariant = lightVariants.find(lightVariant => lightVariant.id === lightVariantId)!;
-                                                const light = lights.find(light => light.id === lightVariant.lightId)!;
-                                                return (
-                                                    <div className="flex flex-row items-center justify-between">
-                                                        <img src={lightVariant.imageUrl} alt={light.displayName} className="w-[150px] h-[150px]" />
-                                                        <p>{light.displayName}</p>
-                                                    </div>
-                                                )
-                                            })}
-                                        </DisclosurePanel>
-                                    </Disclosure>
+                                    </div>
+                                    <div className="flex flex-row">
+                                        <EditQuantity
+                                            cartItem={cartItem}
+                                            onTrashClick={() => {
+                                                setDeletedCartItemId(cartItem.itemId);
+                                                setConfirmCartItemDeletionModalOpen(true);
+                                            }}
+                                        />
+                                        <p className="ml-4 w-16 text-right">${cartItem.price.times(cartItem.quantity).toFixed(2)}</p>
+                                    </div>
+                                </div>
                                 </div>
                                 <hr className={`mt-8 ${(index === countLightItems() - 1 || index === cartContext.cart.length-1) ? "border-2 border-gray-300" : ""}`}/>
                             </div>

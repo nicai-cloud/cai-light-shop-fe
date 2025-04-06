@@ -7,7 +7,6 @@ export type LightType = {
     internalName: string,
     displayName: string,
     powerType: string,
-    dimensionType: string,
     fromPrice: string
 }
 
@@ -49,10 +48,7 @@ export type RawEnhancedLightVariantType = {
     colorId: number,
     color: string,
     imageUrl: string,
-    length: number | null,
-    width: number | null,
-    height: number | null,
-    weight: number | null,
+    dimensionStr: string,
     description: string,
     price: string,
     stock: number
@@ -65,10 +61,7 @@ export type EnhancedLightVariantType = {
     colorId: number,
     color: string,
     imageUrl: string,
-    length: number | null,
-    width: number | null,
-    height: number | null,
-    weight: number | null,
+    dimensionStr: string,
     description: string,
     price: Decimal,
     stock: number
@@ -79,7 +72,7 @@ export type RawLightAndVariantsType = {
     lightDisplayName: string,
     lightPowerType: string,
     lightVideoUrl: string | null,
-    lightDimensionType: string,
+    lightDimensionTypeStr: string,
     lightVariants: RawEnhancedLightVariantType[]
 }
 
@@ -88,7 +81,7 @@ export type LightAndVariantsType = {
     lightDisplayName: string,
     lightPowerType: string,
     lightVideoUrl: string | null,
-    lightDimensionType: string,
+    lightDimensionTypeStr: string,
     lightVariants: EnhancedLightVariantType[]
 }
 
@@ -111,7 +104,7 @@ export const getLightAndVariantsByInternalName = async (name: string): Promise<L
         lightDisplayName: lightAndVariants.lightDisplayName,
         lightPowerType: lightAndVariants.lightPowerType,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
-        lightDimensionType: lightAndVariants.lightDimensionType,
+        lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
         lightVariants: lightAndVariants.lightVariants.map((variant: RawLightVariantType) => ({
             ...variant,
             price: new Decimal(variant.price),
