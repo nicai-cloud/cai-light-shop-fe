@@ -4,7 +4,7 @@ import tailwindMerge from "../utils/tailwind-merge";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useCallback, useContext, useRef, useState } from "react";
 import { loadStripe, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
-import { MainContext } from "./context";
+import { CustomerDetails, MainContext } from "./context";
 import { ShoppingCart } from 'react-feather';
 import { CartContext } from "../context/CartContext";
 import { ShoppingCartModal } from "./shopping-cart-modal";
@@ -43,6 +43,7 @@ export default function Base() {
     const [addToCartDestination, setAddToCartDestination] = useState<string | undefined>(undefined);
     const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
+    const [customer, setCustomerState] = useState<CustomerDetails | null>(null);
 
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
 
@@ -199,11 +200,16 @@ export default function Base() {
         return null;
     };
 
+    const setCustomer = (data: CustomerDetails) => setCustomerState(data);
+    const getCustomer = () => customer!;
+
     const context: MainContext = {
         navigateTo,
         handleAddToCart,
         submitCompleteOrder,
-        submitCompleteOrderPickup
+        submitCompleteOrderPickup,
+        setCustomer,
+        getCustomer,
     };
 
     const stripeElementsOptions: StripeElementsOptions = {

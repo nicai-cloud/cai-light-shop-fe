@@ -2,49 +2,57 @@ import { useCallback, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import ErrorPanel from '../components/error-panel';
 import TextField from '../components/input/text-field';
-import { BasicCustomerDetailsForm } from './types';
+import AsyncAutocomplete from '../components/input/async-autocomplete';
+import { CustomerDetailsForm } from './types';
 import { useMainContext } from './context';
 import ActionButton from '../components/button/action-button';
+import { PAYMENT_PAGE } from '../utils/constants';
 
-export default function ConfirmOrderPickup() {
+export default function Customer() {
     const mainContext = useMainContext();
 
     const [globalError, setGlobalError] = useState<string | null>(null);
 
-    const form = useForm<BasicCustomerDetailsForm>({
+    const form = useForm<CustomerDetailsForm>({
         defaultValues: {
             firstName: '',
             lastName: '',
             email: '',
-            mobile: ''
+            mobile: '',
+            address: null,
         },
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-
-    const onSubmit = useCallback(async (data: BasicCustomerDetailsForm) => {
-        if (isLoading) {
-            return;
-        }
-
-        setIsLoading(true);
-
-        const submissionResult = await mainContext.submitCompleteOrderPickup({
+    const onSubmit = useCallback(async (data: CustomerDetailsForm) => {
+        mainContext.setCustomer({
             firstName: data.firstName,
             lastName: data.lastName,
             mobile: data.mobile,
-            email: data.email
-        });
+            email: data.email,
+            address: data.address!
+        })
+        mainContext.navigateTo(PAYMENT_PAGE);
+    }, [mainContext, setGlobalError]);
 
-        if (submissionResult !== null) {
-            setGlobalError(submissionResult.message);
-            setIsLoading(false);
-            window.scrollTo(0, 0);
+    // Addresses
+    const fetchAddresses = async (query: string) => {
+        if (query.length < 3) {
+            return [];
         }
-    }, [mainContext, isLoading, setIsLoading, setGlobalError]);
 
-    const onValidationError = useCallback(() => {
-    }, []);
+        const data = await fetch(
+            `${import.meta.env.VITE_LIGHT_SHOP_API}/address/auto-complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ search: query }),
+            },
+        );
+
+        const result: string[] = (await data.json()).addresses;
+        return result;
+    };
 
     return (
         <>
@@ -52,7 +60,7 @@ export default function ConfirmOrderPickup() {
                 <div className="mt-8">
                     {globalError !== null && <ErrorPanel className="mt-8" text={globalError} />}
 
-                    <form id="completeOrderForm" onSubmit={form.handleSubmit(onSubmit, onValidationError)}>
+                    <form id="customerDetailsForm" onSubmit={form.handleSubmit(onSubmit)}>
                         <FormProvider {...form}>
                             <h2 className="text-h5 font-bold text-dark-strong mt-4 text-center">Enter your details</h2>
                             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 justify-between gap-4">
@@ -120,17 +128,33 @@ export default function ConfirmOrderPickup() {
                                     }}
                                 />
                             </div>
+                            <h2 className="text-h5 font-bold text-dark-strong mt-8 text-center">What’s your delivery address?</h2>
+                            <p className="mt-2 text-p text-dark-medium text-center">We&apos;ll send your light order to this address.</p>
+                            <AsyncAutocomplete
+                                label="Address"
+                                className="mt-6"
+                                name="address"
+                                autoComplete="off"
+                                placeholder="Start typing your address..."
+                                fetchOptions={fetchAddresses}
+                                data-1p-ignore
+                                rules={{
+                                    required: {
+                                        value: true,
+                                        message: 'Please enter your address.',
+                                    },
+                                }}
+                            />
                         </FormProvider>
                     </form>
                 </div>
                 <div className="mt-20 flex items-center justify-center">
                     <ActionButton
                         type="submit"
-                        form="completeOrderForm"
+                        form="customerDetailsForm"
                         className="text-white px-8 py-2 rounded bg-pink-300"
-                        loading={isLoading}
                     >
-                        Complete order
+                        Proceed to payment
                     </ActionButton>
                 </div>
             </div>

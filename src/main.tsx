@@ -8,7 +8,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import Lights from './pages/lights.tsx'
 import Light from './pages/light.tsx'
 import ViewOrderSummary from './pages/view-order-summary.tsx'
-import ConfirmOrder from './pages/confirm-order.tsx'
+import Payment from './pages/payment.tsx'
+import Customer from './pages/customer.tsx'
 import ConfirmOrderPickup from './pages/confirm-order-pickup.tsx'
 import { CartProvider } from './context/CartContext.tsx'
 import Base from './pages/index.ts'
@@ -39,16 +40,20 @@ const router = createBrowserRouter([
             element: <ViewOrderSummary />,
           },
           {
-            path: 'confirm-order',
-            element: <ConfirmOrder />,
+            path: 'customer',
+            element: <Customer />,
           },
           {
-            path: 'confirm-order-pickup',
-            element: <ConfirmOrderPickup />,
+            path: 'payment',
+            element: <Payment />,
           },
           {
             path: 'success',
             element: <Success />,
+          },
+          {
+            path: 'confirm-order-pickup',
+            element: <ConfirmOrderPickup />,
           },
           {
             path: 'pickup-order-success',

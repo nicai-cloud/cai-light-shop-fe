@@ -2,11 +2,10 @@ import { useCallback, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import ErrorPanel from '../components/error-panel';
 import TextField from '../components/input/text-field';
-import AsyncAutocomplete from '../components/input/async-autocomplete';
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripeElementChangeEvent, StripeElementStyle } from '@stripe/stripe-js';
 import StripeFieldWrapper from '../components/stripe-field-wrapper';
-import { ConfirmOrderDetailsForm } from './types';
+import { PaymentForm } from './types';
 import { useMainContext } from './context';
 import ActionButton from '../components/button/action-button';
 
@@ -27,7 +26,7 @@ const STRIPE_ELEMENT_STYLE_PROPS: StripeElementStyle = {
     },
 };
 
-export default function ConfirmOrder() {
+export default function Payment() {
     const mainContext = useMainContext();
     const stripe = useStripe();
     const elements = useElements();
@@ -45,22 +44,17 @@ export default function ConfirmOrder() {
     const isCardCVVEmpty = useRef(true);
     const [globalError, setGlobalError] = useState<string | null>(null);
 
-    const form = useForm<ConfirmOrderDetailsForm>({
+    const form = useForm<PaymentForm>({
         defaultValues: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            mobile: '',
-
-            address: null,
-
             nameOnCard: '',
         },
     });
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = useCallback(async (data: ConfirmOrderDetailsForm) => {
+    const customer = mainContext.getCustomer();
+
+    const onSubmit = useCallback(async (data: PaymentForm) => {
         if (elements === null) {
             return;
         }
@@ -93,12 +87,11 @@ export default function ConfirmOrder() {
         }
 
         const submissionResult = await mainContext.submitCompleteOrder({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            mobile: data.mobile,
-            email: data.email,
-
-            address: data.address,
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            mobile: customer.mobile,
+            email: customer.email,
+            address: customer.address,
 
             paymentMethodId: paymentMethodResult.paymentMethod.id,
         });
@@ -109,26 +102,6 @@ export default function ConfirmOrder() {
             window.scrollTo(0, 0);
         }
     }, [mainContext, isLoading, setIsLoading, setGlobalError]);
-
-    // Addresses
-    const fetchAddresses = async (query: string) => {
-        if (query.length < 3) {
-            return [];
-        }
-
-        const data = await fetch(
-            `${import.meta.env.VITE_LIGHT_SHOP_API}/address/auto-complete`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ search: query }),
-            },
-        );
-
-        const result: string[] = (await data.json()).addresses;
-        return result;
-    };
 
     // Payments
     const validateStripeFields = useCallback(() => {
@@ -190,94 +163,6 @@ export default function ConfirmOrder() {
 
                     <form id="completeOrderForm" onSubmit={form.handleSubmit(onSubmit, onValidationError)}>
                         <FormProvider {...form}>
-
-                            {/* Customer Details */}
-                            <h2 className="text-h5 font-bold text-dark-strong mt-4 text-center">Enter your details</h2>
-                            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 justify-between gap-4">
-                                <TextField
-                                    className="flex-grow"
-                                    type="text"
-                                    label="First name"
-                                    name="firstName"
-                                    rules={{
-                                        required: {
-                                            value: true,
-                                            message: 'Please enter your first name.',
-                                        },
-                                    }}
-                                />
-                                <TextField
-                                    className="flex-grow"
-                                    type="text"
-                                    label="Last name"
-                                    name="lastName"
-                                    rules={{
-                                        required: {
-                                            value: true,
-                                            message: 'Please enter your last name.',
-                                        },
-                                    }}
-                                />
-                            </div>
-                            <div className="mt-4 flex flex-row justify-between gap-4">
-                                <TextField
-                                    className="flex-grow"
-                                    type="tel"
-                                    label="Mobile number"
-                                    placeholder="e.g. 0400 000 000"
-                                    name="mobile"
-                                    rules={{
-                                        required: {
-                                            value: true,
-                                            message: 'Please enter your mobile number.',
-                                        },
-                                        pattern: {
-                                            value: /^(\+61\s?|0)4\d{2}\s?\d{3}\s?\d{3}$/,
-                                            message: 'Please enter a valid Australian mobile number, e.g. 0400 000 000.',
-                                        },
-                                    }}
-                                />
-                            </div>
-                            <div className="mt-4 flex flex-row justify-between gap-4">
-                                <TextField
-                                    className="flex-grow"
-                                    type="email"
-                                    label="Email address"
-                                    placeholder="e.g. abc@gmail.com"
-                                    name="email"
-                                    rules={{
-                                        required: {
-                                            value: true,
-                                            message: 'Please enter your email.',
-                                        },
-                                        pattern: {
-                                            // eslint-disable-next-line no-control-regex
-                                            value: /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/,
-                                            message: 'Please enter a valid email address, e.g. abc@gmail.com',
-                                        },
-                                    }}
-                                />
-                            </div>
-
-                            {/* Address */}
-                            <h2 className="text-h5 font-bold text-dark-strong mt-8 text-center">What’s your delivery address?</h2>
-                            <p className="mt-2 text-p text-dark-medium text-center">We&apos;ll send your gift order to this address.</p>
-                            <AsyncAutocomplete
-                                label="Address"
-                                className="mt-6"
-                                name="address"
-                                autoComplete="off"
-                                placeholder="Start typing your address..."
-                                fetchOptions={fetchAddresses}
-                                data-1p-ignore
-                                rules={{
-                                    required: {
-                                        value: true,
-                                        message: 'Please enter your address.',
-                                    },
-                                }}
-                            />
-
                             {/* Payments */}
                             <h2 className="text-h5 font-bold text-dark-strong mt-8 text-center">Payment</h2>
                             <p className="mt-2 text-p text-dark-medium text-center">All transactions are secure and encrypted.</p>

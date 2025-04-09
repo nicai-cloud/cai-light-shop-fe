@@ -1,27 +1,18 @@
-export type ConfirmOrderDetailsForm = {
-    // Customer Details
+export type BasicCustomerDetailsForm = {
     firstName: string;
     lastName: string;
     mobile: string;
     email: string;
-
-    // Address
-    address: string | null;
-
-    // Payments
-    nameOnCard: string;
-    paymentMethodId: string;
-    lastFour: string;
-    expiry: {
-        month: number;
-        year: number;
-    };
 };
 
-export type ConfirmOrderPickupDetailsForm = {
-    // Customer Details
+export type CustomerDetailsForm = {
     firstName: string;
     lastName: string;
     mobile: string;
     email: string;
+    address: string | null;
+};
+
+export type PaymentForm = {
+    nameOnCard: string;
 };

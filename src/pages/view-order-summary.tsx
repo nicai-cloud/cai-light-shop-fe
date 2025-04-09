@@ -4,7 +4,7 @@ import { CartContext } from '../context/CartContext';
 import useSWR from 'swr';
 import { getLights, getLightVariants } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CONFIRM_ORDER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_FULFILLMENT_METHOD_INFO, HOME_PAGE } from '../utils/constants';
+import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CUSTOMER_PAGE, CONFIRM_ORDER_PICKUP_PAGE, GET_LIGHTS, GET_LIGHT_VARIANTS, GET_FULFILLMENT_METHOD_INFO, HOME_PAGE } from '../utils/constants';
 // import { getCoupon } from '../services/coupon';
 import { getAllLightVariantsImageUrls } from '../services/image';
 import { getFulfillmentMethodInfo } from '../services/fulfillmentMethod';
@@ -102,7 +102,7 @@ export default function ViewOrderSumary() {
         if (fulfillmentMethod.id === DELIVERY_METHOD_PICKUP) {
             mainContext.navigateTo(CONFIRM_ORDER_PICKUP_PAGE);
         } else {
-            mainContext.navigateTo(CONFIRM_ORDER_PAGE);
+            mainContext.navigateTo(CUSTOMER_PAGE);
         }
         setDeletedCartItemId(null);
     }
