@@ -289,7 +289,7 @@ export default function Base() {
                         {cartContext.cart.length > 0 && shouldShowDrawer && (
                             <div>
                                 {expanded && (
-                                    <div className="fixed bottom-16 left-0 px-8 py-2 w-full h-16 bg-pink-200 shadow-2xl z-50">
+                                    <div className="fixed flex flex-col bottom-12 left-0 px-8 py-2 w-full h-20 justify-center bg-gray-200 shadow-2xl z-50">
                                         <div className="flex flex-row justify-between">
                                             <p>Subtotal:</p>
                                             <p>${formatMoney(calculateTotalCost())}</p>
@@ -315,7 +315,7 @@ export default function Base() {
                                     </div>
                                 )}
                                 <div
-                                    className="fixed bottom-0 left-0 px-8 w-full h-16 bg-pink-300 text-white flex items-center justify-between z-40"
+                                    className="fixed bottom-0 left-0 px-8 w-full h-12 bg-pink-300 text-white flex items-center justify-between z-40"
                                     onClick={() => setExpanded(!expanded)}
                                 >
                                     <div className="flex flex-row justify-between">
