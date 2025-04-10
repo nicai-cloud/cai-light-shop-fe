@@ -18,6 +18,8 @@ import Spinner from "../components/loading/spinner";
 import Decimal from 'decimal.js';
 import { formatMoney } from "../utils/format-money";
 import { DELIVERY, PICKUP } from "./checkout";
+import Up from "../components/icons/16/Up";
+import Down from "../components/icons/16/Down";
 
 type LightVariantType = {
     quantity: number,
@@ -287,24 +289,39 @@ export default function Base() {
                         {cartContext.cart.length > 0 && shouldShowDrawer && (
                             <div>
                                 {expanded && (
-                                    <div className="fixed bottom-16 left-0 pl-4 py-2 w-full h-16 bg-red-500 shadow-2xl z-50">
-                                        <p>Subtotal: ${formatMoney(calculateTotalCost())}</p>
+                                    <div className="fixed bottom-16 left-0 px-8 py-2 w-full h-16 bg-pink-200 shadow-2xl z-50">
+                                        <div className="flex flex-row justify-between">
+                                            <p>Subtotal:</p>
+                                            <p>${formatMoney(calculateTotalCost())}</p>
+                                        </div>
                                         {pickupOrDelivery === null && (
-                                            <p>Pick Up/Delivery: Fill in your details for the price</p>
+                                            <div className="flex flex-row justify-between">
+                                                <p>Pick Up/Delivery:</p>
+                                                <p>Fill in your details for the price</p>
+                                            </div>
                                         )}
                                         {pickupOrDelivery === PICKUP && (
-                                            <p>Pick Up: $0.00</p>
+                                            <div className="flex flex-row justify-between">
+                                                <p>Pick Up:</p>
+                                                <p>$0.00</p>
+                                            </div>
                                         )}
                                         {pickupOrDelivery === DELIVERY && (
-                                            <p>Delivery: ${deliveryCost === null ? "0.00" : formatMoney(getDeliveryCost())}</p>
+                                            <div className="flex flex-row justify-between">
+                                                <p>Delivery:</p>
+                                                <p>${deliveryCost === null ? "0.00" : formatMoney(getDeliveryCost())}</p>
+                                            </div>
                                         )}
                                     </div>
                                 )}
                                 <div
-                                    className="fixed bottom-0 left-0 pl-4 w-full h-16 bg-blue-500 text-white flex items-center z-40"
+                                    className="fixed bottom-0 left-0 px-8 w-full h-16 bg-pink-300 text-white flex items-center justify-between z-40"
                                     onClick={() => setExpanded(!expanded)}
                                 >
-                                    <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
+                                    <div className="flex flex-row justify-between">
+                                        <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
+                                    </div>
+                                    {expanded ? <Up className="w-4 h-4" /> : <Down className="w-4 h-4" />}
                                 </div>
                             </div>
                         )}
