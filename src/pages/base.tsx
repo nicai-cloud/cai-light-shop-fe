@@ -1,7 +1,7 @@
 import { Elements } from "@stripe/react-stripe-js";
 import Page from "../components/page";
 import tailwindMerge from "../utils/tailwind-merge";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useContext, useRef, useState } from "react";
 import { loadStripe, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { CustomerDetails, MainContext } from "./context";
@@ -13,8 +13,11 @@ import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
 // import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
-import { HOME_PAGE, SUCCESS_PAGE, PICKUP_ORDER_SUCCESS_PAGE } from "../utils/constants";
+import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
+import Decimal from 'decimal.js';
+import { formatMoney } from "../utils/format-money";
+import { DELIVERY, PICKUP } from "./checkout";
 
 type LightVariantType = {
     quantity: number,
@@ -44,8 +47,15 @@ export default function Base() {
     const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [customer, setCustomerState] = useState<CustomerDetails | null>(null);
+    const [deliveryCost, setDeliveryCostState] = useState<Decimal | null>(null);
+    const [pickupOrDelivery, setPickupOrDeliveryState] = useState<number | null>(null);
 
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
+    const [expanded, setExpanded] = useState(false);
+
+    const location = useLocation();
+    const showDrawerRoutes = ["/checkout", "/payment"];
+    const shouldShowDrawer = showDrawerRoutes.includes(location.pathname);
 
     const getStripePromise = () => {
         if (stripePromise.current === null) {
@@ -57,6 +67,10 @@ export default function Base() {
 
         return stripePromise.current;
     };
+
+    const calculateTotalCost = () => {
+        return cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
+    }
 
     const navigateTo = useCallback((path: string) => {
         navigate(path);
@@ -112,7 +126,7 @@ export default function Base() {
                         address: finalPageDetails?.address,
                     },
                     orderItems: orderItems,
-                    fulfillmentMethod: cartContext.fulfillmentMethod.id,
+                    fulfillmentMethod: context.getPickupOrDelivery(),
                     couponCode: cartContext.coupon?.couponCode,
                     paymentMethodId: finalPageDetails?.paymentMethodId,
                 }),
@@ -149,67 +163,25 @@ export default function Base() {
         return null;
     };
 
-    const submitCompleteOrderPickup = async (finalPageDetails: any) => {
-        const orderItems: OrderItemType[] = [];
-        cartContext.cart.map((cartItem) => {
-            if (cartItem.selection.lightVariantId) {
-                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
-            }
-        })
-
-        let response;
-        try {
-            response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order-pickup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    customerInfo: {
-                        firstName: finalPageDetails?.firstName,
-                        lastName: finalPageDetails?.lastName,
-                        mobile: finalPageDetails?.mobile,
-                        email: finalPageDetails?.email
-                    },
-                    orderItems: orderItems
-                }),
-            });
-        }
-        catch (e) {
-            return {
-                message: 'There was an unexpected error completing your order. Please try again.',
-            };
-        }
-
-        if (response.status === 400 && (await response.json()).description === "Out of stock") {
-            return {
-                message: 'Sorry, we are running out of stock for the items you have ordered.',
-            }
-        }
-
-        if (response.status >= 400) {
-            return {
-                message: 'There was an unexpected error completing your order. Please try again.',
-            };
-        }
-
-        cartContext.clearCart();
-        setDeletedCartItemId(null);
-        navigateTo(`${PICKUP_ORDER_SUCCESS_PAGE}#${(await response.json()).order_number}`);
-
-        return null;
-    };
-
     const setCustomer = (data: CustomerDetails) => setCustomerState(data);
     const getCustomer = () => customer!;
+
+    const setDeliveryCost = (data: Decimal | null) => setDeliveryCostState(data);
+    const getDeliveryCost = () => deliveryCost!;
+
+    const setPickupOrDelivery = (data: number) => setPickupOrDeliveryState(data);
+    const getPickupOrDelivery = () => pickupOrDelivery!;
 
     const context: MainContext = {
         navigateTo,
         handleAddToCart,
         submitCompleteOrder,
-        submitCompleteOrderPickup,
         setCustomer,
         getCustomer,
+        setDeliveryCost,
+        getDeliveryCost,
+        setPickupOrDelivery,
+        getPickupOrDelivery,
     };
 
     const stripeElementsOptions: StripeElementsOptions = {
@@ -298,12 +270,12 @@ export default function Base() {
             <Page.Footer
                 className={tailwindMerge(
                     'overflow-hidden bg-gray-600 flex justify-center items-start',
-                    'transition-[padding] px-4 py-2 sm:py-8 duration-150 ease-in-out has-[[data-outlet]:empty]:py-0 has-[[data-outlet]:empty]:shadow-none',
+                    'transition-[padding] duration-150 ease-in-out has-[[data-outlet]:empty]:py-0 has-[[data-outlet]:empty]:shadow-none',
                 )}
             >
-                <div className="w-full flex px-1">
-                    <div className="flex flex-col">
-                        <div className="flex flex-row justify-between items-center mb-4">
+                <div className="w-full flex">
+                    <div className="w-full flex flex-col">
+                        <div className="px-4 pb-20 flex flex-row items-center mb-4">
                             <FontAwesomeIcon className="text-white mr-2" icon={faEnvelope} size="2x"/>
                             <a className="text-white" href="mailto:support@lightoz.com.au">support@lightoz.com.au</a>
                         </div>
@@ -312,6 +284,30 @@ export default function Base() {
                             <FontAwesomeIcon className="cursor-pointer text-white mr-8" icon={faFacebook} size="2x" onClick={handleFacebookIconClick} />
                             <FontAwesomeIcon className="cursor-pointer text-white" icon={faTiktok} size="2x" onClick={handleTiktokIconClick} />
                         </div> */}
+                        {cartContext.cart.length > 0 && shouldShowDrawer && (
+                            <div>
+                                {expanded && (
+                                    <div className="fixed bottom-16 left-0 pl-4 py-2 w-full h-16 bg-red-500 shadow-2xl z-50">
+                                        <p>Subtotal: ${formatMoney(calculateTotalCost())}</p>
+                                        {pickupOrDelivery === null && (
+                                            <p>Pick Up/Delivery: Fill in your details for the price</p>
+                                        )}
+                                        {pickupOrDelivery === PICKUP && (
+                                            <p>Pick Up: $0.00</p>
+                                        )}
+                                        {pickupOrDelivery === DELIVERY && (
+                                            <p>Delivery: ${deliveryCost === null ? "0.00" : formatMoney(getDeliveryCost())}</p>
+                                        )}
+                                    </div>
+                                )}
+                                <div
+                                    className="fixed bottom-0 left-0 pl-4 w-full h-16 bg-blue-500 text-white flex items-center z-40"
+                                    onClick={() => setExpanded(!expanded)}
+                                >
+                                    <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Page.Footer>

@@ -5,7 +5,7 @@ import { CartContext, CartItem } from "../context/CartContext";
 import Modal from "../components/modal";
 import EditQuantity from "../components/edit-quantity";
 import { formatMoney } from "../utils/format-money";
-import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, VIEW_ORDER_SUMMARY_PAGE } from "../utils/constants";
+import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CHECKOUT_PAGE } from "../utils/constants";
 import { getNumberEnv } from '../utils/load-env';
 import { getAllLightVariantsImageUrls } from "../services/image";
 import { preloadImage } from '../services/preload_image';
@@ -32,9 +32,9 @@ export const ShoppingCartModal = ({
         return cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
     }
 
-    const handleViewOrderSummary = () => {
+    const handleCheckout = () => {
         onClose();
-        navigate(VIEW_ORDER_SUMMARY_PAGE);
+        navigate(CHECKOUT_PAGE);
     }
 
     const {isLoading: isImagesLoading, data: images} = useSWR(GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, getAllLightVariantsImageUrls, {
@@ -109,10 +109,10 @@ export const ShoppingCartModal = ({
                 {cart.length > 0 && (
                     <div className="flex items-center justify-center">
                         <button
-                            onClick={handleViewOrderSummary}
+                            onClick={handleCheckout}
                             className={"mt-2 bg-pink-300 text-white px-8 py-2 rounded"}
                         >
-                            View Order Summary
+                            CHECKOUT
                         </button>
                     </div>
                 )}

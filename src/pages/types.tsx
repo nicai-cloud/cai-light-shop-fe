@@ -1,15 +1,9 @@
-export type BasicCustomerDetailsForm = {
-    firstName: string;
-    lastName: string;
-    mobile: string;
-    email: string;
-};
-
 export type CustomerDetailsForm = {
     firstName: string;
     lastName: string;
     mobile: string;
     email: string;
+    pickupOrDelivery: number | null;
     address: string | null;
 };
 

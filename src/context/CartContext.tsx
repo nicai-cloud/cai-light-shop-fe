@@ -26,33 +26,27 @@ export interface Coupon {
     discountPercentage: number;
 }
 
-const DEFAULT_FULFILLMENT_METHOD = {id: 0, name: "Pickup"};
-
 const DEFAULT_COUPON = null;
 
 interface CartContextProps {
     cart: CartItem[];
-    fulfillmentMethod: FulfillmentMethod;
     coupon: Coupon | null;
     addItem: (item: CartItem) => void;
     removeItem: (itemId: string) => void;
     clearCart: () => void;
     increaseItemQuantity: (itemId: string) => void;
     decreaseItemQuantity: (itemId: string) => void;
-    setFulfillmentMethod: (method: FulfillmentMethod) => void;
     setCoupon: (coupon: Coupon) => void;
 }
 
 export const CartContext = createContext<CartContextProps>({
     cart: [],
-    fulfillmentMethod: DEFAULT_FULFILLMENT_METHOD,
     coupon: DEFAULT_COUPON,
     addItem: () => {},
     removeItem: () => {},
     clearCart: () => {},
     increaseItemQuantity: () => {},
     decreaseItemQuantity: () => {},
-    setFulfillmentMethod: () => {},
     setCoupon: () => {},
 });
 
@@ -70,19 +64,14 @@ function reviver(_: string, value: any): any {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
-    const [fulfillmentMethod, setFulfillmentMethod] = useState<FulfillmentMethod>(DEFAULT_FULFILLMENT_METHOD);
     const [coupon, setCoupon] = useState<Coupon | null>(DEFAULT_COUPON);
     const [isLocalStorageLoaded, setIsLocalStorageLoaded] = useState(false);
 
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
-        const savedFulfillmentMethod = localStorage.getItem('fulfillmentMethod');
         const savedCoupon = localStorage.getItem('coupon');
         if (savedCart) {
             setCart(JSON.parse(savedCart, reviver));
-        }
-        if (savedFulfillmentMethod) {
-            setFulfillmentMethod(JSON.parse(savedFulfillmentMethod));
         }
         if (savedCoupon) {
             setCoupon(JSON.parse(savedCoupon));
@@ -93,10 +82,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         if (isLocalStorageLoaded) {
             localStorage.setItem('cart', JSON.stringify(cart));
-            localStorage.setItem('fulfillmentMethod', JSON.stringify(fulfillmentMethod));
             localStorage.setItem('coupon', JSON.stringify(coupon));
         }
-    }, [cart, fulfillmentMethod, coupon]);
+    }, [cart, coupon]);
 
     const addItem = (newItem: CartItem) => {
         setCart((prevCart) => {
@@ -116,7 +104,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCart = () => {
       setCart([]);
-      setFulfillmentMethod(DEFAULT_FULFILLMENT_METHOD);
       setCoupon(DEFAULT_COUPON);
   }
 
@@ -146,7 +133,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
       <CartContext.Provider value={
-          { cart, fulfillmentMethod, coupon, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setFulfillmentMethod, setCoupon }
+          { cart, coupon, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setCoupon }
       }>
           {children}
       </CartContext.Provider>
