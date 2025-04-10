@@ -118,7 +118,6 @@ export default function Checkout() {
                         return (
                             <div key={cartItem.itemId} className="mb-8">
                                 <div className="my-8">
-                                    {index === 0 && (<div className="text-xl mb-4">Lights</div>)}
                                     <div className="flex flex-row justify-between items-center">
                                     <div className="flex flex-row items-center">
                                         <img src={cartItem.imageUrl} alt="image source" className="w-[80px] h-[80px]" />
