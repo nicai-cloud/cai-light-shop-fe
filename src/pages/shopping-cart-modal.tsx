@@ -81,7 +81,7 @@ export const ShoppingCartModal = ({
                                     <div className="flex flex-row items-center">
                                         <img src={item.imageUrl} alt="image source" className="w-[80px] h-[80px]" />
                                         <div className="flex flex-col">
-                                            <p className="ml-4">{item.name}</p>
+                                            <p className="ml-4 max-w-[100px]">{item.name}</p>
                                             <p className="ml-4">{item.dimensionStr}</p>
                                         </div>
                                     </div>
