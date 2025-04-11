@@ -272,7 +272,7 @@ export default function Light() {
                     onClick={handleAddToCart}
                     className={"mt-2 bg-pink-300 text-white px-8 py-2 rounded"}
                 >
-                    Add to cart
+                    ADD TO CART
                 </button>
             </div>
         </div>

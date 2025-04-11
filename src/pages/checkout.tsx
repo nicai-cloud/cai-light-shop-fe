@@ -214,7 +214,7 @@ export default function Checkout() {
                                     }}
                                 />
                             </div>
-                            <h2 className="text-h5 font-bold text-dark-strong my-4 text-center">Pick Up & Delivery Options</h2>
+                            <h2 className="text-h5 font-bold text-dark-strong mt-8 mb-4 text-center">Pick Up & Delivery Options</h2>
                             <Controller
                                 name="pickupOrDelivery"
                                 control={form.control}
@@ -254,7 +254,6 @@ export default function Checkout() {
                             {pickupOrDelivery === DELIVERY && (
                                 <div>
                                     <h2 className="text-h5 font-bold text-dark-strong mt-8 text-center">What’s your delivery address?</h2>
-                                    <p className="mt-2 text-p text-dark-medium text-center">We&apos;ll send your light order to this address.</p>
                                     <AsyncAutocomplete
                                         label="Address"
                                         className="mt-6"
@@ -281,7 +280,7 @@ export default function Checkout() {
                         form="customerDetailsForm"
                         className="text-white px-8 py-2 rounded bg-pink-300"
                     >
-                        Proceed to payment
+                        PROCEED TO PAYMENT
                     </ActionButton>
                 </div>
             </div>

@@ -28,13 +28,13 @@ export const ConfirmCartItemDeletionModal = ({
                                 onClose();
                             }}
                         >
-                            Yes
+                            YES
                         </button>
                         <button
                             className="mt-8 bg-pink-300 text-white items-center px-8 py-2 rounded"
                             onClick={handleNo}
                         >
-                            No
+                            NO
                         </button>
                     </div>
                 </div>

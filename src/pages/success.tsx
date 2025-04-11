@@ -36,7 +36,7 @@ export default function Success() {
                     className="text-white px-8 py-2 rounded bg-pink-300"
                     onClick={handleContinueShopping}
                 >
-                    Continue Shopping
+                    CONTINUE SHOPPING
                 </button>
             </div>
         </div>
