@@ -21,12 +21,10 @@ import { DELIVERY, PICKUP } from "./checkout";
 import Up from "../components/icons/16/Up";
 import Down from "../components/icons/16/Down";
 
-type LightVariantType = {
+type OrderItemType = {
     quantity: number,
     lightVariantId: number
 }
-
-type OrderItemType = LightVariantType
 
 type PublishableKeyResponse = {
     publishableKey: string;
