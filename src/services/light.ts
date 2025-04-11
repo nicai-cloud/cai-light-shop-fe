@@ -30,7 +30,7 @@ export type EnhancedLightVariantType = {
     color: string,
     imageUrl: string,
     dimensionStr: string,
-    description: string,
+    descriptions: string[],
     price: Decimal,
     stock: number
 }
