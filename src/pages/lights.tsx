@@ -6,7 +6,7 @@ import { getLights } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_ALL_LIGHTS_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
-import { preloadImage } from '../services/preload_image';
+import { preloadImage } from '../services/preload-image';
 
 export default function Lights() {
     const mainContext = useMainContext();

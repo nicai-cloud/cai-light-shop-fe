@@ -7,10 +7,13 @@ import { CustomerDetailsForm } from './types';
 import { useMainContext } from './context';
 import { CartContext } from '../context/CartContext';
 import ActionButton from '../components/button/action-button';
-import { HOME_PAGE, PAYMENT_PAGE } from '../utils/constants';
-import Decimal from 'decimal.js';
+import { HOME_PAGE, PAYMENT_PAGE, GET_FULFILLMENT_METHOD_INFO } from '../utils/constants';
 import { ConfirmCartItemDeletionModal } from "./confirm-cart-item-deletion-modal";
 import EditQuantity from '../components/edit-quantity';
+import useSWR from 'swr';
+import { getNumberEnv } from '../utils/load-env';
+import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
+import Spinner from '../components/loading/spinner';
 
 export const PICKUP = 0;
 export const DELIVERY = 1;
@@ -23,6 +26,11 @@ export default function Checkout() {
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
     const [pickupOrDelivery, setPickupOrDelivery] = useState<number | null>(null);
     const [globalError, setGlobalError] = useState<string | null>(null);
+
+    const {isLoading: isfulfillmentMethodInfoLoading, data: fulfillmentMethodInfo} = useSWR(GET_FULFILLMENT_METHOD_INFO, getFulfillmentMethodInfo, {
+        // revalidateIfStale: false, // Prevent re-fetching when cache is stale
+        dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
+    });
 
     const form = useForm<CustomerDetailsForm>({
         defaultValues: {
@@ -38,14 +46,11 @@ export default function Checkout() {
     const address = form.watch('address')
 
     useEffect(() => {
-        if (pickupOrDelivery === PICKUP) {
-            mainContext.setDeliveryCost(Decimal(0))
+        if (pickupOrDelivery === PICKUP || address) {
+            const deliveryCost = fulfillmentMethodInfo!.fulfillmentMethods.filter((method) => method.id == pickupOrDelivery)[0].fee;
+            mainContext.setDeliveryCost(deliveryCost);
         } else {
-            if (address) {
-                mainContext.setDeliveryCost(Decimal(14.95))
-            } else {
-                mainContext.setDeliveryCost(null)
-            }
+            mainContext.setDeliveryCost(null);
         }
     }, [pickupOrDelivery, address]);
 
@@ -95,6 +100,14 @@ export default function Checkout() {
     const countLightItems = useCallback(() => {
         return cartContext.cart.filter(cartItem => cartItem.selection.lightVariantId !== undefined).length;
     }, [cartContext])
+
+    if (isfulfillmentMethodInfoLoading || !fulfillmentMethodInfo) {
+        return (
+            <div className="w-full flex items-center justify-center">
+                <Spinner size="h-20 w-20" />
+            </div>
+        )
+    }
 
     return (
         <>

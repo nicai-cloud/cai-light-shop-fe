@@ -8,7 +8,7 @@ import { formatMoney } from "../utils/format-money";
 import { GET_ALL_LIGHT_VARIANTS_IMAGE_URLS, CHECKOUT_PAGE } from "../utils/constants";
 import { getNumberEnv } from '../utils/load-env';
 import { getAllLightVariantsImageUrls } from "../services/image";
-import { preloadImage } from '../services/preload_image';
+import { preloadImage } from '../services/preload-image';
 import Spinner from '../components/loading/spinner';
 import Decimal from 'decimal.js';
 

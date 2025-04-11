@@ -9,7 +9,7 @@ import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
 import { getLightImageUrlsByInternalName } from '../services/image';
-import { preloadImage } from '../services/preload_image';
+import { preloadImage } from '../services/preload-image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
 
