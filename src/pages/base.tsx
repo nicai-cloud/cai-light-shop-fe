@@ -278,7 +278,7 @@ export default function Base() {
             >
                 <div className="w-full flex">
                     <div className="w-full flex flex-col">
-                        <div className="px-4 pb-10 flex flex-row items-center mb-4">
+                        <div className="px-4 pt-4 pb-16 flex flex-row items-center">
                             <FontAwesomeIcon className="text-white mr-2" icon={faEnvelope} size="2x"/>
                             <a className="text-white" href="mailto:support@lightoz.com.au">support@lightoz.com.au</a>
                         </div>
@@ -322,7 +322,7 @@ export default function Base() {
                                     <div className="flex flex-row justify-between">
                                         <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
                                     </div>
-                                    {expandOrderTotal ? <Up className="w-4 h-4" /> : <Down className="w-4 h-4" />}
+                                    {expandOrderTotal ? <Down className="w-4 h-4" /> : <Up className="w-4 h-4" />}
                                 </div>
                             </div>
                         )}
