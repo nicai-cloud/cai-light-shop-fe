@@ -51,9 +51,9 @@ export default function Base() {
     const [customer, setCustomerState] = useState<CustomerDetails | null>(null);
     const [deliveryCost, setDeliveryCostState] = useState<Decimal | null>(null);
     const [pickupOrDelivery, setPickupOrDeliveryState] = useState<number | null>(null);
+    const [expandOrderTotal, setExpandOrderTotal] = useState(false);
 
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
-    const [expanded, setExpanded] = useState(false);
 
     const location = useLocation();
     const showDrawerRoutes = ["/checkout", "/payment"];
@@ -160,6 +160,7 @@ export default function Base() {
 
         cartContext.clearCart();
         setDeletedCartItemId(null);
+        setExpandOrderTotal(false);
         navigateTo(`${SUCCESS_PAGE}#${(await response.json()).order_number}`);
 
         return null;
@@ -277,7 +278,7 @@ export default function Base() {
             >
                 <div className="w-full flex">
                     <div className="w-full flex flex-col">
-                        <div className="px-4 pb-20 flex flex-row items-center mb-4">
+                        <div className="px-4 pb-10 flex flex-row items-center mb-4">
                             <FontAwesomeIcon className="text-white mr-2" icon={faEnvelope} size="2x"/>
                             <a className="text-white" href="mailto:support@lightoz.com.au">support@lightoz.com.au</a>
                         </div>
@@ -288,7 +289,7 @@ export default function Base() {
                         </div> */}
                         {cartContext.cart.length > 0 && shouldShowDrawer && (
                             <div>
-                                {expanded && (
+                                {expandOrderTotal && (
                                     <div className="fixed flex flex-col bottom-12 left-0 px-8 py-2 w-full h-20 justify-center bg-gray-200 shadow-2xl z-50">
                                         <div className="flex flex-row justify-between">
                                             <p>Subtotal:</p>
@@ -316,12 +317,12 @@ export default function Base() {
                                 )}
                                 <div
                                     className="fixed bottom-0 left-0 px-8 w-full h-12 bg-pink-300 text-white flex items-center justify-between z-40"
-                                    onClick={() => setExpanded(!expanded)}
+                                    onClick={() => setExpandOrderTotal(!expandOrderTotal)}
                                 >
                                     <div className="flex flex-row justify-between">
                                         <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
                                     </div>
-                                    {expanded ? <Up className="w-4 h-4" /> : <Down className="w-4 h-4" />}
+                                    {expandOrderTotal ? <Up className="w-4 h-4" /> : <Down className="w-4 h-4" />}
                                 </div>
                             </div>
                         )}
