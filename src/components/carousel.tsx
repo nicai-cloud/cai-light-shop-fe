@@ -43,7 +43,7 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, videoUrl, onInd
     return (
         <div className="flex flex-col">
             <div className="relative w-full max-w-xl mx-auto">
-                {/* Image */}
+                {/* Images and video */}
                 <div className="overflow-hidden rounded-lg shadow-md">
                     <div
                         {...swipeHandlers}
@@ -70,46 +70,52 @@ const Carousel: React.FC<CarouselProps> = ({ images, imageIndex, videoUrl, onInd
                         )}
                     </div>
                 </div>
-                {/* Buttons */}
-                <button
-                    onClick={handlePrevious}
-                    className="absolute top-1/2 left-2 transform -translate-y-1/2 opacity-50 bg-gray-500 text-white px-2 py-2 rounded-full shadow hover:bg-gray-800"
-                >
-                    <NavArrowLeft />
-                </button>
-                <button
-                    onClick={handleNext}
-                    className="absolute top-1/2 right-2 transform -translate-y-1/2 opacity-50 bg-gray-500 text-white px-2 py-2 rounded-full shadow hover:bg-gray-800"
-                >
-                    <NavArrowRight />
-                </button>
+                {/* Left and right buttons */}
+                {(images.length > 1 || videoUrl !== null) && (
+                    <div>
+                        <button
+                            onClick={handlePrevious}
+                            className="absolute top-1/2 left-2 transform -translate-y-1/2 opacity-50 bg-gray-500 text-white px-2 py-2 rounded-full shadow hover:bg-gray-800"
+                        >
+                            <NavArrowLeft />
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            className="absolute top-1/2 right-2 transform -translate-y-1/2 opacity-50 bg-gray-500 text-white px-2 py-2 rounded-full shadow hover:bg-gray-800"
+                        >
+                            <NavArrowRight />
+                        </button>
+                    </div>
+                )}
             </div>
             <div>
                 {/* Indicators */}
-                <div className="flex justify-center mt-4 space-x-2">
-                    {images.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => onIndexChange(index)}
-                            className={`w-3 h-3 rounded-full ${
-                            index === imageIndex
-                                ? "bg-gray-700"
-                                : "bg-gray-300 hover:bg-gray-500"
-                            }`}
-                        />
-                    ))}
-                    {videoUrl !== null && (
-                        <button
-                            key={images.length}
-                            onClick={() => onIndexChange(images.length)}
-                            className={`w-3 h-3 rounded-full ${
-                            images.length === imageIndex
-                                ? "bg-gray-700"
-                                : "bg-gray-300 hover:bg-gray-500"
-                            }`}
-                        />
-                    )}
-                </div>
+                {(images.length > 1 || videoUrl !== null) && (
+                    <div className="flex justify-center mt-4 space-x-2">
+                        {images.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => onIndexChange(index)}
+                                className={`w-3 h-3 rounded-full ${
+                                index === imageIndex
+                                    ? "bg-gray-700"
+                                    : "bg-gray-300 hover:bg-gray-500"
+                                }`}
+                            />
+                        ))}
+                        {videoUrl !== null && (
+                            <button
+                                key={images.length}
+                                onClick={() => onIndexChange(images.length)}
+                                className={`w-3 h-3 rounded-full ${
+                                images.length === imageIndex
+                                    ? "bg-gray-700"
+                                    : "bg-gray-300 hover:bg-gray-500"
+                                }`}
+                            />
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
