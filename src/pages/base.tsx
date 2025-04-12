@@ -13,7 +13,7 @@ import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
 // import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
-import { HOME_PAGE, SUCCESS_PAGE } from "../utils/constants";
+import { HOME_PAGE, CHECKOUT_PAGE, PAYMENT_PAGE, SUCCESS_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 import Decimal from 'decimal.js';
 import { formatMoney } from "../utils/format-money";
@@ -54,7 +54,7 @@ export default function Base() {
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
 
     const location = useLocation();
-    const showDrawerRoutes = ["/checkout", "/payment"];
+    const showDrawerRoutes = [CHECKOUT_PAGE, PAYMENT_PAGE];
     const shouldShowDrawer = showDrawerRoutes.includes(location.pathname);
 
     const getStripePromise = () => {
