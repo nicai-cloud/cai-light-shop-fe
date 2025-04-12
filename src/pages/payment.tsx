@@ -172,7 +172,7 @@ export default function Payment() {
                                     
                                     onChange={handleCardNumberChange}
                                     className="peer [&_iframe]:!outline-none border-none opacity-0 [&.StripeElement--focus]:opacity-100 [&:not(.StripeElement--empty)]:opacity-100"
-                                    options={{ style: STRIPE_ELEMENT_STYLE_PROPS, placeholder: "4000 0003 6000 0006" }}
+                                    options={{ style: STRIPE_ELEMENT_STYLE_PROPS }}
                                 />
                             </StripeFieldWrapper>
                             { cardNumberError
@@ -188,7 +188,7 @@ export default function Payment() {
                                             id="card-expiry"
                                             onChange={handleCardExpiryChange}
                                             className="peer [&_iframe]:!outline-none border-none opacity-0 [&.StripeElement--focus]:opacity-100 [&:not(.StripeElement--empty)]:opacity-100"
-                                            options={{ style: STRIPE_ELEMENT_STYLE_PROPS, placeholder: "12/34" }}
+                                            options={{ style: STRIPE_ELEMENT_STYLE_PROPS }}
                                         />
                                     </StripeFieldWrapper>
                                     { cardExpiryError
@@ -204,7 +204,7 @@ export default function Payment() {
                                             id="card-cvv"
                                             onChange={handleCardCVVChange}
                                             className="peer [&_iframe]:!outline-none border-none opacity-0 [&.StripeElement--focus]:opacity-100 [&:not(.StripeElement--empty)]:opacity-100"
-                                            options={{ style: STRIPE_ELEMENT_STYLE_PROPS, placeholder: "567" }}
+                                            options={{ style: STRIPE_ELEMENT_STYLE_PROPS }}
                                         />
                                     </StripeFieldWrapper>
                                     { cardCVVError
@@ -217,7 +217,6 @@ export default function Payment() {
                             </div>
                             <TextField
                                 label="Name on card"
-                                placeholder="Cai Ni"
                                 name="nameOnCard"
                                 className="mt-4"
                                 rules={{
