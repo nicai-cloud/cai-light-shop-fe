@@ -4,9 +4,10 @@ import useSWR from 'swr';
 import { getAllLightsImageUrls } from '../services/image';
 import { getLights } from '../services/light';
 import Spinner from '../components/loading/spinner';
-import { GET_ALL_LIGHTS_IMAGE_URLS, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
+import { GET_ALL_LIGHTS_IMAGE_URLS, GET_FULFILLMENT_METHOD_INFO, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
 import { preloadImage } from '../services/preload-image';
+import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
 
 export default function Lights() {
     const mainContext = useMainContext();
@@ -21,6 +22,11 @@ export default function Lights() {
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
+    const {isLoading: isfulfillmentMethodInfoLoading, data: fulfillmentMethodInfo} = useSWR(GET_FULFILLMENT_METHOD_INFO, getFulfillmentMethodInfo, {
+        // revalidateIfStale: false, // Prevent re-fetching when cache is stale
+        dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
+    });
+
     useEffect(() => {
         if (allLightsImages) {
             allLightsImages.forEach(preloadImage);
@@ -28,7 +34,8 @@ export default function Lights() {
     }, [allLightsImages]);
 
     if (isAllLightsImagesLoading || !allLightsImages ||
-        isLoading || !lights
+        isLoading || !lights ||
+        isfulfillmentMethodInfoLoading || !fulfillmentMethodInfo
     ) {
         return (
             <div className="w-full flex items-center justify-center">
@@ -43,6 +50,9 @@ export default function Lights() {
 
     return (
         <div className="w-full">
+            <div className="w-full bg-gray-600 text-white text-lg flex items-center justify-center mb-4">
+                ${fulfillmentMethodInfo.fulfillmentMethods[1].fee.toFixed(2)} Flat Rate Shipping
+            </div>
             <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
                 <p className="text-white text-center">
                     POWER LIGHTS
