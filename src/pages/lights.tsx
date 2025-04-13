@@ -50,7 +50,7 @@ export default function Lights() {
 
     return (
         <div className="w-full">
-            <div className="w-full bg-gray-600 text-white text-lg flex items-center justify-center mb-4">
+            <div className="w-full bg-gray-600 text-white text-lg flex items-center justify-center">
                 ${fulfillmentMethodInfo.fulfillmentMethods[1].fee.toFixed(2)} Flat Rate Shipping
             </div>
             <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
