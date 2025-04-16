@@ -60,6 +60,9 @@ export default function Checkout() {
             if (customer.address) {
                 form.reset(customer);
             } else {
+                // This is to address the very specific issue where if pickup is selected on the checkout page,
+                // and we proceed to the payment page, then we navigate back to the checkout page, this time if we
+                // choose delivery, then when an address is entered and selected, it will immediately be reset to null
                 form.reset({
                     firstName: customer.firstName,
                     lastName: customer.lastName,
