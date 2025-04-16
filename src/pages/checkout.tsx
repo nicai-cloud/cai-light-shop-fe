@@ -24,7 +24,6 @@ export default function Checkout() {
 
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
-    const [pickupOrDelivery, setPickupOrDelivery] = useState<number | null>(null);
     const [globalError, setGlobalError] = useState<string | null>(null);
 
     const {isLoading: isfulfillmentMethodInfoLoading, data: fulfillmentMethodInfo} = useSWR(GET_FULFILLMENT_METHOD_INFO, getFulfillmentMethodInfo, {
@@ -44,15 +43,36 @@ export default function Checkout() {
     });
 
     const address = form.watch('address')
+    const pickupOrDelivery = form.watch('pickupOrDelivery');
 
     useEffect(() => {
-        if (pickupOrDelivery === PICKUP || address) {
+        if (pickupOrDelivery === PICKUP || (pickupOrDelivery === DELIVERY && address !== null)) {
             const deliveryCost = fulfillmentMethodInfo!.fulfillmentMethods.filter((method) => method.id == pickupOrDelivery)[0].fee;
             mainContext.setDeliveryCost(deliveryCost);
         } else {
             mainContext.setDeliveryCost(null);
         }
-    }, [pickupOrDelivery, address]);
+    }, [address, pickupOrDelivery]);
+
+    useEffect(() => {
+        const customer = mainContext.getCustomer();
+        if (customer) {
+            if (customer.address) {
+                form.reset(customer);
+            } else {
+                form.reset({
+                    firstName: customer.firstName,
+                    lastName: customer.lastName,
+                    email: customer.email,
+                    mobile: customer.mobile,
+                })
+            }
+        }
+        const storedPickupOrDelivery = mainContext.getPickupOrDelivery();
+        if (storedPickupOrDelivery !== null) {
+            form.setValue('pickupOrDelivery', storedPickupOrDelivery);
+        }
+    }, [form, mainContext])
 
     useEffect(() => {
         if (cartContext.cart.length === 0) {
@@ -61,12 +81,10 @@ export default function Checkout() {
     }, [cartContext.cart]);
 
     const handlePickupOrDelivery = (value: number) => {
-        setPickupOrDelivery(value);
         mainContext.setPickupOrDelivery(value);
     };
 
     const onSubmit = useCallback(async (data: CustomerDetailsForm) => {
-        console.log(data)
         mainContext.setCustomer({
             firstName: data.firstName,
             lastName: data.lastName,
@@ -237,7 +255,7 @@ export default function Checkout() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div
                                                 className={`border-2 rounded-xl p-4 text-center cursor-pointer
-                                                    ${form.formState.errors.pickupOrDelivery ? 'border-red-500' : field.value === PICKUP ? 'border-pink-300 bg-pink-100' : 'border-gray-200'}
+                                                    ${form.formState.errors.pickupOrDelivery ? 'border-red-500' : pickupOrDelivery === PICKUP ? 'border-pink-300 bg-pink-100' : 'border-gray-200'}
                                                 `}
                                                 onClick={() => {
                                                     field.onChange(PICKUP);
@@ -248,7 +266,7 @@ export default function Checkout() {
                                             </div>
                                             <div
                                                 className={`border-2 rounded-xl p-4 text-center cursor-pointer
-                                                    ${form.formState.errors.pickupOrDelivery ? 'border-red-500' : field.value === DELIVERY ? 'border-pink-300 bg-pink-100' : 'border-gray-200'}
+                                                    ${form.formState.errors.pickupOrDelivery ? 'border-red-500' : pickupOrDelivery === DELIVERY ? 'border-pink-300 bg-pink-100' : 'border-gray-200'}
                                                 }`}
                                                 onClick={() => {
                                                     field.onChange(DELIVERY);
