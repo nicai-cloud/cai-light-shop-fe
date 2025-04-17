@@ -67,7 +67,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>{light.fromPrice}</p>
+                        <p>{light.priceTag}</p>
                     </div>
                 ))}
             </div>
@@ -86,7 +86,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>{light.fromPrice}</p>
+                        <p>{light.priceTag}</p>
                     </div>
                 ))}
             </div>
@@ -105,7 +105,7 @@ export default function Lights() {
                             className="h-[160px] w-[160px]"
                         />
                         <p>{light.displayName}</p>
-                        <p>{light.fromPrice}</p>
+                        <p>{light.priceTag}</p>
                     </div>
                 ))}
             </div>

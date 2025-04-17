@@ -7,7 +7,7 @@ type LightType = {
     internalName: string,
     displayName: string,
     powerType: string,
-    fromPrice: string
+    priceTag: string
 }
 
 type RawLightVariantType = {
