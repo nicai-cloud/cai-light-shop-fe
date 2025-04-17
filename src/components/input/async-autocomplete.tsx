@@ -52,7 +52,7 @@ export default function AsyncAutocomplete(props: AsyncAutocompleteProps) {
 
     return (
         <Field className={cn}>
-            <Combobox value={field.value} onChange={selectValueCallback}>
+            <Combobox value={field.value ?? ''} onChange={selectValueCallback}>
                 <ComboboxInput
                     className={tailwindMerge(
                         'peer w-full',
@@ -67,7 +67,7 @@ export default function AsyncAutocomplete(props: AsyncAutocompleteProps) {
                     /*
                 // @ts-expect-error: We cannot infer the types in props. */
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                    displayValue={v => v}
+                    displayValue={(v) => v ?? ''}
                     onChange={(q) => { setQuery(q.target.value); }}
                     onBlur={field.onBlur}
                     name={field.name}
