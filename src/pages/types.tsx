@@ -4,7 +4,7 @@ export type CustomerDetailsForm = {
     mobile: string;
     email: string;
     pickupOrDelivery: number | null;
-    address: string | null;
+    deliveryAddress: string | null;
 };
 
 export type PaymentForm = {

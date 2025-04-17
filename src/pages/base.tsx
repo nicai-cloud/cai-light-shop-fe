@@ -49,6 +49,7 @@ export default function Base() {
     const [customer, setCustomerState] = useState<CustomerDetails | null>(null);
     const [deliveryCost, setDeliveryCostState] = useState<Decimal | null>(null);
     const [pickupOrDelivery, setPickupOrDeliveryState] = useState<number | null>(null);
+    const [deliveryAddress, setDeliveryAddressState] = useState<string | null>(null);
     const [expandOrderTotal, setExpandOrderTotal] = useState(false);
 
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
@@ -93,15 +94,8 @@ export default function Base() {
     //     window.open('https://www.tiktok.com', '_blank', 'noopener,noreferrer');
     // }
 
-    const submitCompleteOrder = async (finalPageDetails: any) => {
-        const snakeCaseAddress = {};
-
-        Object.keys(finalPageDetails.address ?? {}).forEach((k) => {
-            const snakeCaseKey = k.split(/\.?(?=[A-Z])/).join('_').toLowerCase();
-            // @ts-expect-error: We are iterating through keys of the Addres type.
-
-            snakeCaseAddress[snakeCaseKey] = finalPageDetails.address[k];
-        });
+    const submitCompleteOrder = async (paymentMethodId: string) => {
+        const customer = context.getCustomer();
 
         const orderItems: OrderItemType[] = [];
         cartContext.cart.map((cartItem) => {
@@ -119,16 +113,16 @@ export default function Base() {
                 },
                 body: JSON.stringify({
                     customerInfo: {
-                        firstName: finalPageDetails?.firstName,
-                        lastName: finalPageDetails?.lastName,
-                        mobile: finalPageDetails?.mobile,
-                        email: finalPageDetails?.email,
-                        address: finalPageDetails?.address,
+                        firstName: customer.firstName,
+                        lastName: customer.lastName,
+                        mobile: customer.mobile,
+                        email: customer.email,
                     },
                     orderItems: orderItems,
                     fulfillmentMethod: context.getPickupOrDelivery(),
+                    deliveryAddress: context.getDeliveryAddress(),
+                    paymentMethodId: paymentMethodId,
                     couponCode: cartContext.coupon?.couponCode,
-                    paymentMethodId: finalPageDetails?.paymentMethodId,
                 }),
             });
         }
@@ -173,6 +167,9 @@ export default function Base() {
     const setPickupOrDelivery = (data: number) => setPickupOrDeliveryState(data);
     const getPickupOrDelivery = () => pickupOrDelivery!;
 
+    const setDeliveryAddress = (data: string | null) => setDeliveryAddressState(data);
+    const getDeliveryAddress = () => deliveryAddress!;
+
     const context: MainContext = {
         navigateTo,
         handleAddToCart,
@@ -183,6 +180,8 @@ export default function Base() {
         getDeliveryCost,
         setPickupOrDelivery,
         getPickupOrDelivery,
+        setDeliveryAddress,
+        getDeliveryAddress,
     };
 
     const stripeElementsOptions: StripeElementsOptions = {

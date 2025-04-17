@@ -10,7 +10,6 @@ export interface CustomerDetails {
     lastName: string;
     mobile: string;
     email: string;
-    address: string | null;
 }
 
 export type MainContext = {
@@ -23,6 +22,8 @@ export type MainContext = {
     getDeliveryCost: () => Decimal;
     setPickupOrDelivery: (data: number) => void;
     getPickupOrDelivery: () => number;
+    setDeliveryAddress: (data: string | null) => void;
+    getDeliveryAddress: () => string | null;
 };
 
 export function useMainContext(): MainContext {

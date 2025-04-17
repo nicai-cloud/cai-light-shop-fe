@@ -38,42 +38,36 @@ export default function Checkout() {
             email: '',
             mobile: '',
             pickupOrDelivery: null,
-            address: null,
+            deliveryAddress: null,
         },
     });
 
-    const address = form.watch('address')
     const pickupOrDelivery = form.watch('pickupOrDelivery');
+    const deliveryAddress = form.watch('deliveryAddress');
 
     useEffect(() => {
-        if (pickupOrDelivery === PICKUP || (pickupOrDelivery === DELIVERY && address !== null)) {
+        if (pickupOrDelivery === PICKUP || (pickupOrDelivery === DELIVERY && deliveryAddress !== null)) {
             const deliveryCost = fulfillmentMethodInfo!.fulfillmentMethods.filter((method) => method.id == pickupOrDelivery)[0].fee;
             mainContext.setDeliveryCost(deliveryCost);
         } else {
             mainContext.setDeliveryCost(null);
         }
-    }, [address, pickupOrDelivery]);
+    }, [deliveryAddress, pickupOrDelivery]);
 
     useEffect(() => {
         const customer = mainContext.getCustomer();
         if (customer) {
-            if (customer.address) {
-                form.reset(customer);
-            } else {
-                // This is to address the very specific issue where if pickup is selected on the checkout page,
-                // and we proceed to the payment page, then we navigate back to the checkout page, this time if we
-                // choose delivery, then when an address is entered and selected, it will immediately be reset to null
-                form.reset({
-                    firstName: customer.firstName,
-                    lastName: customer.lastName,
-                    email: customer.email,
-                    mobile: customer.mobile,
-                })
-            }
+            form.reset(customer);
+            
         }
         const storedPickupOrDelivery = mainContext.getPickupOrDelivery();
         if (storedPickupOrDelivery !== null) {
             form.setValue('pickupOrDelivery', storedPickupOrDelivery);
+        }
+        
+        const storedDeliveryAddress = mainContext.getDeliveryAddress();
+        if (storedDeliveryAddress !== null) {
+            form.setValue('deliveryAddress', storedDeliveryAddress);
         }
     }, [form, mainContext])
 
@@ -92,11 +86,12 @@ export default function Checkout() {
             firstName: data.firstName,
             lastName: data.lastName,
             mobile: data.mobile,
-            email: data.email,
-            address: data.address
+            email: data.email
         })
+        mainContext.setPickupOrDelivery(pickupOrDelivery!);
+        mainContext.setDeliveryAddress(deliveryAddress);
         mainContext.navigateTo(PAYMENT_PAGE);
-    }, [mainContext, setGlobalError]);
+    }, [mainContext, pickupOrDelivery, deliveryAddress, setGlobalError]);
 
     // Addresses
     const fetchAddresses = async (query: string) => {
@@ -291,7 +286,7 @@ export default function Checkout() {
                                     <AsyncAutocomplete
                                         label="Address"
                                         className="mt-6"
-                                        name="address"
+                                        name="deliveryAddress"
                                         autoComplete="off"
                                         placeholder="Start typing your address..."
                                         fetchOptions={fetchAddresses}

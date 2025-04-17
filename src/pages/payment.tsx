@@ -52,8 +52,6 @@ export default function Payment() {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const customer = mainContext.getCustomer();
-
     const onSubmit = useCallback(async (data: PaymentForm) => {
         if (elements === null) {
             return;
@@ -86,15 +84,7 @@ export default function Payment() {
             return;
         }
 
-        const submissionResult = await mainContext.submitCompleteOrder({
-            firstName: customer.firstName,
-            lastName: customer.lastName,
-            mobile: customer.mobile,
-            email: customer.email,
-            address: customer.address,
-
-            paymentMethodId: paymentMethodResult.paymentMethod.id,
-        });
+        const submissionResult = await mainContext.submitCompleteOrder(paymentMethodResult.paymentMethod.id);
 
         if (submissionResult !== null) {
             setGlobalError(submissionResult.message);
