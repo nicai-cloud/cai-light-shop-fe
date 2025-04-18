@@ -60,6 +60,7 @@ export default function Checkout() {
             form.reset(customer);
             
         }
+        
         const storedPickupOrDelivery = mainContext.getPickupOrDelivery();
         if (storedPickupOrDelivery !== null) {
             form.setValue('pickupOrDelivery', storedPickupOrDelivery);
