@@ -192,7 +192,7 @@ export default function Light() {
                         each
                     </p>
                     <p className="mt-4">Color:</p>
-                    <div className="flex flex-row mt-4">
+                    <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                         {Object.entries(colorsMapping!).map(([colorId, color]) => (
                             <div key={colorId} className={`w-[120px] border-2 ${selectedColorId! === Number(colorId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
                                 {color.color}
@@ -203,7 +203,7 @@ export default function Light() {
                     {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_ONLY && (
                         <div>
                             <p className="mt-4">Length:</p>
-                            <div className="flex flex-row mt-4">
+                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
@@ -216,7 +216,7 @@ export default function Light() {
                     {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_WIDTH && (
                         <div>
                             <p className="mt-4">Dimension:</p>
-                            <div className="flex flex-row mt-4">
+                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
@@ -229,7 +229,7 @@ export default function Light() {
                     {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT && (
                         <div>
                             <p className="mt-4">Dimension:</p>
-                            <div className="flex flex-row mt-4">
+                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
                                     <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
