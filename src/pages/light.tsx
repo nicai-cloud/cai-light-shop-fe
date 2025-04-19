@@ -30,9 +30,9 @@ export default function Light() {
     const [lightDimensionTypeStr, setLightDimensionTypeStr] = useState<string | null>(null);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
-    const [selectedColorId, setSelectedColorId] = useState<number | null>(null);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
-    const [colorsMapping, setColorsMapping] = useState<Record<number, ColorType> | null>(null);
+    const [colorsMapping, setColorsMapping] = useState<Record<string, ColorType> | null>(null);
     const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, string> | null>(null);
     const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
@@ -62,9 +62,9 @@ export default function Light() {
     useEffect(() => {
         if (lightAndVariants) {
             const lightVariants = lightAndVariants.lightVariants;
-            const colorIdsSet = new Set<number>();
+            const colorsSet = new Set<string>();
             const dimensionIdsSet = new Set<number>();
-            const tempColorsMapping: Record<number, ColorType> = {};
+            const tempColorsMapping: Record<string, ColorType> = {};
             const tempDimensionsMapping: Record<number, string> = {};
             const tempColorDimensionToLightVariant: Record<string, number> = {};
             const tempLightVariantMapping: Record<number, EnhancedLightVariantType> = {};
@@ -75,11 +75,10 @@ export default function Light() {
 
                 tempLightVariantMapping[lightVariant.id] = lightVariant;
 
-                const colorId = lightVariant.colorId;
-                const color: ColorType = {"color": lightVariant.color, "id": uniqueColorIndex}
-                if (!colorIdsSet.has(colorId)) {
-                    colorIdsSet.add(colorId);
-                    tempColorsMapping[colorId] = color;
+                const color = lightVariant.color;
+                if (!colorsSet.has(color)) {
+                    colorsSet.add(color);
+                    tempColorsMapping[color] = {"color": lightVariant.color, "id": uniqueColorIndex};
                     uniqueColorIndex++;
                 }
 
@@ -89,12 +88,12 @@ export default function Light() {
                     tempDimensionsMapping[dimensionId] = lightVariant.dimensionStr;
                 }
 
-                const key = `${colorId}+${dimensionId}`
+                const key = `${color}+${dimensionId}`
                 tempColorDimensionToLightVariant[key] = lightVariant.id
 
                 if (index == 0) {
                     setSelectedLightVariant(lightVariant);
-                    setSelectedColorId(lightVariant.colorId);
+                    setSelectedColor(lightVariant.color);
                     setSelectedDimensionId(lightVariant.dimensionId);
                 }
                 index++;
@@ -155,16 +154,16 @@ export default function Light() {
         mainContext.handleAddToCart();
     };
 
-    const handleSelectColor = (colorId: number) => {
-        setCarouselImageIndex(colorsMapping![colorId].id);
-        setSelectedColorId(colorId);
-        const selectedLightVariantId = colorDimensionToLightVariant![`${colorId}+${selectedDimensionId}`];
+    const handleSelectColor = (color: string) => {
+        setCarouselImageIndex(colorsMapping![color].id);
+        setSelectedColor(color);
+        const selectedLightVariantId = colorDimensionToLightVariant![`${color}+${selectedDimensionId}`];
         setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
     }
 
     const handleSelectDimension = (dimensionId: number) => {
         setSelectedDimensionId(dimensionId);
-        const selectedLightVariantId = colorDimensionToLightVariant![`${selectedColorId}+${dimensionId}`];
+        const selectedLightVariantId = colorDimensionToLightVariant![`${selectedColor}+${dimensionId}`];
         setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
     }
 
@@ -193,9 +192,9 @@ export default function Light() {
                     </p>
                     <p className="mt-4">Color:</p>
                     <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                        {Object.entries(colorsMapping!).map(([colorId, color]) => (
-                            <div key={colorId} className={`w-[120px] border-2 ${selectedColorId! === Number(colorId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-8`} onClick={() => handleSelectColor(Number(colorId))}>
-                                {color.color}
+                        {Object.values(colorsMapping!).map(({ color }) => (
+                            <div key={color} className={`w-[120px] border-2 ${selectedColor! === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-8`} onClick={() => handleSelectColor(color)}>
+                                {color}
                             </div>
                         ))}
                     </div>
