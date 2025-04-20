@@ -74,6 +74,7 @@ export default function Light() {
                 if (!colorsSet.has(color)) {
                     colorsSet.add(color);
                     tempColorsMapping[color] = uniqueColorIndex;
+                    console.log("abc", color, tempColorsMapping.length)
                     uniqueColorIndex++;
                 }
 
@@ -149,6 +150,8 @@ export default function Light() {
         mainContext.handleAddToCart();
     };
 
+    console.log(colorsMapping!.length)
+
     const handleSelectColor = (color: string) => {
         setCarouselImageIndex(colorsMapping![color]);
         setSelectedColor(color);
@@ -186,20 +189,31 @@ export default function Light() {
                         each
                     </p>
                     <p className="mt-4">Color:</p>
-                    <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                        {Object.keys(colorsMapping!).map((color) => (
-                            <div key={color} className={`w-[120px] border-2 ${selectedColor! === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-8`} onClick={() => handleSelectColor(color)}>
-                                {color}
+                    {/* Single color */}
+                    {Object.keys(colorsMapping!).length === 1 && (
+                        <div className={'flex justify-start mt-4'}>
+                            <div className={'border-2 border-pink-300 text-black text-center px-4 py-2 rounded'}>
+                                {Object.keys(colorsMapping!)[0]}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
+                    {/* Multiple colors */}
+                    {Object.keys(colorsMapping!).length > 1 && (
+                        <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
+                            {Object.keys(colorsMapping!).map((color) => (
+                                <div key={color} className={`border-2 ${selectedColor! === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectColor(color)}>
+                                    {color}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     {/* length only lights */}
                     {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_ONLY && (
                         <div>
                             <p className="mt-4">Length:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -212,7 +226,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -225,7 +239,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded mr-4`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
                                         {dimensionStr}
                                     </div>
                                 ))}
