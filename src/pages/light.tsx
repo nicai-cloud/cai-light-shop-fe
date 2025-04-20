@@ -260,7 +260,7 @@ export default function Light() {
             <div className="mt-4 w-full flex flex-row items-center justify-center">
                 <button
                     onClick={handleAddToCart}
-                    className={`mt-2 bg-pink-300 text-white px-8 py-2 rounded ${selectedLightVariant.stock < selectedDropdown.id ? "cursor-not-allowed" : "cursor-pointer"}`}
+                    className={`mt-2 text-white px-8 py-2 rounded ${selectedLightVariant.stock < selectedDropdown.id ? "bg-gray-300 cursor-not-allowed" : "bg-pink-300 cursor-pointer"}`}
                     disabled={selectedLightVariant.stock < selectedDropdown.id}
                 >
                     ADD TO CART
