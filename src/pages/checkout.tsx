@@ -58,7 +58,6 @@ export default function Checkout() {
         const customer = mainContext.getCustomer();
         if (customer) {
             form.reset(customer);
-            
         }
         
         const storedPickupOrDelivery = mainContext.getPickupOrDelivery();
