@@ -74,7 +74,11 @@ export default function Checkout() {
 
     useEffect(() => {
         if (cartContext.cart.length === 0) {
-            mainContext.navigateTo(HOME_PAGE);
+            if (mainContext.getCheckedOut()) {
+                mainContext.setCheckedOut(false);
+            } else {
+                mainContext.navigateTo(HOME_PAGE);
+            }
         }
     }, [cartContext.cart]);
 

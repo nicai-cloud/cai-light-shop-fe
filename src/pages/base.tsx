@@ -51,6 +51,7 @@ export default function Base() {
     const [pickupOrDelivery, setPickupOrDeliveryState] = useState<number | null>(null);
     const [deliveryAddress, setDeliveryAddressState] = useState<string | null>(null);
     const [expandOrderTotal, setExpandOrderTotal] = useState(false);
+    const [checkedOut, setCheckedOutState] = useState(false);
 
     const stripePromise = useRef<Promise<Stripe | null> | null>(null);
 
@@ -150,6 +151,7 @@ export default function Base() {
             };
         }
 
+        setCheckedOut(true);
         cartContext.clearCart();
         setDeletedCartItemId(null);
         setExpandOrderTotal(false);
@@ -170,6 +172,9 @@ export default function Base() {
     const setDeliveryAddress = (data: string | null) => setDeliveryAddressState(data);
     const getDeliveryAddress = () => deliveryAddress!;
 
+    const setCheckedOut = (data: boolean) => setCheckedOutState(data);
+    const getCheckedOut = () => checkedOut!;
+
     const context: MainContext = {
         navigateTo,
         handleAddToCart,
@@ -182,6 +187,8 @@ export default function Base() {
         getPickupOrDelivery,
         setDeliveryAddress,
         getDeliveryAddress,
+        setCheckedOut,
+        getCheckedOut,
     };
 
     const stripeElementsOptions: StripeElementsOptions = {

@@ -24,6 +24,8 @@ export type MainContext = {
     getPickupOrDelivery: () => number;
     setDeliveryAddress: (data: string | null) => void;
     getDeliveryAddress: () => string | null;
+    setCheckedOut: (data: boolean) => void;
+    getCheckedOut: () => boolean;
 };
 
 export function useMainContext(): MainContext {
