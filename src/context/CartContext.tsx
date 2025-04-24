@@ -15,11 +15,6 @@ export interface CartItem {
     selection: SelectionIds
 }
 
-export interface FulfillmentMethod {
-    id: number;
-    name: string;
-}
-
 export interface Coupon {
     couponCode: string;
     isValid: boolean;
