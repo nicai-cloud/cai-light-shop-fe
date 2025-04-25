@@ -10,6 +10,7 @@ import Payment from './pages/payment.tsx'
 import Checkout from './pages/checkout.tsx'
 import { CartProvider } from './context/CartContext.tsx'
 import Base from './pages/index.ts'
+import { MainContextProvider } from './pages/context.tsx'
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <CartProvider>
-      <RouterProvider router={router} />
+      <MainContextProvider>
+        <RouterProvider router={router} />
+      </MainContextProvider>
     </CartProvider>
-  </StrictMode>,
+  </StrictMode>
 )

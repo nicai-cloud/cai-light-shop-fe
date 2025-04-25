@@ -1,9 +1,15 @@
-import { useOutletContext } from 'react-router-dom';
 import Decimal from 'decimal.js';
+import { createContext, useContext, useState } from 'react';
+import { CartContext } from '../context/CartContext';
 
 export type SubmissionError = {
     message: string;
 };
+
+type OrderItemType = {
+    quantity: number,
+    lightVariantId: number
+}
 
 export interface CustomerDetails {
     firstName: string;
@@ -12,22 +18,141 @@ export interface CustomerDetails {
     email: string;
 }
 
-export type MainContext = {
-    navigateTo: (path: string) => void;
-    handleAddToCart: (destinaionPath?: string) => void;
-    submitCompleteOrder: (details: any) => Promise<SubmissionError | null>;
+interface MainContextProps {
+    submitCompleteOrder: (paymentMethodId: string) => Promise<SubmissionError | null>;
+    expandOrderTotal: boolean;
+    setExpandOrderTotal: (data: boolean) => void;
+    addToCartModalOpen: boolean;
+    setAddToCartModalOpen: (data: boolean) => void;
+    viewOrderSummaryCheckoutModalOpen: boolean
+    setViewOrderSummaryCheckoutModalOpen: (data: boolean) => void;
+    deletedCartItemId: string | null;
+    setDeletedCartItemId: (data: string | null) => void;
+    addToCartDestination: string | undefined;
+    setAddToCartDestination: (data: string | undefined) => void;
+    customer: CustomerDetails | null;
     setCustomer: (data: CustomerDetails) => void;
-    getCustomer: () => CustomerDetails;
-    setDeliveryCost: (data: Decimal | null) => void;
-    getDeliveryCost: () => Decimal;
+    pickupOrDelivery: number | null;
     setPickupOrDelivery: (data: number) => void;
-    getPickupOrDelivery: () => number;
+    deliveryAddress: string | null;
     setDeliveryAddress: (data: string | null) => void;
-    getDeliveryAddress: () => string | null;
-    setCheckedOut: (data: boolean) => void;
-    getCheckedOut: () => boolean;
+    deliveryCost: Decimal | null;
+    setDeliveryCost: (data: Decimal | null) => void;
+    successfulOrderNumber: string | null;
+    setSuccessfulOrderNumber: (data: string | null) => void;
 };
 
-export function useMainContext(): MainContext {
-    return useOutletContext();
+export const MainContext = createContext<MainContextProps | null>(null);
+
+export const useMainContext = () => {
+    const context = useContext(MainContext);
+    if (!context) throw new Error("useMainContext must be within a MainContextProvider");
+    return context;
 }
+
+export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const cartContext = useContext(CartContext);
+    const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
+    const [addToCartDestination, setAddToCartDestination] = useState<string | undefined>(undefined);
+    const [viewOrderSummaryCheckoutModalOpen, setViewOrderSummaryCheckoutModalOpen] = useState<boolean>(false);
+    const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
+    const [expandOrderTotal, setExpandOrderTotal] = useState(false);
+    const [successfulOrderNumber, setSuccessfulOrderNumber] = useState<string | null>(null);
+
+    const [customer, setCustomer] = useState<CustomerDetails | null>(null);
+    const [pickupOrDelivery, setPickupOrDelivery] = useState<number | null>(null);
+    const [deliveryAddress, setDeliveryAddress] = useState<string | null>(null);
+    const [deliveryCost, setDeliveryCost] = useState<Decimal | null>(null);
+
+    const submitCompleteOrder = async (paymentMethodId: string) => {
+        const orderItems: OrderItemType[] = [];
+        cartContext.cart.map((cartItem) => {
+            if (cartItem.selection.lightVariantId) {
+                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
+            }
+        })
+
+        let response;
+        try {
+            response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    customerInfo: {
+                        firstName: customer!.firstName,
+                        lastName: customer!.lastName,
+                        mobile: customer!.mobile,
+                        email: customer!.email,
+                    },
+                    orderItems: orderItems,
+                    fulfillmentMethod: pickupOrDelivery,
+                    deliveryAddress: deliveryAddress,
+                    paymentMethodId: paymentMethodId,
+                    couponCode: cartContext.coupon?.couponCode,
+                }),
+            });
+        }
+        catch (e) {
+            return {
+                message: 'There was an unexpected error completing your order. Please try again.',
+            };
+        }
+
+        if (response.status === 400 && (await response.json()).description === "Out of stock") {
+            return {
+                message: 'Sorry, we are running out of stock for the items you have ordered.',
+            }
+        }
+
+        if (response.status === 402) {
+            return {
+                message: 'There was an error processing the payment for your order. Please check you have sufficient funds and try again.',
+            };
+        }
+
+        if (response.status >= 400) {
+            return {
+                message: 'There was an unexpected error completing your order. Please try again.',
+            };
+        }
+
+        setSuccessfulOrderNumber((await response.json()).order_number);
+        cartContext.clearCart();
+        setDeletedCartItemId(null);
+        setExpandOrderTotal(false);
+
+        return null;
+    };
+    
+    return (
+        <MainContext.Provider value={
+            {
+                submitCompleteOrder,
+                expandOrderTotal,
+                setExpandOrderTotal,
+                addToCartModalOpen,
+                setAddToCartModalOpen,
+                viewOrderSummaryCheckoutModalOpen,
+                setViewOrderSummaryCheckoutModalOpen,
+                deletedCartItemId,
+                setDeletedCartItemId,
+                addToCartDestination,
+                setAddToCartDestination,
+                customer,
+                setCustomer,
+                pickupOrDelivery,
+                setPickupOrDelivery,
+                deliveryAddress,
+                setDeliveryAddress,
+                deliveryCost,
+                setDeliveryCost,
+                successfulOrderNumber,
+                setSuccessfulOrderNumber,
+            }
+        }>
+            {children}
+        </MainContext.Provider>
+    );
+};

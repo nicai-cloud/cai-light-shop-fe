@@ -14,11 +14,13 @@ import useSWR from 'swr';
 import { getNumberEnv } from '../utils/load-env';
 import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
 import Spinner from '../components/loading/spinner';
+import { useNavigate } from 'react-router-dom';
 
 export const PICKUP = 0;
 export const DELIVERY = 1;
 
 export default function Checkout() {
+    const navigate = useNavigate();
     const mainContext = useMainContext();
     const cartContext = useContext(CartContext);
 
@@ -55,17 +57,17 @@ export default function Checkout() {
     }, [deliveryAddress, pickupOrDelivery]);
 
     useEffect(() => {
-        const customer = mainContext.getCustomer();
+        const customer = mainContext.customer;
         if (customer) {
             form.reset(customer);
         }
         
-        const storedPickupOrDelivery = mainContext.getPickupOrDelivery();
+        const storedPickupOrDelivery = mainContext.pickupOrDelivery;
         if (storedPickupOrDelivery !== null) {
             form.setValue('pickupOrDelivery', storedPickupOrDelivery);
         }
         
-        const storedDeliveryAddress = mainContext.getDeliveryAddress();
+        const storedDeliveryAddress = mainContext.deliveryAddress;
         if (storedDeliveryAddress !== null) {
             form.setValue('deliveryAddress', storedDeliveryAddress);
         }
@@ -73,11 +75,7 @@ export default function Checkout() {
 
     useEffect(() => {
         if (cartContext.cart.length === 0) {
-            if (mainContext.getCheckedOut()) {
-                mainContext.setCheckedOut(false);
-            } else {
-                mainContext.navigateTo(HOME_PAGE);
-            }
+            navigate(HOME_PAGE);
         }
     }, [cartContext.cart]);
 
@@ -94,7 +92,7 @@ export default function Checkout() {
         })
         mainContext.setPickupOrDelivery(pickupOrDelivery!);
         mainContext.setDeliveryAddress(deliveryAddress);
-        mainContext.navigateTo(PAYMENT_PAGE);
+        navigate(PAYMENT_PAGE);
     }, [mainContext, pickupOrDelivery, deliveryAddress, setGlobalError]);
 
     // Addresses

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import ErrorPanel from '../components/error-panel';
 import TextField from '../components/input/text-field';
@@ -8,6 +8,8 @@ import StripeFieldWrapper from '../components/stripe-field-wrapper';
 import { PaymentForm } from './types';
 import { useMainContext } from './context';
 import ActionButton from '../components/button/action-button';
+import { useNavigate } from 'react-router-dom';
+import { SUCCESS_PAGE } from '../utils/constants';
 
 const STRIPE_ELEMENT_STYLE_PROPS: StripeElementStyle = {
     base: {
@@ -27,6 +29,7 @@ const STRIPE_ELEMENT_STYLE_PROPS: StripeElementStyle = {
 };
 
 export default function Payment() {
+    const navigate = useNavigate();
     const mainContext = useMainContext();
     const stripe = useStripe();
     const elements = useElements();
@@ -51,6 +54,12 @@ export default function Payment() {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (mainContext.successfulOrderNumber) {
+            navigate(`${SUCCESS_PAGE}#${mainContext.successfulOrderNumber!}`);
+        }
+    }, [mainContext.successfulOrderNumber]);
 
     const onSubmit = useCallback(async (data: PaymentForm) => {
         if (elements === null) {

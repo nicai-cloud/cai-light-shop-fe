@@ -2,9 +2,9 @@ import { Elements } from "@stripe/react-stripe-js";
 import Page from "../components/page";
 import tailwindMerge from "../utils/tailwind-merge";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { loadStripe, Stripe, StripeElementsOptions } from "@stripe/stripe-js";
-import { CustomerDetails, MainContext } from "./context";
+import { useMainContext } from "./context";
 import { ShoppingCart } from 'react-feather';
 import { CartContext } from "../context/CartContext";
 import { ShoppingCartModal } from "./shopping-cart-modal";
@@ -13,18 +13,13 @@ import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
 // import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
-import { HOME_PAGE, CHECKOUT_PAGE, PAYMENT_PAGE, SUCCESS_PAGE } from "../utils/constants";
+import { HOME_PAGE, CHECKOUT_PAGE, PAYMENT_PAGE } from "../utils/constants";
 import Spinner from "../components/loading/spinner";
 import Decimal from 'decimal.js';
 import { formatMoney } from "../utils/format-money";
 import { DELIVERY, PICKUP } from "./checkout";
 import Up from "../components/icons/16/Up";
 import Down from "../components/icons/16/Down";
-
-type OrderItemType = {
-    quantity: number,
-    lightVariantId: number
-}
 
 type PublishableKeyResponse = {
     publishableKey: string;
@@ -43,22 +38,12 @@ export default function Base() {
     const [isLoading, setIsLoading] = useState(true);
     const [shoppingCartModalOpen, setShoppingCartModalOpen] = useState<boolean>(false);
     const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
-    const [addToCartDestination, setAddToCartDestination] = useState<string | undefined>(undefined);
-    const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
-    const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
-    const [customer, setCustomerState] = useState<CustomerDetails | null>(null);
-    const [deliveryCost, setDeliveryCostState] = useState<Decimal | null>(null);
-    const [pickupOrDelivery, setPickupOrDeliveryState] = useState<number | null>(null);
-    const [deliveryAddress, setDeliveryAddressState] = useState<string | null>(null);
-    const [expandOrderTotal, setExpandOrderTotal] = useState(false);
-    const [checkedOut, setCheckedOutState] = useState(false);
-
-    const stripePromise = useRef<Promise<Stripe | null> | null>(null);
 
     const location = useLocation();
     const showDrawerRoutes = [CHECKOUT_PAGE, PAYMENT_PAGE];
     const shouldShowDrawer = showDrawerRoutes.includes(location.pathname);
 
+    const stripePromise = useRef<Promise<Stripe | null> | null>(null);
     const getStripePromise = () => {
         if (stripePromise.current === null) {
             stripePromise.current = retrievePublishableKey().then((details) => {
@@ -74,15 +59,6 @@ export default function Base() {
         return cartContext.cart.reduce((total, {price, quantity}) => price.times(quantity).add(total), Decimal(0));
     }
 
-    const navigateTo = useCallback((path: string) => {
-        navigate(path);
-    }, [])
-
-    const handleAddToCart = (addToCartDestination?: string) => {
-        setAddToCartModalOpen(true);
-        setAddToCartDestination(addToCartDestination);
-    }
-
     // const handleInstagramIconClick = () => {
     //     window.open('https://www.instagram.com', '_blank', 'noopener,noreferrer');
     // }
@@ -95,101 +71,7 @@ export default function Base() {
     //     window.open('https://www.tiktok.com', '_blank', 'noopener,noreferrer');
     // }
 
-    const submitCompleteOrder = async (paymentMethodId: string) => {
-        const customer = context.getCustomer();
-
-        const orderItems: OrderItemType[] = [];
-        cartContext.cart.map((cartItem) => {
-            if (cartItem.selection.lightVariantId) {
-                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
-            }
-        })
-
-        let response;
-        try {
-            response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    customerInfo: {
-                        firstName: customer.firstName,
-                        lastName: customer.lastName,
-                        mobile: customer.mobile,
-                        email: customer.email,
-                    },
-                    orderItems: orderItems,
-                    fulfillmentMethod: context.getPickupOrDelivery(),
-                    deliveryAddress: context.getDeliveryAddress(),
-                    paymentMethodId: paymentMethodId,
-                    couponCode: cartContext.coupon?.couponCode,
-                }),
-            });
-        }
-        catch (e) {
-            return {
-                message: 'There was an unexpected error completing your order. Please try again.',
-            };
-        }
-
-        if (response.status === 400 && (await response.json()).description === "Out of stock") {
-            return {
-                message: 'Sorry, we are running out of stock for the items you have ordered.',
-            }
-        }
-
-        if (response.status === 402) {
-            return {
-                message: 'There was an error processing the payment for your order. Please check you have sufficient funds and try again.',
-            };
-        }
-
-        if (response.status >= 400) {
-            return {
-                message: 'There was an unexpected error completing your order. Please try again.',
-            };
-        }
-
-        setCheckedOut(true);
-        cartContext.clearCart();
-        setDeletedCartItemId(null);
-        setExpandOrderTotal(false);
-        navigateTo(`${SUCCESS_PAGE}#${(await response.json()).order_number}`);
-
-        return null;
-    };
-
-    const setCustomer = (data: CustomerDetails) => setCustomerState(data);
-    const getCustomer = () => customer!;
-
-    const setDeliveryCost = (data: Decimal | null) => setDeliveryCostState(data);
-    const getDeliveryCost = () => deliveryCost!;
-
-    const setPickupOrDelivery = (data: number) => setPickupOrDeliveryState(data);
-    const getPickupOrDelivery = () => pickupOrDelivery!;
-
-    const setDeliveryAddress = (data: string | null) => setDeliveryAddressState(data);
-    const getDeliveryAddress = () => deliveryAddress!;
-
-    const setCheckedOut = (data: boolean) => setCheckedOutState(data);
-    const getCheckedOut = () => checkedOut!;
-
-    const context: MainContext = {
-        navigateTo,
-        handleAddToCart,
-        submitCompleteOrder,
-        setCustomer,
-        getCustomer,
-        setDeliveryCost,
-        getDeliveryCost,
-        setPickupOrDelivery,
-        getPickupOrDelivery,
-        setDeliveryAddress,
-        getDeliveryAddress,
-        setCheckedOut,
-        getCheckedOut,
-    };
+    const mainContext = useMainContext();
 
     const stripeElementsOptions: StripeElementsOptions = {
         fonts: [
@@ -211,11 +93,11 @@ export default function Base() {
                     onClose={() => {
                         setShoppingCartModalOpen(false);
                         if (cartContext.cart.length === 0) {
-                            navigateTo(HOME_PAGE);
+                            navigate(HOME_PAGE);
                         }
                     }}
                     onTrashClick={() => setConfirmCartItemDeletionModalOpen(true)}
-                    setDeletedCartItemId={(cartItemId: string) => setDeletedCartItemId(cartItemId)}
+                    setDeletedCartItemId={(cartItemId: string) => mainContext.setDeletedCartItemId(cartItemId)}
                 />
             )}
             {confirmCartItemDeletionModalOpen === true && (
@@ -223,14 +105,14 @@ export default function Base() {
                     onClose={() => {
                         setConfirmCartItemDeletionModalOpen(false);
                     }}
-                    onYes={() => cartContext.removeItem(deletedCartItemId!)}
+                    onYes={() => cartContext.removeItem(mainContext.deletedCartItemId!)}
                 />
             )}
-            {addToCartModalOpen === true && (
+            {mainContext.addToCartModalOpen === true && (
                 <AddToCartModal onClose={() => {
-                    setAddToCartModalOpen(false);
-                    if (addToCartDestination) {
-                        navigateTo(addToCartDestination);
+                    mainContext.setAddToCartModalOpen(false);
+                    if (mainContext.addToCartDestination) {
+                        navigate(mainContext.addToCartDestination);
                     }
                     window.scrollTo({
                         top: 0,
@@ -240,7 +122,7 @@ export default function Base() {
             )}
             <Page.Header className="bg-white border-b border-gray-300">
                 <div className="relative flex items-center justify-between p-3">
-                    <div className="p-3 cursor-pointer" onClick={() => navigateTo(HOME_PAGE)}>
+                    <div className="p-3 cursor-pointer" onClick={() => navigate(HOME_PAGE)}>
                         <FontAwesomeIcon icon={faHome} size="2x" />
                     </div>
                     <div className="flex items-center justify-center">
@@ -268,7 +150,7 @@ export default function Base() {
                         )
                         : (
                             <div className="flex items-center justify-center w-full">
-                                <Outlet context={context} />
+                                <Outlet context={mainContext} />
                             </div>
                         )
                     }
@@ -293,40 +175,40 @@ export default function Base() {
                         </div> */}
                         {cartContext.cart.length > 0 && shouldShowDrawer && (
                             <div>
-                                {expandOrderTotal && (
+                                {mainContext.expandOrderTotal && (
                                     <div className="fixed flex flex-col bottom-12 left-0 px-8 py-2 w-full h-20 justify-center bg-gray-200 shadow-2xl z-50">
                                         <div className="flex flex-row justify-between">
                                             <p>Subtotal:</p>
                                             <p>${formatMoney(calculateTotalCost())}</p>
                                         </div>
-                                        {pickupOrDelivery === null && (
+                                        {mainContext.pickupOrDelivery === null && (
                                             <div className="flex flex-row justify-between">
                                                 <p>Pick Up/Delivery:</p>
                                                 <p>Fill in your details for the price</p>
                                             </div>
                                         )}
-                                        {pickupOrDelivery === PICKUP && (
+                                        {mainContext.pickupOrDelivery === PICKUP && (
                                             <div className="flex flex-row justify-between">
                                                 <p>Pick Up:</p>
                                                 <p>$0.00</p>
                                             </div>
                                         )}
-                                        {pickupOrDelivery === DELIVERY && (
+                                        {mainContext.pickupOrDelivery === DELIVERY && (
                                             <div className="flex flex-row justify-between">
                                                 <p>Delivery:</p>
-                                                <p>${deliveryCost === null ? "0.00" : formatMoney(getDeliveryCost())}</p>
+                                                <p>${mainContext.deliveryCost === null ? "0.00" : formatMoney(mainContext.deliveryCost)}</p>
                                             </div>
                                         )}
                                     </div>
                                 )}
                                 <div
                                     className="fixed bottom-0 left-0 px-8 w-full h-12 bg-pink-300 text-white flex items-center justify-between z-40"
-                                    onClick={() => setExpandOrderTotal(!expandOrderTotal)}
+                                    onClick={() => mainContext.setExpandOrderTotal(!mainContext.expandOrderTotal)}
                                 >
                                     <div className="flex flex-row justify-between">
-                                        <p>Order Total: ${deliveryCost ? `${formatMoney(calculateTotalCost().add(getDeliveryCost()))}` : `${formatMoney(calculateTotalCost())}`}</p>
+                                        <p>Order Total: ${mainContext.deliveryCost ? `${formatMoney(calculateTotalCost().add(mainContext.deliveryCost))}` : `${formatMoney(calculateTotalCost())}`}</p>
                                     </div>
-                                    {expandOrderTotal ? <Down className="w-4 h-4" /> : <Up className="w-4 h-4" />}
+                                    {mainContext.expandOrderTotal ? <Down className="w-4 h-4" /> : <Up className="w-4 h-4" />}
                                 </div>
                             </div>
                         )}

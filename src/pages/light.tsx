@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { CartContext, CartItem} from '../context/CartContext';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { getLightAndVariantsByInternalName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
@@ -20,6 +20,7 @@ export default function Light() {
     const LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT = "length-height";
     const LIGHT_DIMENSION_TYPE_LENGTH_ONLY = "length-only";
 
+    const navigate = useNavigate();
     const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
     const [lightDimensionTypeStr, setLightDimensionTypeStr] = useState<string | null>(null);
@@ -74,7 +75,6 @@ export default function Light() {
                 if (!colorsSet.has(color)) {
                     colorsSet.add(color);
                     tempColorsMapping[color] = uniqueColorIndex;
-                    console.log("abc", color, tempColorsMapping.length)
                     uniqueColorIndex++;
                 }
 
@@ -147,10 +147,9 @@ export default function Light() {
         addItem(cartItem);
 
         setSelectedDropdown(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-        mainContext.handleAddToCart();
+        mainContext.setAddToCartModalOpen(true);
+        mainContext.setAddToCartDestination(undefined);
     };
-
-    console.log(colorsMapping!.length)
 
     const handleSelectColor = (color: string) => {
         setCarouselImageIndex(colorsMapping![color]);
@@ -169,7 +168,7 @@ export default function Light() {
         <div className="w-full px-4">
             <div className="w-full flex flex-col">
                 <div className="w-full flex flex-row justify-between pt-2">
-                    <NavArrowLeft onClick={() => mainContext.navigateTo(LIGHTS_PAGE)}/>
+                    <NavArrowLeft onClick={() => navigate(LIGHTS_PAGE)}/>
                     <ShareIos onClick={handleShare}/>
                 </div>
                 <div className="px-2 my-4 flex flex-col">

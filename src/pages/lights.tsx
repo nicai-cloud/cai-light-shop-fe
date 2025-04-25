@@ -1,4 +1,3 @@
-import { useMainContext } from './context';
 import { useEffect } from 'react';
 import useSWR from 'swr';
 import { getAllLightsImageUrls } from '../services/image';
@@ -8,9 +7,10 @@ import { GET_ALL_LIGHTS_IMAGE_URLS, GET_FULFILLMENT_METHOD_INFO, GET_LIGHTS, LIG
 import { getNumberEnv } from '../utils/load-env';
 import { preloadImage } from '../services/preload-image';
 import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
+import { useNavigate } from 'react-router-dom';
 
 export default function Lights() {
-    const mainContext = useMainContext();
+    const navigate = useNavigate();
 
     const {isLoading: isAllLightsImagesLoading, data: allLightsImages} = useSWR(GET_ALL_LIGHTS_IMAGE_URLS, getAllLightsImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
@@ -45,7 +45,7 @@ export default function Lights() {
     }
 
     const handleClick = (internal_name: string) => {
-        mainContext.navigateTo(`${LIGHT_PAGE}/${internal_name}`);
+        navigate(`${LIGHT_PAGE}/${internal_name}`);
     }
 
     return (

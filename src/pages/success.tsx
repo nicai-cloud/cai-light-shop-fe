@@ -1,10 +1,12 @@
 import { faGift } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMainContext } from "./context";
 import { HOME_PAGE } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
 
 export default function Success() {
+    const navigate = useNavigate();
     const mainContext = useMainContext();
     const [orderNumber, setOrderNumber] = useState<String>('');
 
@@ -12,9 +14,10 @@ export default function Success() {
         setOrderNumber(window.location.hash.slice(1));  // Exclude the #
     })
 
-    const handleContinueShopping = useCallback(() => {
-        mainContext.navigateTo(HOME_PAGE);
-    }, [mainContext])
+    const handleContinueShopping = () => {
+        mainContext.setSuccessfulOrderNumber(null);
+        navigate(HOME_PAGE);
+    }
 
     return (
         <div className="w-full px-4 flex flex-col items-center">
