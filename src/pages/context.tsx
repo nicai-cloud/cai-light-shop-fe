@@ -40,6 +40,8 @@ interface MainContextProps {
     setDeliveryCost: (data: Decimal | null) => void;
     successfulOrderNumber: string | null;
     setSuccessfulOrderNumber: (data: string | null) => void;
+    confirmCartItemDeletionModalOpen: boolean;
+    setConfirmCartItemDeletionModalOpen: (data: boolean) => void;
 };
 
 export const MainContext = createContext<MainContextProps | null>(null);
@@ -58,6 +60,7 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [expandOrderTotal, setExpandOrderTotal] = useState(false);
     const [successfulOrderNumber, setSuccessfulOrderNumber] = useState<string | null>(null);
+    const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
 
     const [customer, setCustomer] = useState<CustomerDetails | null>(null);
     const [pickupOrDelivery, setPickupOrDelivery] = useState<number | null>(null);
@@ -140,6 +143,8 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 setDeletedCartItemId,
                 addToCartDestination,
                 setAddToCartDestination,
+                confirmCartItemDeletionModalOpen,
+                setConfirmCartItemDeletionModalOpen,
                 customer,
                 setCustomer,
                 pickupOrDelivery,

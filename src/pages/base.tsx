@@ -37,7 +37,6 @@ export default function Base() {
     const cartContext = useContext(CartContext);
     const [isLoading, setIsLoading] = useState(true);
     const [shoppingCartModalOpen, setShoppingCartModalOpen] = useState<boolean>(false);
-    const [confirmCartItemDeletionModalOpen, setConfirmCartItemDeletionModalOpen] = useState<boolean>(false);
 
     const location = useLocation();
     const showDrawerRoutes = [CHECKOUT_PAGE, PAYMENT_PAGE];
@@ -96,15 +95,11 @@ export default function Base() {
                             navigate(HOME_PAGE);
                         }
                     }}
-                    onTrashClick={() => setConfirmCartItemDeletionModalOpen(true)}
-                    setDeletedCartItemId={(cartItemId: string) => mainContext.setDeletedCartItemId(cartItemId)}
                 />
             )}
-            {confirmCartItemDeletionModalOpen === true && (
+            {mainContext.confirmCartItemDeletionModalOpen === true && (
                 <ConfirmCartItemDeletionModal
-                    onClose={() => {
-                        setConfirmCartItemDeletionModalOpen(false);
-                    }}
+                    onClose={() => mainContext.setConfirmCartItemDeletionModalOpen(false)}
                     onYes={() => cartContext.removeItem(mainContext.deletedCartItemId!)}
                 />
             )}

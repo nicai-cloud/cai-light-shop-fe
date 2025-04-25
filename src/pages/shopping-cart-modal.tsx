@@ -11,20 +11,18 @@ import { getAllLightVariantsImageUrls } from "../services/image";
 import { preloadImage } from '../services/preload-image';
 import Spinner from '../components/loading/spinner';
 import Decimal from 'decimal.js';
+import { useMainContext } from "./context";
 
 type ShoppingCartModalProps = {
     onClose: () => void;
-    onTrashClick: () => void;
-    setDeletedCartItemId: (itemId: string) => void;
 };
   
 export const ShoppingCartModal = ({
-    onClose,
-    onTrashClick,
-    setDeletedCartItemId
+    onClose
 }: ShoppingCartModalProps) => {
-    const cartContext = useContext(CartContext);
     const navigate = useNavigate();
+    const mainContext = useMainContext();
+    const cartContext = useContext(CartContext);
 
     const cart: CartItem[] = cartContext.cart;
 
@@ -89,8 +87,8 @@ export const ShoppingCartModal = ({
                                         <EditQuantity
                                             cartItem={item}
                                             onTrashClick={() => {
-                                                setDeletedCartItemId(item.itemId);
-                                                onTrashClick();
+                                                mainContext.setDeletedCartItemId(item.itemId);
+                                                mainContext.setConfirmCartItemDeletionModalOpen(true);
                                             }}
                                         />
                                         <p className="ml-4 w-16 text-right">${item.price.times(item.quantity).toFixed(2)}</p>
