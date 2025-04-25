@@ -5,13 +5,13 @@ import useSWR from 'swr';
 import { getLightAndVariantsByInternalName, EnhancedLightVariantType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_LIGHT_IMAGE_URLS, GET_LIGHT_AND_VARIANTS_BY_NAME, LIGHTS_PAGE, MAXIMUM_SELECTION_QUANTITY, LOW_STOCK_QUANTITY } from '../utils/constants';
-import { useMainContext } from './context';
 import { getNumberEnv } from '../utils/load-env';
 import Carousel from '../components/carousel';
 import { getLightImageUrlsByInternalName } from '../services/image';
 import { preloadImage } from '../services/preload-image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
+import { AddToCartModal } from './add-to-cart-modal';
 
 export default function Light() {
     const DEFAULT_QUANTITY_DROPDOWN_OPTION = {id: 1, name: "1"};
@@ -21,7 +21,6 @@ export default function Light() {
     const LIGHT_DIMENSION_TYPE_LENGTH_ONLY = "length-only";
 
     const navigate = useNavigate();
-    const mainContext = useMainContext();
     const { addItem } = useContext(CartContext);
     const [lightDimensionTypeStr, setLightDimensionTypeStr] = useState<string | null>(null);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
@@ -33,6 +32,7 @@ export default function Light() {
     const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
     const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, EnhancedLightVariantType> | null>(null);
+    const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
 
     const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
 
@@ -147,7 +147,7 @@ export default function Light() {
         addItem(cartItem);
 
         setSelectedDropdown(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-        mainContext.setAddToCartModalOpen(true);
+        setAddToCartModalOpen(true);
     };
 
     const handleSelectColor = (color: string) => {
@@ -165,6 +165,15 @@ export default function Light() {
 
     return (
         <div className="w-full px-4">
+            {addToCartModalOpen === true && (
+                <AddToCartModal onClose={() => {
+                    setAddToCartModalOpen(false);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                    });
+                }}/>
+            )}
             <div className="w-full flex flex-col">
                 <div className="w-full flex flex-row justify-between pt-2">
                     <NavArrowLeft onClick={() => navigate(LIGHTS_PAGE)}/>

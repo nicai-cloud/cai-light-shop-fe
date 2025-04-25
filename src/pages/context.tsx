@@ -22,8 +22,6 @@ interface MainContextProps {
     submitCompleteOrder: (paymentMethodId: string) => Promise<SubmissionError | null>;
     expandOrderTotal: boolean;
     setExpandOrderTotal: (data: boolean) => void;
-    addToCartModalOpen: boolean;
-    setAddToCartModalOpen: (data: boolean) => void;
     deletedCartItemId: string | null;
     setDeletedCartItemId: (data: string | null) => void;
     customer: CustomerDetails | null;
@@ -50,7 +48,6 @@ export const useMainContext = () => {
 
 export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const cartContext = useContext(CartContext);
-    const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [expandOrderTotal, setExpandOrderTotal] = useState(false);
     const [successfulOrderNumber, setSuccessfulOrderNumber] = useState<string | null>(null);
@@ -129,8 +126,6 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 submitCompleteOrder,
                 expandOrderTotal,
                 setExpandOrderTotal,
-                addToCartModalOpen,
-                setAddToCartModalOpen,
                 deletedCartItemId,
                 setDeletedCartItemId,
                 confirmCartItemDeletionModalOpen,

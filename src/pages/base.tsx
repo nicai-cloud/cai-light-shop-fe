@@ -9,7 +9,6 @@ import { ShoppingCart } from 'react-feather';
 import { CartContext } from "../context/CartContext";
 import { ShoppingCartModal } from "./shopping-cart-modal";
 import { ConfirmCartItemDeletionModal } from "./confirm-cart-item-deletion-modal";
-import { AddToCartModal } from "./add-to-cart-modal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faHome } from '@fortawesome/free-solid-svg-icons';
 // import { faFacebook, faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons';
@@ -102,15 +101,6 @@ export default function Base() {
                     onClose={() => mainContext.setConfirmCartItemDeletionModalOpen(false)}
                     onYes={() => cartContext.removeItem(mainContext.deletedCartItemId!)}
                 />
-            )}
-            {mainContext.addToCartModalOpen === true && (
-                <AddToCartModal onClose={() => {
-                    mainContext.setAddToCartModalOpen(false);
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth',
-                    });
-                }}/>
             )}
             <Page.Header className="bg-white border-b border-gray-300">
                 <div className="relative flex items-center justify-between p-3">
