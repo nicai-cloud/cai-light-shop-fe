@@ -106,9 +106,6 @@ export default function Base() {
             {mainContext.addToCartModalOpen === true && (
                 <AddToCartModal onClose={() => {
                     mainContext.setAddToCartModalOpen(false);
-                    if (mainContext.addToCartDestination) {
-                        navigate(mainContext.addToCartDestination);
-                    }
                     window.scrollTo({
                         top: 0,
                         behavior: 'smooth',

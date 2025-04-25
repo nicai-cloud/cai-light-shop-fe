@@ -28,8 +28,6 @@ interface MainContextProps {
     setViewOrderSummaryCheckoutModalOpen: (data: boolean) => void;
     deletedCartItemId: string | null;
     setDeletedCartItemId: (data: string | null) => void;
-    addToCartDestination: string | undefined;
-    setAddToCartDestination: (data: string | undefined) => void;
     customer: CustomerDetails | null;
     setCustomer: (data: CustomerDetails) => void;
     pickupOrDelivery: number | null;
@@ -55,7 +53,6 @@ export const useMainContext = () => {
 export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const cartContext = useContext(CartContext);
     const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
-    const [addToCartDestination, setAddToCartDestination] = useState<string | undefined>(undefined);
     const [viewOrderSummaryCheckoutModalOpen, setViewOrderSummaryCheckoutModalOpen] = useState<boolean>(false);
     const [deletedCartItemId, setDeletedCartItemId] = useState<string | null>(null);
     const [expandOrderTotal, setExpandOrderTotal] = useState(false);
@@ -141,8 +138,6 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 setViewOrderSummaryCheckoutModalOpen,
                 deletedCartItemId,
                 setDeletedCartItemId,
-                addToCartDestination,
-                setAddToCartDestination,
                 confirmCartItemDeletionModalOpen,
                 setConfirmCartItemDeletionModalOpen,
                 customer,

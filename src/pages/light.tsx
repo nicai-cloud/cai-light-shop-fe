@@ -148,7 +148,6 @@ export default function Light() {
 
         setSelectedDropdown(DEFAULT_QUANTITY_DROPDOWN_OPTION);
         mainContext.setAddToCartModalOpen(true);
-        mainContext.setAddToCartDestination(undefined);
     };
 
     const handleSelectColor = (color: string) => {
