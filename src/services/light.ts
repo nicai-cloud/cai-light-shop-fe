@@ -24,8 +24,6 @@ type LightAndVariantsType = {
     lightDisplayName: string,
     lightVideoUrl: string | null,
     lightDimensionTypeStr: string,
-    defaultColor: string
-    defaultDimensionId: string
     defaultLightVariant: EnhancedLightVariantType
     colorsMapping: Record<string, number>
     dimensionsMapping: Record<string, string>
@@ -44,8 +42,6 @@ export const getLightAndVariantsByInternalName = async (name: string): Promise<L
         lightDisplayName: lightAndVariants.lightDisplayName,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
         lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
-        defaultColor: lightAndVariants.defaultColor,
-        defaultDimensionId: lightAndVariants.defaultDimensionId,
         defaultLightVariant: lightAndVariants.defaultLightVariant,
         colorsMapping: lightAndVariants.colorsMapping,
         dimensionsMapping: lightAndVariants.dimensionsMapping,

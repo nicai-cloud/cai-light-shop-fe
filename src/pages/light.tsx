@@ -53,9 +53,9 @@ export default function Light() {
 
     useEffect(() => {
         if (lightAndVariants) {
-            setSelectedColor(lightAndVariants.defaultColor);
-            setSelectedDimensionId(lightAndVariants.defaultDimensionId);
             setSelectedLightVariant(lightAndVariants.defaultLightVariant);
+            setSelectedColor(lightAndVariants.defaultLightVariant.color);
+            setSelectedDimensionId(lightAndVariants.defaultLightVariant.dimensionId);
         }
     }, [lightAndVariants]);
 
