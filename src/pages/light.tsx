@@ -22,7 +22,6 @@ export default function Light() {
 
     const navigate = useNavigate();
     const { addItem } = useContext(CartContext);
-    const [lightDimensionTypeStr, setLightDimensionTypeStr] = useState<string | null>(null);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -94,7 +93,6 @@ export default function Light() {
                 }
                 index++;
             }
-            setLightDimensionTypeStr(lightAndVariants.lightDimensionTypeStr);
             setColorsMapping(tempColorsMapping);
             setDimensionsMapping(tempDimensionsMapping);
             setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
@@ -122,7 +120,6 @@ export default function Light() {
 
     if (isImagesLoading || !images ||
         isLightAndVariantsLoading || !lightAndVariants ||
-        !lightDimensionTypeStr ||
         !selectedLightVariant
     ) {
         return (
@@ -215,7 +212,7 @@ export default function Light() {
                         </div>
                     )}
                     {/* length only lights */}
-                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_ONLY && (
+                    {lightAndVariants.lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_ONLY && (
                         <div>
                             <p className="mt-4">Length:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
@@ -228,7 +225,7 @@ export default function Light() {
                         </div>
                     )}
                     {/* length-width lights */}
-                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_WIDTH && (
+                    {lightAndVariants.lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_WIDTH && (
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
@@ -241,7 +238,7 @@ export default function Light() {
                         </div>
                     )}
                     {/* length-height lights */}
-                    {lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT && (
+                    {lightAndVariants.lightDimensionTypeStr === LIGHT_DIMENSION_TYPE_LENGTH_HEIGHT && (
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">

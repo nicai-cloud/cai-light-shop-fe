@@ -34,9 +34,7 @@ export type EnhancedLightVariantType = {
 }
 
 type LightAndVariantsType = {
-    lightInternalName: string,
     lightDisplayName: string,
-    lightPowerType: string,
     lightVideoUrl: string | null,
     lightDimensionTypeStr: string,
     lightVariants: EnhancedLightVariantType[]
@@ -51,9 +49,7 @@ export const getLightAndVariantsByInternalName = async (name: string): Promise<L
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal_name=${name}`);
     const lightAndVariants = await response.json();
     return {
-        lightInternalName: lightAndVariants.lightInternalName,
         lightDisplayName: lightAndVariants.lightDisplayName,
-        lightPowerType: lightAndVariants.lightPowerType,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
         lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
         lightVariants: lightAndVariants.lightVariants.map((variant: RawLightVariantType) => ({
