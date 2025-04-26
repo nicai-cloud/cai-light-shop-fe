@@ -1,5 +1,3 @@
-import Decimal from 'decimal.js';
-
 type LightType = {
     id: number,
     imageUrl: string,
@@ -10,26 +8,15 @@ type LightType = {
     priceTag: string
 }
 
-type RawLightVariantType = {
-    id: number,
-    lightId: number,
-    dimensionId: number,
-    color: string,
-    imageUrl: string,
-    description: string,
-    price: string,
-    stock: number
-}
-
 export type EnhancedLightVariantType = {
     id: number,
     lightId: number,
-    dimensionId: number,
+    dimensionId: string,
     color: string,
     imageUrl: string,
     dimensionStr: string,
     descriptions: string[],
-    price: Decimal,
+    price: string,
     stock: number
 }
 
@@ -37,7 +24,12 @@ type LightAndVariantsType = {
     lightDisplayName: string,
     lightVideoUrl: string | null,
     lightDimensionTypeStr: string,
-    lightVariants: EnhancedLightVariantType[]
+    defaultColor: string
+    defaultDimensionId: string
+    defaultLightVariant: EnhancedLightVariantType
+    colorsMapping: Record<string, number>
+    dimensionsMapping: Record<string, string>
+    colorDimensionToLightVariantMapping: Record<string, EnhancedLightVariantType>
 }
 
 export const getLights = async (): Promise<LightType[]> => {
@@ -52,9 +44,11 @@ export const getLightAndVariantsByInternalName = async (name: string): Promise<L
         lightDisplayName: lightAndVariants.lightDisplayName,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
         lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
-        lightVariants: lightAndVariants.lightVariants.map((variant: RawLightVariantType) => ({
-            ...variant,
-            price: new Decimal(variant.price),
-        })),
+        defaultColor: lightAndVariants.defaultColor,
+        defaultDimensionId: lightAndVariants.defaultDimensionId,
+        defaultLightVariant: lightAndVariants.defaultLightVariant,
+        colorsMapping: lightAndVariants.colorsMapping,
+        dimensionsMapping: lightAndVariants.dimensionsMapping,
+        colorDimensionToLightVariantMapping: lightAndVariants.colorDimensionToLightVariantMapping
     };
 }

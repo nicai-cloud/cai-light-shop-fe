@@ -12,6 +12,7 @@ import { preloadImage } from '../services/preload-image';
 import { NavArrowLeft, ShareIos } from "iconoir-react";
 import Dropdown, { DropdownOption } from '../components/input/dropdown';
 import { AddToCartModal } from './add-to-cart-modal';
+import Decimal from 'decimal.js';
 
 export default function Light() {
     const DEFAULT_QUANTITY_DROPDOWN_OPTION = {id: 1, name: "1"};
@@ -23,14 +24,10 @@ export default function Light() {
     const navigate = useNavigate();
     const { addItem } = useContext(CartContext);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
-    const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
-    const [selectedDimensionId, setSelectedDimensionId] = useState<number | null>(null);
-    const [colorsMapping, setColorsMapping] = useState<Record<string, number> | null>(null);
-    const [dimensionsMapping, setDimensionsMapping] = useState<Record<number, string> | null>(null);
-    const [colorDimensionToLightVariant, setColorDimensionToLightVariant] = useState<Record<string, number> | null>(null);
+    const [selectedDimensionId, setSelectedDimensionId] = useState<string | null>(null);
+    const [selectedLightVariant, setSelectedLightVariant] = useState<EnhancedLightVariantType | null>(null);
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
-    const [lightVariantMapping, setLightVariantMapping] = useState<Record<number, EnhancedLightVariantType> | null>(null);
     const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
 
     const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
@@ -56,47 +53,9 @@ export default function Light() {
 
     useEffect(() => {
         if (lightAndVariants) {
-            const lightVariants = lightAndVariants.lightVariants;
-            const colorsSet = new Set<string>();
-            const dimensionIdsSet = new Set<number>();
-            const tempColorsMapping: Record<string, number> = {};
-            const tempDimensionsMapping: Record<number, string> = {};
-            const tempColorDimensionToLightVariant: Record<string, number> = {};
-            const tempLightVariantMapping: Record<number, EnhancedLightVariantType> = {};
-            let index = 0;
-            let uniqueColorIndex = 0;
-            while (index < lightVariants.length) {
-                const lightVariant = lightVariants[index];
-
-                tempLightVariantMapping[lightVariant.id] = lightVariant;
-
-                const color = lightVariant.color;
-                if (!colorsSet.has(color)) {
-                    colorsSet.add(color);
-                    tempColorsMapping[color] = uniqueColorIndex;
-                    uniqueColorIndex++;
-                }
-
-                const dimensionId = lightVariant.dimensionId;
-                if (!dimensionIdsSet.has(dimensionId)) {
-                    dimensionIdsSet.add(dimensionId);
-                    tempDimensionsMapping[dimensionId] = lightVariant.dimensionStr;
-                }
-
-                const key = `${color}+${dimensionId}`
-                tempColorDimensionToLightVariant[key] = lightVariant.id
-
-                if (index == 0) {
-                    setSelectedLightVariant(lightVariant);
-                    setSelectedColor(lightVariant.color);
-                    setSelectedDimensionId(lightVariant.dimensionId);
-                }
-                index++;
-            }
-            setColorsMapping(tempColorsMapping);
-            setDimensionsMapping(tempDimensionsMapping);
-            setColorDimensionToLightVariant(tempColorDimensionToLightVariant);
-            setLightVariantMapping(tempLightVariantMapping);
+            setSelectedColor(lightAndVariants.defaultColor);
+            setSelectedDimensionId(lightAndVariants.defaultDimensionId);
+            setSelectedLightVariant(lightAndVariants.defaultLightVariant);
         }
     }, [lightAndVariants]);
 
@@ -135,7 +94,7 @@ export default function Light() {
             imageUrl: selectedLightVariant.imageUrl,
             name: lightAndVariants.lightDisplayName,
             dimensionStr: selectedLightVariant.dimensionStr,
-            price: selectedLightVariant.price,
+            price: new Decimal(selectedLightVariant.price),
             quantity: selectedDropdown.id,
             selection: {
                 lightVariantId: selectedLightVariant.id
@@ -148,16 +107,14 @@ export default function Light() {
     };
 
     const handleSelectColor = (color: string) => {
-        setCarouselImageIndex(colorsMapping![color]);
+        setCarouselImageIndex(lightAndVariants.colorsMapping![color]);
         setSelectedColor(color);
-        const selectedLightVariantId = colorDimensionToLightVariant![`${color}+${selectedDimensionId}`];
-        setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
+        setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${color}${selectedDimensionId}`]);
     }
 
-    const handleSelectDimension = (dimensionId: number) => {
+    const handleSelectDimension = (dimensionId: string) => {
         setSelectedDimensionId(dimensionId);
-        const selectedLightVariantId = colorDimensionToLightVariant![`${selectedColor}+${dimensionId}`];
-        setSelectedLightVariant(lightVariantMapping![selectedLightVariantId]);
+        setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${selectedColor}${dimensionId}`]);
     }
 
     return (
@@ -188,23 +145,23 @@ export default function Light() {
                     <p className="mt-4 text-xl">{lightAndVariants.lightDisplayName} light</p>
                     <p className="mt-4">
                         <span className="text-xl">
-                            ${selectedLightVariant.price.toFixed(2)} 
+                            ${new Decimal(selectedLightVariant.price).toFixed(2)} 
                         </span>{" "}
                         each
                     </p>
                     <p className="mt-4">Color:</p>
                     {/* Single color */}
-                    {Object.keys(colorsMapping!).length === 1 && (
+                    {Object.keys(lightAndVariants.colorsMapping).length === 1 && (
                         <div className={'flex justify-start mt-4'}>
                             <div className={'border-2 border-pink-300 text-black text-center px-4 py-2 rounded'}>
-                                {Object.keys(colorsMapping!)[0]}
+                                {Object.keys(lightAndVariants.colorsMapping)[0]}
                             </div>
                         </div>
                     )}
                     {/* Multiple colors */}
-                    {Object.keys(colorsMapping!).length > 1 && (
+                    {Object.keys(lightAndVariants.colorsMapping).length > 1 && (
                         <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                            {Object.keys(colorsMapping!).map((color) => (
+                            {Object.keys(lightAndVariants.colorsMapping).map((color) => (
                                 <div key={color} className={`border-2 ${selectedColor! === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectColor(color)}>
                                     {color}
                                 </div>
@@ -216,8 +173,8 @@ export default function Light() {
                         <div>
                             <p className="mt-4">Length:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -229,8 +186,8 @@ export default function Light() {
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -242,8 +199,8 @@ export default function Light() {
                         <div>
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
-                                {Object.entries(dimensionsMapping!).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === Number(dimensionId) ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(Number(dimensionId))}>
+                                {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
