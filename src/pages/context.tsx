@@ -24,6 +24,8 @@ interface MainContextProps {
     setExpandOrderTotal: (data: boolean) => void;
     deletedCartItemId: string | null;
     setDeletedCartItemId: (data: string | null) => void;
+    confirmCartItemDeletionModalOpen: boolean;
+    setConfirmCartItemDeletionModalOpen: (data: boolean) => void;
     customer: CustomerDetails | null;
     setCustomer: (data: CustomerDetails) => void;
     pickupOrDelivery: number | null;
@@ -34,8 +36,6 @@ interface MainContextProps {
     setDeliveryCost: (data: Decimal | null) => void;
     successfulOrderNumber: string | null;
     setSuccessfulOrderNumber: (data: string | null) => void;
-    confirmCartItemDeletionModalOpen: boolean;
-    setConfirmCartItemDeletionModalOpen: (data: boolean) => void;
 };
 
 export const MainContext = createContext<MainContextProps | null>(null);
