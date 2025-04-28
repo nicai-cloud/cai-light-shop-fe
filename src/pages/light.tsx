@@ -22,7 +22,7 @@ export default function Light() {
     const LIGHT_DIMENSION_TYPE_LENGTH_ONLY = "length-only";
 
     const navigate = useNavigate();
-    const { addItem } = useContext(CartContext);
+    const cartContext = useContext(CartContext);
     const [selectedDropdown, setSelectedDropdown] = useState<DropdownOption>(DEFAULT_QUANTITY_DROPDOWN_OPTION);
     const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [selectedDimensionId, setSelectedDimensionId] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function Light() {
                 lightVariantId: selectedLightVariant.id
             }
         }
-        addItem(cartItem);
+        cartContext.addItem(cartItem);
 
         setSelectedDropdown(DEFAULT_QUANTITY_DROPDOWN_OPTION);
         setAddToCartModalOpen(true);
@@ -110,11 +110,15 @@ export default function Light() {
         setCarouselImageIndex(lightAndVariants.colorsMapping![color]);
         setSelectedColor(color);
         setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${color}${selectedDimensionId}`]);
-    }
+    };
 
     const handleSelectDimension = (dimensionId: string) => {
         setSelectedDimensionId(dimensionId);
         setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${selectedColor}${dimensionId}`]);
+    };
+
+    const shouldDisableAddToCartButton = () => {
+        return selectedLightVariant.stock < (cartContext.getItemQuantity('light' + selectedLightVariant.id) + selectedDropdown.id);
     }
 
     return (
@@ -235,8 +239,8 @@ export default function Light() {
             <div className="mt-4 w-full flex flex-row items-center justify-center">
                 <button
                     onClick={handleAddToCart}
-                    className={`mt-2 text-white px-8 py-2 rounded ${selectedLightVariant.stock < selectedDropdown.id ? "bg-gray-300 cursor-not-allowed" : "bg-pink-300 cursor-pointer"}`}
-                    disabled={selectedLightVariant.stock < selectedDropdown.id}
+                    className={`mt-2 text-white px-8 py-2 rounded ${shouldDisableAddToCartButton() ? "bg-gray-300 cursor-not-allowed" : "bg-pink-300 cursor-pointer"}`}
+                    disabled={shouldDisableAddToCartButton()}
                 >
                     ADD TO CART
                 </button>

@@ -26,6 +26,7 @@ const DEFAULT_COUPON = null;
 interface CartContextProps {
     cart: CartItem[];
     coupon: Coupon | null;
+    getItemQuantity: (itemId: string) => number;
     addItem: (item: CartItem) => void;
     removeItem: (itemId: string) => void;
     clearCart: () => void;
@@ -37,6 +38,7 @@ interface CartContextProps {
 export const CartContext = createContext<CartContextProps>({
     cart: [],
     coupon: DEFAULT_COUPON,
+    getItemQuantity: () => 0,
     addItem: () => {},
     removeItem: () => {},
     clearCart: () => {},
@@ -81,6 +83,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [cart, coupon]);
 
+    const getItemQuantity = (itemId: string) => {
+        const existingItem = cart.find((item) => item.itemId === itemId);
+        if (!existingItem) {
+            return 0;
+        } else {
+            return existingItem.quantity;
+        }
+    }
+
     const addItem = (newItem: CartItem) => {
         setCart((prevCart) => {
             const existingItem = prevCart.find((item) => item.itemId === newItem.itemId);
@@ -93,44 +104,44 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
     };
 
-  const removeItem = (itemId: string) => {
-      setCart((prevCart) => prevCart.filter((item) => item.itemId !== itemId));
-  };
+    const removeItem = (itemId: string) => {
+        setCart((prevCart) => prevCart.filter((item) => item.itemId !== itemId));
+    };
 
-  const clearCart = () => {
-      setCart([]);
-      setCoupon(DEFAULT_COUPON);
-  }
+    const clearCart = () => {
+        setCart([]);
+        setCoupon(DEFAULT_COUPON);
+    }
 
-  const increaseItemQuantity = (itemId: string) => {
-      setCart((prevCart) => {
-          const existingItem = prevCart.find((item) => item.itemId === itemId);
-          if (existingItem) {
-              return prevCart.map((item) =>
-                  (item.itemId === itemId && item.quantity < 10) ? { ...item, quantity: item.quantity + 1 } : item
-              );
-          }
-          return prevCart;
-      });
-  }
+    const increaseItemQuantity = (itemId: string) => {
+        setCart((prevCart) => {
+            const existingItem = prevCart.find((item) => item.itemId === itemId);
+            if (existingItem) {
+                return prevCart.map((item) =>
+                    (item.itemId === itemId && item.quantity < 10) ? { ...item, quantity: item.quantity + 1 } : item
+                );
+            }
+            return prevCart;
+        });
+    }
 
-  const decreaseItemQuantity = (itemId: string) => {
-      setCart((prevCart) => {
-          const existingItem = prevCart.find((item) => item.itemId === itemId);
-          if (existingItem) {
-              return prevCart.map((item) =>
-                  (item.itemId === itemId && item.quantity > 1) ? { ...item, quantity: item.quantity - 1 } : item
-              );
-          }
-          return prevCart;
-      });
-  }
+    const decreaseItemQuantity = (itemId: string) => {
+        setCart((prevCart) => {
+            const existingItem = prevCart.find((item) => item.itemId === itemId);
+            if (existingItem) {
+                return prevCart.map((item) =>
+                    (item.itemId === itemId && item.quantity > 1) ? { ...item, quantity: item.quantity - 1 } : item
+                );
+            }
+            return prevCart;
+        });
+    }
 
-  return (
-      <CartContext.Provider value={
-          { cart, coupon, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setCoupon }
-      }>
-          {children}
-      </CartContext.Provider>
-  );
+    return (
+        <CartContext.Provider value={
+            { cart, coupon, getItemQuantity, addItem, removeItem, clearCart, increaseItemQuantity, decreaseItemQuantity, setCoupon }
+        }>
+            {children}
+        </CartContext.Provider>
+    );
 };
