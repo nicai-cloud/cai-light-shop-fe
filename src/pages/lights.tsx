@@ -60,7 +60,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "power").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
+                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
@@ -79,7 +79,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "solar").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
+                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
@@ -98,7 +98,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "battery").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4 mr-4" onClick={() => handleClick(light.internalName)}>
+                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
                         <img
                             src={light.imageUrl}
                             alt={light.displayName}
