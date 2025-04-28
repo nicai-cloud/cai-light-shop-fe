@@ -21,6 +21,7 @@ export type EnhancedLightVariantType = {
 }
 
 type LightAndVariantsType = {
+    lightPowerType: string,
     lightDisplayName: string,
     lightVideoUrl: string | null,
     lightDimensionTypeStr: string,
@@ -28,6 +29,7 @@ type LightAndVariantsType = {
     colorsMapping: Record<string, number>
     dimensionsMapping: Record<string, string>
     colorDimensionToLightVariantMapping: Record<string, EnhancedLightVariantType>
+    defaultDimensionToLightVariantMapping: Record<string, EnhancedLightVariantType>
 }
 
 export const getLights = async (): Promise<LightType[]> => {
@@ -39,12 +41,14 @@ export const getLightAndVariantsByInternalName = async (name: string): Promise<L
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal_name=${name}`);
     const lightAndVariants = await response.json();
     return {
+        lightPowerType: lightAndVariants.lightPowerType,
         lightDisplayName: lightAndVariants.lightDisplayName,
         lightVideoUrl: lightAndVariants.lightVideoUrl,
         lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
         defaultLightVariant: lightAndVariants.defaultLightVariant,
         colorsMapping: lightAndVariants.colorsMapping,
         dimensionsMapping: lightAndVariants.dimensionsMapping,
-        colorDimensionToLightVariantMapping: lightAndVariants.colorDimensionToLightVariantMapping
+        colorDimensionToLightVariantMapping: lightAndVariants.colorDimensionToLightVariantMapping,
+        defaultDimensionToLightVariantMapping: lightAndVariants.defaultDimensionToLightVariantMapping
     };
 }

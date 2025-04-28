@@ -79,7 +79,9 @@ export default function Light() {
 
     if (isImagesLoading || !images ||
         isLightAndVariantsLoading || !lightAndVariants ||
-        !selectedLightVariant
+        !selectedLightVariant ||
+        !selectedColor ||
+        !selectedDimensionId
     ) {
         return (
             <div className="w-full flex items-center justify-center">
@@ -109,12 +111,26 @@ export default function Light() {
     const handleSelectColor = (color: string) => {
         setCarouselImageIndex(lightAndVariants.colorsMapping![color]);
         setSelectedColor(color);
-        setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${color}${selectedDimensionId}`]);
+        const colorDimensionKey = `${color}${selectedDimensionId}`
+        if (colorDimensionKey in lightAndVariants.colorDimensionToLightVariantMapping) {
+            setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[colorDimensionKey]);
+        } else {
+            const dummyLightVariant = lightAndVariants.defaultDimensionToLightVariantMapping[selectedDimensionId];
+            dummyLightVariant.descriptions = [`This is a ${color.toLowerCase()} ${lightAndVariants.lightPowerType.toLowerCase()} ${lightAndVariants.lightDisplayName.toLowerCase()} light`];
+            setSelectedLightVariant(dummyLightVariant);
+        }
     };
 
     const handleSelectDimension = (dimensionId: string) => {
         setSelectedDimensionId(dimensionId);
-        setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[`${selectedColor}${dimensionId}`]);
+        const colorDimensionKey = `${selectedColor}${dimensionId}`;
+        if (colorDimensionKey in lightAndVariants.colorDimensionToLightVariantMapping) {
+            setSelectedLightVariant(lightAndVariants.colorDimensionToLightVariantMapping[colorDimensionKey]);
+        } else {
+            const dummyLightVariant = lightAndVariants.defaultDimensionToLightVariantMapping[dimensionId];
+            dummyLightVariant.descriptions = [`This is a ${selectedColor.toLowerCase()} ${lightAndVariants.lightPowerType.toLowerCase()} ${lightAndVariants.lightDisplayName.toLowerCase()} light`];
+            setSelectedLightVariant(dummyLightVariant);
+        }
     };
 
     const shouldDisableAddToCartButton = () => {
@@ -166,7 +182,7 @@ export default function Light() {
                     {Object.keys(lightAndVariants.colorsMapping).length > 1 && (
                         <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                             {Object.keys(lightAndVariants.colorsMapping).map((color) => (
-                                <div key={color} className={`border-2 ${selectedColor! === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectColor(color)}>
+                                <div key={color} className={`border-2 ${selectedColor === color ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectColor(color)}>
                                     {color}
                                 </div>
                             ))}
@@ -178,7 +194,7 @@ export default function Light() {
                             <p className="mt-4">Length:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -191,7 +207,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
@@ -204,7 +220,7 @@ export default function Light() {
                             <p className="mt-4">Dimension:</p>
                             <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-6">
                                 {Object.entries(lightAndVariants.dimensionsMapping).map(([dimensionId, dimensionStr]) => (
-                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId! === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
+                                    <div key={dimensionId} className={`w-[120px] border-2 ${selectedDimensionId === dimensionId ? 'border-pink-300' : 'border-gray-100'} text-black text-center px-1 py-2 rounded`} onClick={() => handleSelectDimension(dimensionId)}>
                                         {dimensionStr}
                                     </div>
                                 ))}
