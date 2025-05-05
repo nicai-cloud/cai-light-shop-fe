@@ -30,14 +30,14 @@ export default function Light() {
     const [carouselImageIndex, setCarouselImageIndex] = useState<number>(0);
     const [addToCartModalOpen, setAddToCartModalOpen] = useState<boolean>(false);
 
-    const { internal_name } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
+    const { internal_name: internalName } = useParams<{ internal_name: string }>(); // Extract internal name from the URL
 
-    const {isLoading: isImagesLoading, data: images} = useSWR([GET_LIGHT_IMAGE_URLS, internal_name!], () => getLightImageUrlsByInternalName(internal_name!), {
+    const {isLoading: isImagesLoading, data: images} = useSWR([GET_LIGHT_IMAGE_URLS, internalName], () => getLightImageUrlsByInternalName(internalName!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
 
-    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_AND_VARIANTS_BY_NAME, internal_name!], () => getLightAndVariantsByInternalName(internal_name!), {
+    const {isLoading: isLightAndVariantsLoading, data: lightAndVariants} = useSWR([GET_LIGHT_AND_VARIANTS_BY_NAME, internalName], () => getLightAndVariantsByInternalName(internalName!), {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });

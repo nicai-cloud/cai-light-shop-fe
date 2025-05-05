@@ -112,7 +112,7 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
             };
         }
 
-        setSuccessfulOrderNumber((await response.json()).order_number);
+        setSuccessfulOrderNumber((await response.json()).orderNumber);
         cartContext.clearCart();
         setDeletedCartItemId(null);
         setExpandOrderTotal(false);

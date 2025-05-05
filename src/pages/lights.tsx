@@ -44,8 +44,8 @@ export default function Lights() {
         )
     }
 
-    const handleClick = (internal_name: string) => {
-        navigate(`${LIGHT_PAGE}/${internal_name}`);
+    const handleClick = (internalName: string) => {
+        navigate(`${LIGHT_PAGE}/${internalName}`);
     }
 
     return (
