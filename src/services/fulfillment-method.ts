@@ -34,7 +34,7 @@ function convertFulfillmentMethod(fulfillmentMethod: RawFulfillmentMethodType): 
 
 export const getFulfillmentMethodInfo = async (): Promise<FulfillmentMethodInfoType> => {
     const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/fulfillment-methods`);
-    const fulfillmentMethodInfo = await response.json();
+    const fulfillmentMethodInfo = (await response.json());
     const result = {
         ...fulfillmentMethodInfo,
         fulfillmentMethods: fulfillmentMethodInfo.fulfillmentMethods.map(convertFulfillmentMethod),
