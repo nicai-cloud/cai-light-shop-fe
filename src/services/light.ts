@@ -38,7 +38,7 @@ export const getLights = async (): Promise<LightType[]> => {
 }
 
 export const getLightAndVariantsByInternalName = async (name: string): Promise<LightAndVariantsType> => {
-    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal_name=${name}`);
+    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal-name=${name}`);
     const lightAndVariants = (await response.json()).lightAndVariants;
     return {
         lightPowerType: lightAndVariants.lightPowerType,
