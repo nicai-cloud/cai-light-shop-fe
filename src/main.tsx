@@ -11,6 +11,7 @@ import Checkout from './pages/checkout.tsx'
 import { CartProvider } from './context/CartContext.tsx'
 import Base from './pages/index.ts'
 import { MainContextProvider } from './pages/context.tsx'
+import { HOME_PAGE } from './utils/constants.ts'
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Navigate to="/lights" replace />,
+        element: <Navigate to={HOME_PAGE} replace />,
       },
       {
         path: '/',
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <Navigate to='/lights' replace />,
+        element: <Navigate to={HOME_PAGE} replace />,
       }
     ]
   }
