@@ -1,18 +1,13 @@
 import { faGift } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
 import { useMainContext } from "./context";
 import { HOME_PAGE } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { DELIVERY } from "./checkout";
 
 export default function Success() {
     const navigate = useNavigate();
     const mainContext = useMainContext();
-    const [orderNumber, setOrderNumber] = useState<String>('');
-
-    useEffect(() => {
-        setOrderNumber(window.location.hash.slice(1));  // Exclude the #
-    })
 
     const handleContinueShopping = () => {
         mainContext.setSuccessfulOrderNumber(null);
@@ -29,8 +24,10 @@ export default function Success() {
             <hr className="my-10"/>
             <div>
                 <h1 className="text-2xl font-bold mb-4">Order Summary</h1>
-                <p><span className="font-bold">Order Number:</span> {orderNumber}</p>
-                <p><span className="font-bold">Estimated Delivery:</span> 7-10 business days</p>
+                <p><span className="font-bold">Order Number:</span> {mainContext.successfulOrderNumber}</p>
+                {mainContext.pickupOrDelivery !== null && mainContext.pickupOrDelivery === DELIVERY && (
+                    <p><span className="font-bold">Estimated Delivery:</span> 7-10 business days</p>
+                )}
                 <p className="mt-4">You will receive a confirmation email with all the details shortly.</p>
             </div>
             <hr className="my-10"/>

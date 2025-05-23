@@ -57,7 +57,7 @@ export default function Payment() {
 
     useEffect(() => {
         if (mainContext.successfulOrderNumber) {
-            navigate(`${SUCCESS_PAGE}#${mainContext.successfulOrderNumber!}`);
+            navigate(SUCCESS_PAGE);
         }
     }, [mainContext.successfulOrderNumber]);
 
