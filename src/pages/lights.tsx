@@ -8,9 +8,11 @@ import { getNumberEnv } from '../utils/load-env';
 import { preloadImage } from '../services/preload-image';
 import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
 import { useNavigate } from 'react-router-dom';
+import { useMainContext } from './context';
 
 export default function Lights() {
     const navigate = useNavigate();
+    const mainContext = useMainContext();
 
     const {isLoading: isAllLightsImagesLoading, data: allLightsImages} = useSWR(GET_ALL_LIGHTS_IMAGE_URLS, getAllLightsImageUrls, {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
@@ -26,6 +28,10 @@ export default function Lights() {
         // revalidateIfStale: false, // Prevent re-fetching when cache is stale
         dedupingInterval: getNumberEnv(import.meta.env.VITE_DEDUPING_INTERVAL_MILLISECONDS)
     });
+
+    useEffect(() => {
+        mainContext.setSuccessfulOrderNumber(null);
+    }, []);
 
     useEffect(() => {
         if (allLightsImages) {

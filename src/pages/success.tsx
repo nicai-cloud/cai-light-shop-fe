@@ -10,7 +10,6 @@ export default function Success() {
     const mainContext = useMainContext();
 
     const handleContinueShopping = () => {
-        mainContext.setSuccessfulOrderNumber(null);
         navigate(HOME_PAGE);
     }
 
