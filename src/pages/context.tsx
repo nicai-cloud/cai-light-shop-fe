@@ -19,7 +19,9 @@ export interface CustomerDetails {
 }
 
 interface MainContextProps {
-    submitCompleteOrder: (paymentMethodId: string) => Promise<SubmissionError | null>;
+    getOrderItemsFromCart: () => OrderItemType[];
+    createPaymentIntent: () => Promise<string>;
+    submitCompleteOrder: (data: string) => Promise<SubmissionError | null>;
     expandOrderTotal: boolean;
     setExpandOrderTotal: (data: boolean) => void;
     deletedCartItemId: string | null;
@@ -58,14 +60,30 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [deliveryAddress, setDeliveryAddress] = useState<string | null>(null);
     const [deliveryCost, setDeliveryCost] = useState<Decimal | null>(null);
 
-    const submitCompleteOrder = async (paymentMethodId: string) => {
-        const orderItems: OrderItemType[] = [];
-        cartContext.cart.map((cartItem) => {
-            if (cartItem.selection.lightVariantId) {
-                orderItems.push({quantity: cartItem.quantity, lightVariantId: cartItem.selection.lightVariantId})
-            }
-        })
+    const getOrderItemsFromCart = () => {
+        const orderItems: OrderItemType[] = cartContext.cart.map((cartItem) => ({
+            quantity: cartItem.quantity,
+            lightVariantId: cartItem.selection.lightVariantId,
+        }));
+        return orderItems;
+    }
 
+    const createPaymentIntent = async () => {
+        const res = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/payment/payment-intent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                orderItems: getOrderItemsFromCart(),
+                fulfillmentMethod: pickupOrDelivery,
+            }),
+        });
+        const { clientSecret } = await res.json();
+        return clientSecret;
+    }
+
+    const submitCompleteOrder = async (paymentIntentId: string) => {
         let response;
         try {
             response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order`, {
@@ -80,10 +98,10 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                         mobile: customer!.mobile,
                         email: customer!.email,
                     },
-                    orderItems: orderItems,
+                    orderItems: getOrderItemsFromCart(),
+                    paymentIntentId: paymentIntentId,
                     fulfillmentMethod: pickupOrDelivery,
                     deliveryAddress: deliveryAddress,
-                    paymentMethodId: paymentMethodId,
                     couponCode: cartContext.coupon?.couponCode,
                 }),
             });
@@ -123,6 +141,8 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return (
         <MainContext.Provider value={
             {
+                getOrderItemsFromCart,
+                createPaymentIntent,
                 submitCompleteOrder,
                 expandOrderTotal,
                 setExpandOrderTotal,

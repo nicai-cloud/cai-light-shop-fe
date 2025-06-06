@@ -61,8 +61,9 @@ export default function Payment() {
         }
     }, [mainContext.successfulOrderNumber]);
 
-    const onSubmit = useCallback(async (data: PaymentForm) => {
-        if (elements === null) {
+    const onSubmit = useCallback(async () => {
+        if (!stripe || !elements) {
+            console.error("Stripe.js hasn't loaded yet.");
             return;
         }
 
@@ -72,29 +73,29 @@ export default function Payment() {
 
         setIsLoading(true);
 
-        const paymentMethodResult = await stripe?.createPaymentMethod({
-            type: 'card',
-            card: elements.getElement('cardNumber')!,
-            billing_details: {
-                name: data.nameOnCard,
+        const clientSecret = await mainContext.createPaymentIntent();
+
+        // Confirm the payment (this triggers 3DS if required)
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: elements.getElement('cardNumber')!,
             },
         });
 
-        if (paymentMethodResult?.error) {
+        if (error) {
             form.resetField('nameOnCard');
-            setGlobalError(paymentMethodResult.error.message ?? 'There was an error adding your card. Please choose another card and try again. If the problem persists, please contact support.');
+            setGlobalError(error.message ?? 'There was an error with the payment, please try again. If the problem persists, please contact support.');
             setIsLoading(false);
             return;
         }
 
-        if (!paymentMethodResult?.paymentMethod) {
-            setGlobalError('There was an error adding your card. Please choose another card and try again. If the problem persists, please contact support.');
+        if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+            setGlobalError('There was an error with the payment, please try again. If the problem persists, please contact support.');
             setIsLoading(false);
             return;
         }
 
-        const submissionResult = await mainContext.submitCompleteOrder(paymentMethodResult.paymentMethod.id);
-
+        const submissionResult = await mainContext.submitCompleteOrder(paymentIntent.id);
         if (submissionResult !== null) {
             setGlobalError(submissionResult.message);
             setIsLoading(false);
