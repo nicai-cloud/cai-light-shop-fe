@@ -21,23 +21,23 @@ export interface CustomerDetails {
 interface MainContextProps {
     getOrderItemsFromCart: () => OrderItemType[];
     createPaymentIntent: () => Promise<string>;
-    submitCompleteOrder: (data: string) => Promise<SubmissionError | null>;
+    submitCompleteOrder: (paymentIntentId: string) => Promise<SubmissionError | null>;
     expandOrderTotal: boolean;
-    setExpandOrderTotal: (data: boolean) => void;
+    setExpandOrderTotal: (expandOrderTotal: boolean) => void;
     deletedCartItemId: string | null;
-    setDeletedCartItemId: (data: string | null) => void;
+    setDeletedCartItemId: (deletedCartItemId: string | null) => void;
     confirmCartItemDeletionModalOpen: boolean;
-    setConfirmCartItemDeletionModalOpen: (data: boolean) => void;
+    setConfirmCartItemDeletionModalOpen: (confirmCartItemDeletionModalOpen: boolean) => void;
     customer: CustomerDetails | null;
-    setCustomer: (data: CustomerDetails) => void;
+    setCustomer: (customerDetails: CustomerDetails) => void;
     pickupOrDelivery: number | null;
-    setPickupOrDelivery: (data: number) => void;
+    setPickupOrDelivery: (pickupOrDelivery: number) => void;
     deliveryAddress: string | null;
-    setDeliveryAddress: (data: string | null) => void;
+    setDeliveryAddress: (deliveryAddress: string | null) => void;
     deliveryCost: Decimal | null;
-    setDeliveryCost: (data: Decimal | null) => void;
+    setDeliveryCost: (deliveryCost: Decimal | null) => void;
     successfulOrderNumber: string | null;
-    setSuccessfulOrderNumber: (data: string | null) => void;
+    setSuccessfulOrderNumber: (successfulOrderNumber: string | null) => void;
 };
 
 export const MainContext = createContext<MainContextProps | null>(null);

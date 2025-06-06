@@ -80,12 +80,12 @@ export default function Checkout() {
         mainContext.setPickupOrDelivery(value);
     };
 
-    const onSubmit = useCallback(async (data: CustomerDetailsForm) => {
+    const onSubmit = useCallback(async (customerDetails: CustomerDetailsForm) => {
         mainContext.setCustomer({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            mobile: data.mobile,
-            email: data.email
+            firstName: customerDetails.firstName,
+            lastName: customerDetails.lastName,
+            mobile: customerDetails.mobile,
+            email: customerDetails.email
         })
         mainContext.setPickupOrDelivery(pickupOrDelivery!);
         mainContext.setDeliveryAddress(deliveryAddress);
