@@ -21,7 +21,7 @@ export interface CustomerDetails {
 interface MainContextProps {
     getOrderItemsFromCart: () => OrderItemType[];
     createPaymentIntent: () => Promise<string>;
-    submitCompleteOrder: (paymentIntentId: string) => Promise<SubmissionError | null>;
+    submitCompleteOrder: (paymentIntentId: string, recaptchaToken: string) => Promise<SubmissionError | null>;
     expandOrderTotal: boolean;
     setExpandOrderTotal: (expandOrderTotal: boolean) => void;
     deletedCartItemId: string | null;
@@ -83,7 +83,7 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         return clientSecret;
     }
 
-    const submitCompleteOrder = async (paymentIntentId: string) => {
+    const submitCompleteOrder = async (paymentIntentId: string, recaptchaToken: string) => {
         let response;
         try {
             response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/complete-order`, {
@@ -103,6 +103,7 @@ export const MainContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                     fulfillmentMethod: pickupOrDelivery,
                     deliveryAddress: deliveryAddress,
                     couponCode: cartContext.coupon?.couponCode,
+                    recaptchaToken: recaptchaToken
                 }),
             });
         }

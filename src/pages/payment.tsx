@@ -10,6 +10,7 @@ import { useMainContext } from './context';
 import ActionButton from '../components/button/action-button';
 import { useNavigate } from 'react-router-dom';
 import { SUCCESS_PAGE } from '../utils/constants';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const STRIPE_ELEMENT_STYLE_PROPS: StripeElementStyle = {
     base: {
@@ -33,6 +34,7 @@ export default function Payment() {
     const mainContext = useMainContext();
     const stripe = useStripe();
     const elements = useElements();
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     // We need to manually store the error state from Stripe elements to render
     // error messages. These messages come in during onChange events.
@@ -67,6 +69,11 @@ export default function Payment() {
             return;
         }
 
+        if (!executeRecaptcha) {
+            console.error("Execute recaptcha not yet available.");
+            return;
+        }
+
         if (isLoading) {
             return;
         }
@@ -95,7 +102,8 @@ export default function Payment() {
             return;
         }
 
-        const submissionResult = await mainContext.submitCompleteOrder(paymentIntent.id);
+        const recaptchaToken = await executeRecaptcha("complete_order");
+        const submissionResult = await mainContext.submitCompleteOrder(paymentIntent.id, recaptchaToken);
         if (submissionResult !== null) {
             setGlobalError(submissionResult.message);
             setIsLoading(false);
