@@ -5,7 +5,6 @@ import TextField from '../components/input/text-field';
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { StripeElementChangeEvent, StripeElementStyle } from '@stripe/stripe-js';
 import StripeFieldWrapper from '../components/stripe-field-wrapper';
-import { PaymentForm } from './types';
 import { useMainContext } from './context';
 import ActionButton from '../components/button/action-button';
 import { useNavigate } from 'react-router-dom';
