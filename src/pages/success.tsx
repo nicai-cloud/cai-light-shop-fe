@@ -24,7 +24,7 @@ export default function Success() {
             <div>
                 <h1 className="text-2xl font-bold mb-4">Order Summary</h1>
                 <p><span className="font-bold">Order Number:</span> {mainContext.successfulOrderNumber}</p>
-                {mainContext.pickupOrDelivery !== null && mainContext.pickupOrDelivery === DELIVERY && (
+                {mainContext.pickupOrDelivery === DELIVERY && (
                     <p><span className="font-bold">Estimated Delivery:</span> 7-10 business days</p>
                 )}
                 <p className="mt-4">You will receive a confirmation email with all the details shortly.</p>
