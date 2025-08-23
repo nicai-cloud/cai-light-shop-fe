@@ -33,22 +33,40 @@ type LightAndVariantsType = {
 }
 
 export const getLights = async (): Promise<LightType[]> => {
-    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights`);
-    return (await response.json()).lights;
+    try {
+        const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return (await response.json()).lights;
+    } catch (error) {
+        console.error('Failed to fetch lights:', error);
+        throw new Error('Unable to fetch lights. Please try again later.');
+    }
 }
 
 export const getLightAndVariantsByInternalName = async (name: string): Promise<LightAndVariantsType> => {
-    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal-name=${name}`);
-    const lightAndVariants = (await response.json()).lightAndVariants;
-    return {
-        lightPowerType: lightAndVariants.lightPowerType,
-        lightDisplayName: lightAndVariants.lightDisplayName,
-        lightVideoUrl: lightAndVariants.lightVideoUrl,
-        lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
-        defaultLightVariant: lightAndVariants.defaultLightVariant,
-        colorsMapping: lightAndVariants.colorsMapping,
-        dimensionsMapping: lightAndVariants.dimensionsMapping,
-        colorDimensionToLightVariantMapping: lightAndVariants.colorDimensionToLightVariantMapping,
-        defaultDimensionToLightVariantMapping: lightAndVariants.defaultDimensionToLightVariantMapping
-    };
+    try {
+        const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/lights/search?internal-name=${name}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const lightAndVariants = (await response.json()).lightAndVariants;
+        return {
+            lightPowerType: lightAndVariants.lightPowerType,
+            lightDisplayName: lightAndVariants.lightDisplayName,
+            lightVideoUrl: lightAndVariants.lightVideoUrl,
+            lightDimensionTypeStr: lightAndVariants.lightDimensionTypeStr,
+            defaultLightVariant: lightAndVariants.defaultLightVariant,
+            colorsMapping: lightAndVariants.colorsMapping,
+            dimensionsMapping: lightAndVariants.dimensionsMapping,
+            colorDimensionToLightVariantMapping: lightAndVariants.colorDimensionToLightVariantMapping,
+            defaultDimensionToLightVariantMapping: lightAndVariants.defaultDimensionToLightVariantMapping
+        };
+    } catch (error) {
+        console.error(`Failed to fetch light and variants by internal name ${name}:`, error);
+        throw new Error('Unable to fetch light and variants. Please try again later.');
+    }
 }

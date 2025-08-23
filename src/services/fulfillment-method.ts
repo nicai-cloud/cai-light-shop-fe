@@ -28,12 +28,21 @@ function convertFulfillmentMethod(fulfillmentMethod: RawFulfillmentMethodType): 
 }
 
 export const getFulfillmentMethodInfo = async (): Promise<FulfillmentMethodInfoType> => {
-    const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/fulfillment-methods`);
-    const fulfillmentMethodInfo = (await response.json());
-    const result = {
-        ...fulfillmentMethodInfo,
-        fulfillmentMethods: fulfillmentMethodInfo.fulfillmentMethods.map(convertFulfillmentMethod),
-        freeShippingThreshold: new Decimal(fulfillmentMethodInfo.freeShippingThreshold)
+    try {
+        const response = await fetch(`${import.meta.env.VITE_LIGHT_SHOP_API}/fulfillment-methods`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const fulfillmentMethodInfo = await response.json();
+        const result = {
+            ...fulfillmentMethodInfo,
+            fulfillmentMethods: fulfillmentMethodInfo.fulfillmentMethods.map(convertFulfillmentMethod),
+            freeShippingThreshold: new Decimal(fulfillmentMethodInfo.freeShippingThreshold)
+        }
+        return result;
+    } catch (error) {
+        console.error('`Failed to fetch fulfillment method infomation:', error);
+        throw new Error('Unable to fetch fulfillment method infomation. Please try again later.');
     }
-    return result;
 }
