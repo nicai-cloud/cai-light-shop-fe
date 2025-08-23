@@ -14,11 +14,6 @@ type FulfillmentMethodType = {
     discountFee: Decimal
 }
 
-export type RawFulfillmentMethodInfoType = {
-    "fulfillmentMethods": RawFulfillmentMethodType[],
-    "freeShippingThreshold": string
-}
-
 export type FulfillmentMethodInfoType = {
     "fulfillmentMethods": FulfillmentMethodType[],
     "freeShippingThreshold": Decimal
