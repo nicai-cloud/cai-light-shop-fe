@@ -29,6 +29,10 @@ const STRIPE_ELEMENT_STYLE_PROPS: StripeElementStyle = {
     },
 };
 
+type PaymentForm = {
+    nameOnCard: string;
+};
+
 export default function Payment() {
     const navigate = useNavigate();
     const mainContext = useMainContext();

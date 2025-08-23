@@ -3,7 +3,6 @@ import { FormProvider, useForm, Controller } from 'react-hook-form';
 import ErrorPanel from '../components/error-panel';
 import TextField from '../components/input/text-field';
 import AsyncAutocomplete from '../components/input/async-autocomplete';
-import { CustomerDetailsForm } from './types';
 import { useMainContext } from './context';
 import { CartContext } from '../context/CartContext';
 import ActionButton from '../components/button/action-button';
@@ -17,6 +16,15 @@ import { useNavigate } from 'react-router-dom';
 
 export const PICKUP = 0;
 export const DELIVERY = 1;
+
+type CustomerDetailsForm = {
+    firstName: string;
+    lastName: string;
+    mobile: string;
+    email: string;
+    pickupOrDelivery: number | null;
+    deliveryAddress: string | null;
+};
 
 export default function Checkout() {
     const navigate = useNavigate();
