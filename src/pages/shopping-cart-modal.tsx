@@ -101,19 +101,17 @@ export const ShoppingCartModal = ({
                             <p>Subtotal</p>
                             <p>${formatMoney(calculateTotalCost())}</p>
                         </div>
+                        <div className="flex items-center justify-center">
+                            <button
+                                onClick={handleCheckout}
+                                className={"mt-2 bg-pink-300 text-white px-8 py-2 rounded"}
+                            >
+                                CHECKOUT
+                            </button>
+                        </div>
                     </>
                 )}
                 </Modal.Body>
-                {cart.length > 0 && (
-                    <div className="flex items-center justify-center">
-                        <button
-                            onClick={handleCheckout}
-                            className={"mt-2 bg-pink-300 text-white px-8 py-2 rounded"}
-                        >
-                            CHECKOUT
-                        </button>
-                    </div>
-                )}
             </Modal>
         </div>
     );
