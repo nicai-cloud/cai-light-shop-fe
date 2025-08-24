@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useSWR from 'swr';
 import { getAllLightsImageUrls } from '../services/image';
-import { getLights } from '../services/light';
+import { getLights, LightType } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_ALL_LIGHTS_IMAGE_URLS, GET_FULFILLMENT_METHOD_INFO, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
@@ -10,6 +10,10 @@ import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
 import { useNavigate } from 'react-router-dom';
 import { useMainContext } from './context';
 
+interface LightCategoryProps {
+    light: LightType;
+}
+  
 export default function Lights() {
     const navigate = useNavigate();
     const mainContext = useMainContext();
@@ -54,6 +58,20 @@ export default function Lights() {
         navigate(`${LIGHT_PAGE}/${internalName}`);
     }
 
+    const LightCategory = ( { light } : LightCategoryProps ) => {
+        return (
+            <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
+                <img
+                    src={light.imageUrl}
+                    alt={light.displayName}
+                    className="h-[160px] w-[160px]"
+                />
+                <p>{light.displayName}</p>
+                <p>{light.priceTag}</p>
+            </div>
+        )
+    }
+
     return (
         <div className="w-full">
             <div className="w-full h-10 bg-gray-600 text-white text-lg flex items-center justify-center">
@@ -66,15 +84,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "power").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
-                        <img
-                            src={light.imageUrl}
-                            alt={light.displayName}
-                            className="h-[160px] w-[160px]"
-                        />
-                        <p>{light.displayName}</p>
-                        <p>{light.priceTag}</p>
-                    </div>
+                    <LightCategory light={light} />
                 ))}
             </div>
             <br />
@@ -85,15 +95,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "solar").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
-                        <img
-                            src={light.imageUrl}
-                            alt={light.displayName}
-                            className="h-[160px] w-[160px]"
-                        />
-                        <p>{light.displayName}</p>
-                        <p>{light.priceTag}</p>
-                    </div>
+                    <LightCategory light={light} />
                 ))}
             </div>
             <br />
@@ -104,15 +106,7 @@ export default function Lights() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
                 {lights.filter(light => light.powerType === "battery").map((light) => (
-                    <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
-                        <img
-                            src={light.imageUrl}
-                            alt={light.displayName}
-                            className="h-[160px] w-[160px]"
-                        />
-                        <p>{light.displayName}</p>
-                        <p>{light.priceTag}</p>
-                    </div>
+                    <LightCategory light={light} />
                 ))}
             </div>
         </div>

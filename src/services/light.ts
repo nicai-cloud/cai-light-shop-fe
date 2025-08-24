@@ -1,4 +1,4 @@
-type LightType = {
+export type LightType = {
     id: number,
     imageUrl: string,
     videoUrl: string | null,
