@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useSWR from 'swr';
 import { getAllLightsImageUrls } from '../services/image';
-import { getLights, LightType } from '../services/light';
+import { getLights } from '../services/light';
 import Spinner from '../components/loading/spinner';
 import { GET_ALL_LIGHTS_IMAGE_URLS, GET_FULFILLMENT_METHOD_INFO, GET_LIGHTS, LIGHT_PAGE } from '../utils/constants';
 import { getNumberEnv } from '../utils/load-env';
@@ -10,8 +10,9 @@ import { getFulfillmentMethodInfo } from '../services/fulfillment-method';
 import { useNavigate } from 'react-router-dom';
 import { useMainContext } from './context';
 
-interface LightCategoryProps {
-    light: LightType;
+interface LightsCategoryProps {
+    powerType: string;
+    title: string;
 }
   
 export default function Lights() {
@@ -58,17 +59,28 @@ export default function Lights() {
         navigate(`${LIGHT_PAGE}/${internalName}`);
     }
 
-    const LightCategory = ( { light } : LightCategoryProps ) => {
+    const LightsCategory = ( { powerType, title } : LightsCategoryProps ) => {
         return (
-            <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
-                <img
-                    src={light.imageUrl}
-                    alt={light.displayName}
-                    className="h-[160px] w-[160px]"
-                />
-                <p>{light.displayName}</p>
-                <p>{light.priceTag}</p>
-            </div>
+            <>
+                <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
+                    <p className="text-white text-center">
+                        {title} LIGHTS
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
+                    {lights.filter(light => light.powerType === powerType).map((light) => (
+                        <div key={light.id} className="relative flex flex-col items-center cursor-pointer mt-4" onClick={() => handleClick(light.internalName)}>
+                            <img
+                                src={light.imageUrl}
+                                alt={light.displayName}
+                                className="h-[160px] w-[160px]"
+                            />
+                            <p>{light.displayName}</p>
+                            <p>{light.priceTag}</p>
+                        </div>
+                    ))}
+                </div>
+            </>
         )
     }
 
@@ -77,38 +89,11 @@ export default function Lights() {
             <div className="w-full h-10 bg-gray-600 text-white text-lg flex items-center justify-center">
                 ${fulfillmentMethodInfo.fulfillmentMethods[1].fee.toFixed(2)} Flat Rate Shipping
             </div>
-            <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
-                <p className="text-white text-center">
-                    POWER LIGHTS
-                </p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.powerType === "power").map((light) => (
-                    <LightCategory light={light} />
-                ))}
-            </div>
+            <LightsCategory powerType="power" title="POWER" />
             <br />
-            <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
-                <p className="text-white text-center">
-                    SOLAR LIGHTS
-                </p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.powerType === "solar").map((light) => (
-                    <LightCategory light={light} />
-                ))}
-            </div>
+            <LightsCategory powerType="solar" title="SOLAR" />
             <br />
-            <div className="w-full h-16 bg-pink-300 flex items-center justify-center">
-                <p className="text-white text-center">
-                    BATTERY LIGHTS
-                </p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 mx-4 sm:mx-4 gap-4 sm:gap-4 justify-items-center">
-                {lights.filter(light => light.powerType === "battery").map((light) => (
-                    <LightCategory light={light} />
-                ))}
-            </div>
+            <LightsCategory powerType="battery" title="BATTERY" />
         </div>
     );
 }
